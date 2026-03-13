@@ -145,38 +145,15 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 카테고리별 슬라이더 초기화
-const vehicleSwipers = {};
-
-function initVehicleSwiper(category) {
-    const container = document.querySelector(`.vehicle-category[data-category="${category}"] .vehicleSwiper`);
-    if (container && !vehicleSwipers[category]) {
-        vehicleSwipers[category] = new Swiper(container, {
-            ...vehicleSwiperConfig,
-            pagination: {
-                el: container.querySelector('.swiper-pagination'),
-                clickable: true,
-                dynamicBullets: true,
-            },
-        });
-    }
-    if (vehicleSwipers[category]) {
-        vehicleSwipers[category].update();
-    }
-}
-
-// 첫 번째 탭(세단) 초기화
-initVehicleSwiper('sedan');
-
-// 탭 전환
-document.querySelectorAll('.vehicle-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-        document.querySelectorAll('.vehicle-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.vehicle-category').forEach(c => c.classList.remove('active'));
-        tab.classList.add('active');
-        const category = tab.dataset.category;
-        document.querySelector(`.vehicle-category[data-category="${category}"]`).classList.add('active');
-        initVehicleSwiper(category);
+// 모든 차량 슬라이더 초기화
+document.querySelectorAll('.vehicleSwiper').forEach(container => {
+    new Swiper(container, {
+        ...vehicleSwiperConfig,
+        pagination: {
+            el: container.querySelector('.swiper-pagination'),
+            clickable: true,
+            dynamicBullets: true,
+        },
     });
 });
 

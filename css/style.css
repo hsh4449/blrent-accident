@@ -416,51 +416,16 @@ body {
     background-color: var(--bg-white);
 }
 
-/* 카테고리 탭 */
-.vehicle-tabs {
-    display: flex;
-    gap: 8px;
-    margin-top: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-
-.vehicle-tabs::-webkit-scrollbar {
-    display: none;
-}
-
-.vehicle-tab {
-    padding: 8px 20px;
-    border: 2px solid var(--primary-orange);
-    border-radius: 24px;
-    background: transparent;
-    color: var(--primary-orange);
-    font-size: var(--font-sm);
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.3s ease;
-}
-
-.vehicle-tab.active {
-    background: var(--primary-orange);
-    color: #fff;
-}
-
-.vehicle-tab:hover {
-    background: var(--primary-orange);
-    color: #fff;
-}
-
-/* 카테고리 컨테이너 */
-.vehicle-category {
-    display: none;
-}
-
-.vehicle-category.active {
-    display: block;
+/* 섹션 타이틀 */
+.vehicle-section-title {
+    font-size: var(--font-xl);
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-top: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
+    padding-left: 4px;
+    border-left: 4px solid var(--primary-orange);
+    padding-left: var(--spacing-sm);
 }
 
 /* Swiper 컨테이너 */
