@@ -121,6 +121,56 @@ const promoSwiper = new Swiper('.promoSwiper', {
     speed: 800,
 });
 
+// 신규 차량 슬라이더
+const vehicleSwiperNew = new Swiper('.vehicleSwiperNew', {
+    slidesPerView: 2.2,
+    slidesPerGroup: 2,
+    spaceBetween: 12,
+    centeredSlides: false,
+    grabCursor: true,
+    touchRatio: 1,
+    touchAngle: 45,
+    loop: false,
+    pagination: {
+        el: '.vehicleSwiperNew .swiper-pagination',
+        clickable: true,
+        dynamicBullets: true,
+    },
+    watchSlidesProgress: true,
+    watchSlidesVisibility: true,
+    preloadImages: false,
+    lazy: {
+        loadPrevNext: true,
+    },
+    breakpoints: {
+        480: {
+            slidesPerView: 2.5,
+            slidesPerGroup: 2,
+            spaceBetween: 12,
+        },
+        640: {
+            slidesPerView: 3,
+            slidesPerGroup: 3,
+            spaceBetween: 16,
+        },
+        768: {
+            slidesPerView: 4,
+            slidesPerGroup: 4,
+            spaceBetween: 20,
+        },
+        1024: {
+            slidesPerView: 5,
+            slidesPerGroup: 5,
+            spaceBetween: 24,
+        },
+        1280: {
+            slidesPerView: 6,
+            slidesPerGroup: 6,
+            spaceBetween: 28,
+        },
+    },
+});
+
 // 윗줄 차량 슬라이더 (독립 스와이프)
 const vehicleSwiperTop = new Swiper('.vehicleSwiperTop', {
     slidesPerView: 2.2, // 모바일: 2.2개씩
