@@ -323,11 +323,13 @@ body {
     font-weight: 700;
     color: var(--primary-orange);
     margin-bottom: var(--spacing-xs);
+    white-space: nowrap;
 }
 
 .stat-label {
     font-size: var(--font-sm);
     color: var(--text-gray);
+    white-space: nowrap;
 }
 
 /* ========================================
