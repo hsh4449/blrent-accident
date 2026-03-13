@@ -1,0 +1,26 @@
+{
+  "name": "blrent-upgraded",
+  "version": "2.0.0",
+  "description": "비엘렌트카 - 1번 구조 + 2번 기능 통합 버전",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "렌트카",
+    "사고대차",
+    "대전",
+    "세종",
+    "충청"
+  ],
+  "author": "(주)비엘렌트카",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}

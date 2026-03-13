@@ -1,0 +1,10 @@
+# Netlify Redirects
+
+# SPA 라우팅 (모든 요청을 index.html로)
+/*    /index.html   200
+
+# 정적 파일은 직접 서빙
+/css/*  /css/:splat  200
+/js/*   /js/:splat   200
+/img/*  /img/:splat  200
+/video/* /video/:splat 200
