@@ -922,6 +922,12 @@
         </a>
     </div>
 
+    <!-- 이미지 확대 모달 -->
+    <div id="imageModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:16px;cursor:zoom-out;-webkit-tap-highlight-color:transparent;" onclick="this.style.display='none'">
+        <img id="modalImg" src="" alt="" style="max-width:100%;max-height:90vh;object-fit:contain;border-radius:8px;pointer-events:none;">
+        <span style="position:absolute;top:16px;right:20px;color:#fff;font-size:32px;cursor:pointer;line-height:1;">&times;</span>
+    </div>
+
     <!-- Swiper JS (defer로 비동기 로딩) -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     

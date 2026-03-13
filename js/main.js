@@ -574,6 +574,29 @@ editableElements.forEach(element => {
 });
 
 // ========================================
+// 차량 이미지 클릭 확대
+// ========================================
+
+const imageModal = document.getElementById('imageModal');
+const modalImg = document.getElementById('modalImg');
+
+if (imageModal && modalImg) {
+    document.querySelectorAll('.vehicle-image img').forEach(img => {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            modalImg.src = img.src;
+            modalImg.alt = img.alt;
+            imageModal.style.display = 'flex';
+        });
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') imageModal.style.display = 'none';
+    });
+}
+
+// ========================================
 // 초기화 완료 로그
 // ========================================
 
