@@ -476,7 +476,7 @@ body {
     box-shadow: var(--shadow-md);
     border: 3px solid var(--primary-orange-lighter);
     transition: all 0.3s ease;
-    height: 100%;
+    height: 220px;
     display: flex;
     flex-direction: column;
 }
@@ -1384,6 +1384,10 @@ body {
         padding-bottom: var(--spacing-xl);
     }
 
+    .vehicle-card {
+        height: 260px;
+    }
+
     .vehicle-image {
         height: 160px;
     }
@@ -1394,12 +1398,16 @@ body {
 
     .vehicle-name {
         font-size: var(--font-base);
-        white-space: normal; /* 태블릿부터 여러 줄 가능 */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .vehicle-description {
         font-size: var(--font-sm);
-        white-space: normal;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
@@ -1434,6 +1442,10 @@ body {
         padding-bottom: var(--spacing-2xl);
     }
 
+    .vehicle-card {
+        height: 290px;
+    }
+
     .vehicle-image {
         height: 180px;
     }
@@ -1444,10 +1456,16 @@ body {
 
     .vehicle-name {
         font-size: var(--font-lg);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .vehicle-description {
         font-size: var(--font-base);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
