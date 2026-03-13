@@ -122,8 +122,8 @@ const promoSwiper = new Swiper('.promoSwiper', {
     speed: 800,
 });
 
-// 신규 차량 슬라이더
-const vehicleSwiperNew = new Swiper('.vehicleSwiperNew', {
+// 차량 슬라이더 공통 옵션
+const vehicleSwiperConfig = {
     slidesPerView: 2.2,
     slidesPerGroup: 2,
     spaceBetween: 12,
@@ -132,144 +132,52 @@ const vehicleSwiperNew = new Swiper('.vehicleSwiperNew', {
     touchRatio: 1,
     touchAngle: 45,
     loop: false,
-    pagination: {
-        el: '.vehicleSwiperNew .swiper-pagination',
-        clickable: true,
-        dynamicBullets: true,
-    },
     watchSlidesProgress: true,
     watchSlidesVisibility: true,
     preloadImages: false,
-    lazy: {
-        loadPrevNext: true,
-    },
+    lazy: { loadPrevNext: true },
     breakpoints: {
-        480: {
-            slidesPerView: 2.5,
-            slidesPerGroup: 2,
-            spaceBetween: 12,
-        },
-        640: {
-            slidesPerView: 3,
-            slidesPerGroup: 3,
-            spaceBetween: 16,
-        },
-        768: {
-            slidesPerView: 4,
-            slidesPerGroup: 4,
-            spaceBetween: 20,
-        },
-        1024: {
-            slidesPerView: 5,
-            slidesPerGroup: 5,
-            spaceBetween: 24,
-        },
-        1280: {
-            slidesPerView: 6,
-            slidesPerGroup: 6,
-            spaceBetween: 28,
-        },
+        480: { slidesPerView: 2.5, slidesPerGroup: 2, spaceBetween: 12 },
+        640: { slidesPerView: 3, slidesPerGroup: 3, spaceBetween: 16 },
+        768: { slidesPerView: 4, slidesPerGroup: 4, spaceBetween: 20 },
+        1024: { slidesPerView: 5, slidesPerGroup: 5, spaceBetween: 24 },
+        1280: { slidesPerView: 6, slidesPerGroup: 6, spaceBetween: 28 },
     },
-});
+};
 
-// 윗줄 차량 슬라이더 (독립 스와이프)
-const vehicleSwiperTop = new Swiper('.vehicleSwiperTop', {
-    slidesPerView: 2.2, // 모바일: 2.2개씩
-    slidesPerGroup: 2,
-    spaceBetween: 12,
-    centeredSlides: false,
-    grabCursor: true,
-    touchRatio: 1,
-    touchAngle: 45,
-    loop: false,
-    pagination: {
-        el: '.vehicleSwiperTop .swiper-pagination',
-        clickable: true,
-        dynamicBullets: true,
-    },
-    watchSlidesProgress: true,
-    watchSlidesVisibility: true,
-    preloadImages: false,
-    lazy: {
-        loadPrevNext: true,
-    },
-    breakpoints: {
-        480: {
-            slidesPerView: 2.5,
-            slidesPerGroup: 2,
-            spaceBetween: 12,
-        },
-        640: {
-            slidesPerView: 3,
-            slidesPerGroup: 3,
-            spaceBetween: 16,
-        },
-        768: {
-            slidesPerView: 4,
-            slidesPerGroup: 4,
-            spaceBetween: 20,
-        },
-        1024: {
-            slidesPerView: 5,
-            slidesPerGroup: 5,
-            spaceBetween: 24,
-        },
-        1280: {
-            slidesPerView: 6,
-            slidesPerGroup: 6,
-            spaceBetween: 28,
-        },
-    },
-});
+// 카테고리별 슬라이더 초기화
+const vehicleSwipers = {};
 
-// 아랫줄 차량 슬라이더 (독립 스와이프)
-const vehicleSwiperBottom = new Swiper('.vehicleSwiperBottom', {
-    slidesPerView: 2.2, // 모바일: 2.2개씩
-    slidesPerGroup: 2,
-    spaceBetween: 12,
-    centeredSlides: false,
-    grabCursor: true,
-    touchRatio: 1,
-    touchAngle: 45,
-    loop: false,
-    pagination: {
-        el: '.vehicleSwiperBottom .swiper-pagination',
-        clickable: true,
-        dynamicBullets: true,
-    },
-    watchSlidesProgress: true,
-    watchSlidesVisibility: true,
-    preloadImages: false,
-    lazy: {
-        loadPrevNext: true,
-    },
-    breakpoints: {
-        480: {
-            slidesPerView: 2.5,
-            slidesPerGroup: 2,
-            spaceBetween: 12,
-        },
-        640: {
-            slidesPerView: 3,
-            slidesPerGroup: 3,
-            spaceBetween: 16,
-        },
-        768: {
-            slidesPerView: 4,
-            slidesPerGroup: 4,
-            spaceBetween: 20,
-        },
-        1024: {
-            slidesPerView: 5,
-            slidesPerGroup: 5,
-            spaceBetween: 24,
-        },
-        1280: {
-            slidesPerView: 6,
-            slidesPerGroup: 6,
-            spaceBetween: 28,
-        },
-    },
+function initVehicleSwiper(category) {
+    const container = document.querySelector(`.vehicle-category[data-category="${category}"] .vehicleSwiper`);
+    if (container && !vehicleSwipers[category]) {
+        vehicleSwipers[category] = new Swiper(container, {
+            ...vehicleSwiperConfig,
+            pagination: {
+                el: container.querySelector('.swiper-pagination'),
+                clickable: true,
+                dynamicBullets: true,
+            },
+        });
+    }
+    if (vehicleSwipers[category]) {
+        vehicleSwipers[category].update();
+    }
+}
+
+// 첫 번째 탭(세단) 초기화
+initVehicleSwiper('sedan');
+
+// 탭 전환
+document.querySelectorAll('.vehicle-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.vehicle-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.vehicle-category').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        const category = tab.dataset.category;
+        document.querySelector(`.vehicle-category[data-category="${category}"]`).classList.add('active');
+        initVehicleSwiper(category);
+    });
 });
 
 // 고객후기 슬라이더

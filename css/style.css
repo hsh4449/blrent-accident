@@ -416,25 +416,62 @@ body {
     background-color: var(--bg-white);
 }
 
-/* Swiper 컨테이너 - 윗줄/아랫줄 독립 */
-.vehicleSwiperTop,
-.vehicleSwiperBottom {
+/* 카테고리 탭 */
+.vehicle-tabs {
+    display: flex;
+    gap: 8px;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.vehicle-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.vehicle-tab {
+    padding: 8px 20px;
+    border: 2px solid var(--primary-orange);
+    border-radius: 24px;
+    background: transparent;
+    color: var(--primary-orange);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.vehicle-tab.active {
+    background: var(--primary-orange);
+    color: #fff;
+}
+
+.vehicle-tab:hover {
+    background: var(--primary-orange);
+    color: #fff;
+}
+
+/* 카테고리 컨테이너 */
+.vehicle-category {
+    display: none;
+}
+
+.vehicle-category.active {
+    display: block;
+}
+
+/* Swiper 컨테이너 */
+.vehicleSwiper {
     padding-bottom: var(--spacing-xl);
     margin-bottom: var(--spacing-md);
     overflow: visible;
 }
 
-.vehicleSwiperTop {
-    margin-top: var(--spacing-lg);
-}
-
-.vehicleSwiperBottom {
-    margin-bottom: var(--spacing-2xl);
-}
-
 /* 슬라이드 기본 스타일 */
-.vehicleSwiperTop .swiper-slide,
-.vehicleSwiperBottom .swiper-slide {
+.vehicleSwiper .swiper-slide {
     height: auto;
 }
 
@@ -538,13 +575,11 @@ body {
 }
 
 /* Swiper 페이지네이션 커스텀 */
-.vehicleSwiperTop .swiper-pagination,
-.vehicleSwiperBottom .swiper-pagination {
+.vehicleSwiper .swiper-pagination {
     bottom: 0;
 }
 
-.vehicleSwiperTop .swiper-pagination-bullet,
-.vehicleSwiperBottom .swiper-pagination-bullet {
+.vehicleSwiper .swiper-pagination-bullet {
     width: 8px;
     height: 8px;
     background-color: var(--text-light);
@@ -552,8 +587,7 @@ body {
     transition: all 0.3s ease;
 }
 
-.vehicleSwiperTop .swiper-pagination-bullet-active,
-.vehicleSwiperBottom .swiper-pagination-bullet-active {
+.vehicleSwiper .swiper-pagination-bullet-active {
     background-color: var(--primary-orange);
     width: 20px;
     border-radius: 4px;
@@ -1348,8 +1382,7 @@ body {
     }
 
     /* 차량 섹션 - 태블릿 */
-    .vehicleSwiperTop,
-    .vehicleSwiperBottom {
+    .vehicleSwiper {
         padding-bottom: var(--spacing-xl);
     }
 
