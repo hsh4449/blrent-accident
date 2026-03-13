@@ -111,7 +111,7 @@ const promoSwiper = new Swiper('.promoSwiper', {
     spaceBetween: 0,
     loop: true,
     autoplay: {
-        delay: 4000,
+        delay: 3000,
         disableOnInteraction: false,
     },
     pagination: {
