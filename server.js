@@ -99,7 +99,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log('');
   console.log('🚗 ========================================');
-  console.log('   비엘렌트카 서버 시작!');
+  console.log('   아레스렌트카 서버 시작!');
   console.log('========================================');
   console.log(`   🌐 URL: http://localhost:${PORT}`);
   console.log(`   📂 폴더: ${__dirname}`);

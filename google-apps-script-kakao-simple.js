@@ -1,5 +1,5 @@
 /**
- * 비엘렌트카 상담 신청 → 카카오톡 알림 (나에게 보내기)
+ * 아레스렌트카 상담 신청 → 카카오톡 알림 (나에게 보내기)
  * 가장 간단한 방법!
  */
 
@@ -58,7 +58,7 @@ function sendKakaoMessage(name, phone, carModel, accidentDate, message, timestam
   const url = 'https://kapi.kakao.com/v2/api/talk/memo/default/send';
   
   // 메시지 내용
-  const messageText = `🚗 [비엘렌트카] 새 상담 신청!
+  const messageText = `🚗 [아레스렌트카] 새 상담 신청!
 
 📋 고객 정보:
 • 이름: ${name}

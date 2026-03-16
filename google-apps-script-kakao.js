@@ -1,5 +1,5 @@
 /**
- * 비엘렌트카 상담 신청 폼 처리
+ * 아레스렌트카 상담 신청 폼 처리
  * Google Sheets 저장 + 카카오톡 알림
  */
 
@@ -72,7 +72,7 @@ function doPost(e) {
 // ========================================
 
 function sendKakaoNotification(data) {
-  const message = `🚗 [비엘렌트카] 새로운 상담 신청
+  const message = `🚗 [아레스렌트카] 새로운 상담 신청
 
 📋 신청 정보:
 • 이름: ${data.name}
@@ -120,12 +120,12 @@ ${data.message || '없음'}
 // ========================================
 
 function sendEmailNotification(data) {
-  const subject = `🚗 [비엘렌트카] 새로운 상담 신청 - ${data.name}님`;
+  const subject = `🚗 [아레스렌트카] 새로운 상담 신청 - ${data.name}님`;
   
   const htmlBody = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
       <div style="background: #FF6B00; color: white; padding: 20px; border-radius: 10px 10px 0 0;">
-        <h1 style="margin: 0; font-size: 24px;">🚗 비엘렌트카 상담 신청</h1>
+        <h1 style="margin: 0; font-size: 24px;">🚗 아레스렌트카 상담 신청</h1>
       </div>
       
       <div style="background: white; padding: 30px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
@@ -167,7 +167,7 @@ function sendEmailNotification(data) {
       </div>
       
       <div style="text-align: center; color: #999; font-size: 12px; margin-top: 20px;">
-        <p>비엘렌트카 자동 알림 시스템</p>
+        <p>아레스렌트카 자동 알림 시스템</p>
       </div>
     </div>
   `;

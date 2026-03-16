@@ -1,5 +1,5 @@
 /**
- * 비엘렌트카 상담 신청 폼 처리
+ * 아레스렌트카 상담 신청 폼 처리
  * Google Sheets 저장 + 이메일 알림 (간단 버전)
  */
 
@@ -50,11 +50,11 @@ function doPost(e) {
 // ========================================
 
 function sendEmail(name, phone, carModel, accidentDate, message, timestamp) {
-  const subject = `🚗 [비엘렌트카] 새로운 상담 신청 - ${name}님`;
+  const subject = `🚗 [아레스렌트카] 새로운 상담 신청 - ${name}님`;
   
   const body = `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚗 비엘렌트카 상담 신청 알림
+🚗 아레스렌트카 상담 신청 알림
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📋 고객 정보:
@@ -83,7 +83,7 @@ ${message || '없음'}
     const htmlBody = `
       <div style="font-family: 'Malgun Gothic', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
         <div style="background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%); color: white; padding: 30px; border-radius: 15px 15px 0 0; text-align: center; box-shadow: 0 4px 15px rgba(255,107,0,0.3);">
-          <h1 style="margin: 0; font-size: 28px;">🚗 비엘렌트카</h1>
+          <h1 style="margin: 0; font-size: 28px;">🚗 아레스렌트카</h1>
           <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">새로운 상담 신청이 도착했습니다</p>
         </div>
         
@@ -132,7 +132,7 @@ ${message || '없음'}
         
         <div style="text-align: center; color: #999; font-size: 13px; margin-top: 30px; padding: 20px;">
           <p style="margin: 5px 0;">━━━━━━━━━━━━━━━━━━</p>
-          <p style="margin: 5px 0;">비엘렌트카 자동 알림 시스템</p>
+          <p style="margin: 5px 0;">아레스렌트카 자동 알림 시스템</p>
           <p style="margin: 5px 0;">📞 1666-6525 | 📧 contact@blrentcar.com</p>
           <p style="margin: 5px 0;">━━━━━━━━━━━━━━━━━━</p>
         </div>

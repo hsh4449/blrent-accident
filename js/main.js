@@ -1,5 +1,5 @@
 /* ========================================
-   비엘렌트카 - JavaScript
+   아레스렌트카 - JavaScript
    모바일 인터랙션 및 기능 구현
 ======================================== */
 
@@ -405,7 +405,7 @@ window.addEventListener('load', () => {
 const DEBUG_MODE = false;
 
 if (DEBUG_MODE) {
-    console.log('🚗 비엘렌트카 홈페이지 로드됨');
+    console.log('🚗 아레스렌트카 홈페이지 로드됨');
     console.log('📱 화면 너비:', window.innerWidth);
     console.log('📏 헤더 높이:', headerHeight);
     
@@ -486,7 +486,7 @@ if (imageModal && modalImg) {
 // 초기화 완료 로그
 // ========================================
 
-console.log('%c🚗 비엘렌트카 홈페이지', 'color: #FF6B00; font-size: 20px; font-weight: bold;');
+console.log('%c🚗 아레스렌트카 홈페이지', 'color: #FF6B00; font-size: 20px; font-weight: bold;');
 console.log('%c✅ JavaScript 초기화 완료', 'color: #4CAF50; font-size: 14px;');
 console.log('%c📱 모바일 우선 반응형 디자인', 'color: #2196F3; font-size: 12px;');
 

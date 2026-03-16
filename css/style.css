@@ -1,5 +1,5 @@
 /* ========================================
-   비엘렌트카 - 모바일 우선 스타일시트
+   아레스렌트카 - 모바일 우선 스타일시트
    주황색 테마 (#FF6B00, #FF8C00, #FFA500)
 ======================================== */
 
@@ -301,16 +301,19 @@ body {
 .hero-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-md);
+    gap: var(--spacing-xs);
     margin-top: var(--spacing-xl);
+    overflow: hidden;
 }
 
 .stat-item {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     background-color: var(--bg-light);
     border-radius: 12px;
     border: 2px solid transparent;
     transition: all 0.3s ease;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .stat-item:hover {
@@ -319,7 +322,7 @@ body {
 }
 
 .stat-number {
-    font-size: var(--font-xl);
+    font-size: clamp(0.9rem, 4vw, 1.25rem);
     font-weight: 700;
     color: var(--primary-orange);
     margin-bottom: var(--spacing-xs);
@@ -327,7 +330,7 @@ body {
 }
 
 .stat-label {
-    font-size: var(--font-sm);
+    font-size: clamp(0.65rem, 2.8vw, 0.875rem);
     color: var(--text-gray);
     white-space: nowrap;
 }
@@ -363,16 +366,19 @@ body {
 .service-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    overflow: hidden;
 }
 
 .service-card {
     background-color: var(--bg-white);
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     border-radius: 16px;
     text-align: center;
     box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
+    overflow: hidden;
+    min-width: 0;
 }
 
 .service-card:hover {
@@ -394,7 +400,7 @@ body {
 }
 
 .service-card-title {
-    font-size: var(--font-base);
+    font-size: clamp(0.75rem, 3.2vw, 1rem);
     font-weight: 700;
     color: var(--text-dark);
     margin-bottom: var(--spacing-sm);
@@ -402,7 +408,7 @@ body {
 }
 
 .service-card-text {
-    font-size: var(--font-sm);
+    font-size: var(--font-xs);
     color: var(--text-gray);
     line-height: 1.5;
 }

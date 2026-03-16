@@ -1,7 +1,7 @@
 {
   "name": "blrent-upgraded",
   "version": "2.0.0",
-  "description": "비엘렌트카 - 1번 구조 + 2번 기능 통합 버전",
+  "description": "아레스렌트카 - 1번 구조 + 2번 기능 통합 버전",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -14,7 +14,7 @@
     "세종",
     "충청"
   ],
-  "author": "(주)비엘렌트카",
+  "author": "(주)아레스렌트카",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {

@@ -1,5 +1,5 @@
 /**
- * 비엘렌트카 상담 신청 → 카카오톡 알림
+ * 아레스렌트카 상담 신청 → 카카오톡 알림
  * 복사해서 Google Apps Script에 붙여넣으세요!
  */
 
@@ -54,7 +54,7 @@ function doPost(e) {
 function sendKakaoNotification(name, phone, carModel, accidentDate, message, timestamp) {
   
   const kakaoMessage = {
-    "text": `🚗 [비엘렌트카] 새로운 상담 신청!\n\n━━━━━━━━━━━━━━━━━━━\n📋 고객 정보\n━━━━━━━━━━━━━━━━━━━\n\n👤 이름: ${name}\n📞 연락처: ${phone}\n🚙 차량: ${carModel || '미입력'}\n📅 사고일자: ${accidentDate || '미입력'}\n\n💬 문의내용\n━━━━━━━━━━━━━━━━━━━\n${message || '없음'}\n\n⏰ 신청시간: ${Utilities.formatDate(timestamp, 'Asia/Seoul', 'yyyy-MM-dd HH:mm')}\n━━━━━━━━━━━━━━━━━━━`
+    "text": `🚗 [아레스렌트카] 새로운 상담 신청!\n\n━━━━━━━━━━━━━━━━━━━\n📋 고객 정보\n━━━━━━━━━━━━━━━━━━━\n\n👤 이름: ${name}\n📞 연락처: ${phone}\n🚙 차량: ${carModel || '미입력'}\n📅 사고일자: ${accidentDate || '미입력'}\n\n💬 문의내용\n━━━━━━━━━━━━━━━━━━━\n${message || '없음'}\n\n⏰ 신청시간: ${Utilities.formatDate(timestamp, 'Asia/Seoul', 'yyyy-MM-dd HH:mm')}\n━━━━━━━━━━━━━━━━━━━`
   };
   
   const options = {

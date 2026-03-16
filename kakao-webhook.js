@@ -1,5 +1,5 @@
 /**
- * 비엘렌트카 상담 신청 → 카카오톡 알림
+ * 아레스렌트카 상담 신청 → 카카오톡 알림
  * Google Sheets + 카카오톡 오픈채팅방 알림
  */
 
@@ -55,7 +55,7 @@ function doPost(e) {
 function sendKakaoNotification(name, phone, carModel, accidentDate, message, timestamp) {
   
   const kakaoMessage = {
-    "text": `🚗 [비엘렌트카] 새로운 상담 신청\n\n📋 고객 정보\n• 이름: ${name}\n• 연락처: ${phone}\n• 차량: ${carModel || '미입력'}\n• 사고일자: ${accidentDate || '미입력'}\n\n💬 문의내용:\n${message || '없음'}\n\n⏰ ${Utilities.formatDate(timestamp, 'Asia/Seoul', 'yyyy-MM-dd HH:mm')}`
+    "text": `🚗 [아레스렌트카] 새로운 상담 신청\n\n📋 고객 정보\n• 이름: ${name}\n• 연락처: ${phone}\n• 차량: ${carModel || '미입력'}\n• 사고일자: ${accidentDate || '미입력'}\n\n💬 문의내용:\n${message || '없음'}\n\n⏰ ${Utilities.formatDate(timestamp, 'Asia/Seoul', 'yyyy-MM-dd HH:mm')}`
   };
   
   const options = {

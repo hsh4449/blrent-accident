@@ -1,5 +1,5 @@
 /**
- * 비엘렌트카 상담 신청
+ * 아레스렌트카 상담 신청
  * Google Sheets 저장 + Gmail 발송 → 네이버 메일 알림
  */
 
@@ -37,12 +37,12 @@ function doPost(e) {
     // 3. Gmail로 메일 발송 (네이버 메일로)
     // ========================================
     var toEmail = "blrentcar@naver.com";
-    var subject = "🚗 [비엘렌트카] " + name + "님 상담 신청";
+    var subject = "🚗 [아레스렌트카] " + name + "님 상담 신청";
     
     // 일반 텍스트 메일
     var plainBody = "";
     plainBody += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-    plainBody += "🚗 비엘렌트카 상담 신청 알림\n";
+    plainBody += "🚗 아레스렌트카 상담 신청 알림\n";
     plainBody += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
     plainBody += "📋 고객 정보\n";
     plainBody += "────────────────────────\n";
@@ -62,7 +62,7 @@ function doPost(e) {
     var htmlBody = "";
     htmlBody += "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;'>";
     htmlBody += "  <div style='background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%); color: white; padding: 30px; border-radius: 15px 15px 0 0; text-align: center;'>";
-    htmlBody += "    <h1 style='margin: 0; font-size: 28px;'>🚗 비엘렌트카</h1>";
+    htmlBody += "    <h1 style='margin: 0; font-size: 28px;'>🚗 아레스렌트카</h1>";
     htmlBody += "    <p style='margin: 10px 0 0 0; font-size: 16px;'>새로운 상담 신청이 도착했습니다</p>";
     htmlBody += "  </div>";
     htmlBody += "  <div style='background: white; padding: 40px; border-radius: 0 0 15px 15px;'>";
@@ -83,7 +83,7 @@ function doPost(e) {
     htmlBody += "    </div>";
     htmlBody += "  </div>";
     htmlBody += "  <div style='text-align: center; color: #999; font-size: 13px; margin-top: 20px; padding: 20px;'>";
-    htmlBody += "    <p>비엘렌트카 자동 알림 시스템</p>";
+    htmlBody += "    <p>아레스렌트카 자동 알림 시스템</p>";
     htmlBody += "    <p>📞 1666-6525 | 📧 blrentcar@naver.com</p>";
     htmlBody += "  </div>";
     htmlBody += "</div>";
@@ -91,7 +91,7 @@ function doPost(e) {
     // GmailApp으로 발송 (사람이 보낸 것처럼)
     GmailApp.sendEmail(toEmail, subject, plainBody, {
       htmlBody: htmlBody,
-      name: '비엘렌트카'
+      name: '아레스렌트카'
     });
     
     Logger.log('✅ 메일 발송 성공: ' + toEmail);
