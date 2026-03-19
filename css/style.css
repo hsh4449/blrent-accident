@@ -106,10 +106,16 @@ body {
 .logo {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    font-size: var(--font-xl);
+    gap: var(--spacing-xs);
+    font-size: var(--font-lg);
     font-weight: 700;
     color: var(--primary-orange);
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
 }
 
 .logo i {
@@ -1192,6 +1198,11 @@ body {
     font-weight: 700;
     color: var(--primary-orange);
     margin-bottom: var(--spacing-lg);
+}
+
+.footer-logo-img {
+    height: 36px;
+    width: auto;
 }
 
 .footer-logo i {
