@@ -1,0 +1,89 @@
+plugins = []
+headers = []
+
+[build]
+edge_functions = "C:\\Users\\Administrator\\Desktop\\blrent\\netlify\\edge-functions"
+publish = "C:\\Users\\Administrator\\Desktop\\blrent"
+publishOrigin = "default"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[edge_functions]]
+function = "geo-block"
+path = "/*"
+
+[functions]
+
+[functions."*"]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/css/*"
+to = "/css/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/js/*"
+to = "/js/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/img/*"
+to = "/img/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/video/*"
+to = "/video/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
