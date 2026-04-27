@@ -302,7 +302,9 @@
                     <th>차량번호</th>
                     <th>대여종류</th>
                     <th>인도/반납</th>
-                    <th>경유</th>
+                    <th>출발지</th>
+                    <th>경유지</th>
+                    <th>도착지</th>
                     <th>담당자</th>
                     <th>탁송비</th>
                     <th>수수료율</th>
@@ -553,11 +555,17 @@
                     <option value="반납">반납</option>
                 </select>
             </div>
-            <div class="form-group full">
-                <label>
-                    <input type="checkbox" id="fViaPoint" style="vertical-align:middle;margin-right:6px;">
-                    경유지 있음
-                </label>
+            <div class="form-group">
+                <label>출발지</label>
+                <input type="text" id="fOrigin" maxlength="10" placeholder="예: 인천">
+            </div>
+            <div class="form-group">
+                <label>경유지 (선택)</label>
+                <input type="text" id="fVia" maxlength="10" placeholder="비우면 경유 없음">
+            </div>
+            <div class="form-group">
+                <label>도착지</label>
+                <input type="text" id="fDestination" maxlength="10" placeholder="예: 순천">
             </div>
             <div class="form-group full">
                 <label>내용 / 지역 (자유입력)</label>
@@ -925,7 +933,7 @@ function renderTable() {
     const tbody = document.getElementById('tableBody');
 
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="19" style="padding:40px;color:#999;">데이터가 없습니다</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="21" style="padding:40px;color:#999;">데이터가 없습니다</td></tr>';
         renderSummary();
         return;
     }
@@ -940,12 +948,16 @@ function renderTable() {
     const categories = ['장기대여','사고대여','일반대여','기타'];
     const directions = ['','인도','반납'];
 
+    const escAttr = (s) => String(s == null ? '' : s).replace(/"/g, '&quot;');
+
     tbody.innerHTML = filtered.map(r => {
         const showDriver = r.person === '탁송기사';
         const cRate = r.commissionRate != null ? r.commissionRate : 20;
         const cat = r.category || '장기대여';
         const dir = r.direction || '';
-        const via = !!r.viaPoint;
+        const origin = r.origin || '';
+        const viaLoc = (typeof r.via === 'string') ? r.via : '';
+        const dest = r.destination || '';
         const fuelC = r.fuelCharge || 0;
         const extras = r.extras || [];
         const extrasTotal = extras.reduce((s,e)=>s+(parseInt(e.amount)||0), 0);
@@ -957,7 +969,9 @@ function renderTable() {
             <td><input type="text" class="inline-input" style="width:60px;text-align:center;font-weight:700;" value="${r.carNo||''}" data-field="carNo" onchange="autoSave(${r.id})"></td>
             <td><select class="inline-select" data-field="category" onchange="autoSave(${r.id})">${selOpt(categories, cat)}</select></td>
             <td><select class="inline-select" data-field="direction" onchange="autoSave(${r.id})">${directions.map(d=>`<option value="${d}" ${d===dir?'selected':''}>${d||'-'}</option>`).join('')}</select></td>
-            <td><input type="checkbox" data-field="viaPoint" ${via?'checked':''} onchange="autoSave(${r.id})" style="width:18px;height:18px;cursor:pointer;"></td>
+            <td><input type="text" class="inline-input" style="width:60px;text-align:center;" maxlength="10" value="${escAttr(origin)}" data-field="origin" placeholder="-" onchange="autoSave(${r.id})"></td>
+            <td><input type="text" class="inline-input" style="width:60px;text-align:center;" maxlength="10" value="${escAttr(viaLoc)}" data-field="via" placeholder="-" onchange="autoSave(${r.id})"></td>
+            <td><input type="text" class="inline-input" style="width:60px;text-align:center;" maxlength="10" value="${escAttr(dest)}" data-field="destination" placeholder="-" onchange="autoSave(${r.id})"></td>
             <td><select class="inline-select" data-field="person" onchange="inlinePersonChange(${r.id},this);autoSave(${r.id})">${selOpt(persons, r.person)}</select></td>
             <td><input type="number" class="inline-input" style="width:85px;" value="${r.fee||0}" data-field="fee" oninput="inlineCalc(${r.id})" onchange="autoSave(${r.id})"></td>
             <td>${showDriver ? `<select class="inline-select" data-field="commissionRate" onchange="inlineCalc(${r.id});autoSave(${r.id})">${rates.map(rt=>`<option value="${rt}" ${rt===cRate?'selected':''}>${rt}%</option>`).join('')}</select>` : '-'}</td>
@@ -1653,7 +1667,9 @@ function openModal(id) {
         document.getElementById('fNote').value = r.note;
         document.getElementById('fCategory').value = r.category || '장기대여';
         document.getElementById('fDirection').value = r.direction || '';
-        document.getElementById('fViaPoint').checked = !!r.viaPoint;
+        document.getElementById('fOrigin').value = r.origin || '';
+        document.getElementById('fVia').value = (typeof r.via === 'string') ? r.via : '';
+        document.getElementById('fDestination').value = r.destination || '';
         _modalExtras = r.extras ? JSON.parse(JSON.stringify(r.extras)) : [];
     } else {
         document.getElementById('fDate').value = new Date().toISOString().slice(0, 10);
@@ -1668,7 +1684,9 @@ function openModal(id) {
         document.getElementById('fNote').value = '';
         document.getElementById('fCategory').value = '장기대여';
         document.getElementById('fDirection').value = '';
-        document.getElementById('fViaPoint').checked = false;
+        document.getElementById('fOrigin').value = '';
+        document.getElementById('fVia').value = '';
+        document.getElementById('fDestination').value = '';
         _modalExtras = [];
     }
     renderExtras();
@@ -1754,7 +1772,9 @@ function saveRecord() {
         content: document.getElementById('fContent').value.trim(),
         category: document.getElementById('fCategory').value,
         direction: document.getElementById('fDirection').value,
-        viaPoint: document.getElementById('fViaPoint').checked,
+        origin: document.getElementById('fOrigin').value.trim(),
+        via: document.getElementById('fVia').value.trim(),
+        destination: document.getElementById('fDestination').value.trim(),
         person: person,
         fee: fee,
         commissionRate: cRate,
@@ -1905,7 +1925,9 @@ function saveInlineEdit(id, quiet) {
 
     const catSel = tr.querySelector('[data-field="category"]');
     const dirSel = tr.querySelector('[data-field="direction"]');
-    const viaChk = tr.querySelector('[data-field="viaPoint"]');
+    const originInp = tr.querySelector('[data-field="origin"]');
+    const viaInp = tr.querySelector('[data-field="via"]');
+    const destInp = tr.querySelector('[data-field="destination"]');
     const fuelInp = tr.querySelector('[data-field="fuelCharge"]');
     const contentInp = tr.querySelector('[data-field="content"]');
     const noteInp = tr.querySelector('[data-field="note"]');
@@ -1917,7 +1939,9 @@ function saveInlineEdit(id, quiet) {
         content: contentInp ? contentInp.value.trim() : (prev.content || ''),
         category: catSel ? catSel.value : (prev.category || '장기대여'),
         direction: dirSel ? dirSel.value : (prev.direction || ''),
-        viaPoint: viaChk ? viaChk.checked : !!prev.viaPoint,
+        origin: originInp ? originInp.value.trim() : (prev.origin || ''),
+        via: viaInp ? viaInp.value.trim() : (typeof prev.via === 'string' ? prev.via : ''),
+        destination: destInp ? destInp.value.trim() : (prev.destination || ''),
         person: person,
         fee: fee,
         commissionRate: cRate,
@@ -1948,7 +1972,7 @@ function deleteRecord(id) {
 // ===================== 내보내기 =====================
 function exportData() {
     const filtered = getFiltered();
-    const header = '날짜,차량번호,유형,인도/반납,경유,내용,담당자,탁송비,기사지급,수수료,청구금액,주유비,추가비용합계,추가비용내역,내수익,수익분배,상태,비고';
+    const header = '날짜,차량번호,대여종류,인도/반납,출발지,경유지,도착지,내용,담당자,탁송비,기사지급,수수료,청구금액,주유비,추가비용합계,추가비용내역,내수익,수익분배,상태,비고';
     const csvEscape = (v) => {
         const s = String(v == null ? '' : v);
         return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
@@ -1958,7 +1982,8 @@ function exportData() {
         const extrasTotal = extras.reduce((s,e)=>s+(parseInt(e.amount)||0),0);
         const extrasDesc = extras.map(e=>`${e.name||''}:${e.amount||0}`).join(' / ');
         return [
-            r.date, r.carNo, r.category||'', r.direction||'', r.viaPoint?'경유':'',
+            r.date, r.carNo, r.category||'', r.direction||'',
+            r.origin||'', (typeof r.via === 'string' ? r.via : ''), r.destination||'',
             r.content, r.person, r.fee, r.driverPay, r.commission, r.charge,
             r.fuelCharge||0, extrasTotal, extrasDesc,
             r.profit, r.distribute, r.status, r.note
