@@ -800,12 +800,13 @@ function renderSummary() {
     const totalProfit = filtered.reduce((s, r) => s + (r.profit || 0), 0);
     const fireSettle = filtered.filter(r => r.distribute === '불꽃탁송').reduce((s, r) => s + (r.profit || 0), 0);
     // 황성현/조윤호 정산은 본인 작업의 공급가 + 추가비용 기준 (미정산분만)
-    // 정산 기준일: 매월 10일. cutoff 이전은 이미 정산 완료, 이후만 미정산
+    // 익월 10일 정산: N월 건은 (N+1)월 10일에 정산됨
+    // 오늘이 (N)월 10일을 지났으면 (N-1)월 말일까지 정산완료, (N)월 1일부터 미정산
+    // 오늘이 (N)월 10일 전이면 (N-2)월 말일까지 정산완료, (N-1)월 1일부터 미정산
     const _today = new Date();
-    const _cutoffDay = 10;
-    const _cutoffDate = _today.getDate() >= _cutoffDay
-        ? new Date(_today.getFullYear(), _today.getMonth(), _cutoffDay)
-        : new Date(_today.getFullYear(), _today.getMonth() - 1, _cutoffDay);
+    const _cutoffDate = _today.getDate() >= 10
+        ? new Date(_today.getFullYear(), _today.getMonth(), 0)        // 전월 말일
+        : new Date(_today.getFullYear(), _today.getMonth() - 1, 0);   // 전전월 말일
     const calcPersonSummary = (person) => {
         const items = filtered.filter(r => r.person === person && new Date(r.date) > _cutoffDate);
         const supply = items.reduce((s, r) => {
@@ -1158,24 +1159,19 @@ function renderSettlement() {
         return { count: items.length, total, received, receivable };
     };
 
-    // 담당자별 정산 (공급가 기준, 매월 10일 정산)
-    // 정산 기준일: 매월 10일. 4/10 이전 = 정산완료, 4/10 이후 = 다음 정산 대상
+    // 담당자별 정산 (공급가 기준)
+    // 익월 10일 정산: N월 건은 (N+1)월 10일에 정산
+    // 오늘이 (N)월 10일 지났으면 (N-1)월 말일까지 정산완료, (N)월 1일부터 미정산
+    // 오늘이 (N)월 10일 전이면 (N-2)월 말일까지 정산완료, (N-1)월 1일부터 미정산
     const today = new Date();
     const cutoffDay = 10;
-    // 가장 최근 지난 10일 계산
-    let cutoffDate;
-    if (today.getDate() >= cutoffDay) {
-        cutoffDate = new Date(today.getFullYear(), today.getMonth(), cutoffDay);
-    } else {
-        cutoffDate = new Date(today.getFullYear(), today.getMonth() - 1, cutoffDay);
-    }
-    // 다음 정산일
-    let nextSettleDate;
-    if (today.getDate() >= cutoffDay) {
-        nextSettleDate = new Date(today.getFullYear(), today.getMonth() + 1, cutoffDay);
-    } else {
-        nextSettleDate = new Date(today.getFullYear(), today.getMonth(), cutoffDay);
-    }
+    const cutoffDate = today.getDate() >= cutoffDay
+        ? new Date(today.getFullYear(), today.getMonth(), 0)
+        : new Date(today.getFullYear(), today.getMonth() - 1, 0);
+    // 다음 정산일 (이번 달 10일을 지났으면 다음 달 10일, 아니면 이번 달 10일)
+    const nextSettleDate = today.getDate() >= cutoffDay
+        ? new Date(today.getFullYear(), today.getMonth() + 1, cutoffDay)
+        : new Date(today.getFullYear(), today.getMonth(), cutoffDay);
     const fmtSettleDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 
     const calcPerson = (person) => {
