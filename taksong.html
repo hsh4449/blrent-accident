@@ -799,9 +799,15 @@ function renderSummary() {
     const totalDriverPay = filtered.reduce((s, r) => s + (r.driverPay || 0), 0);
     const totalProfit = filtered.reduce((s, r) => s + (r.profit || 0), 0);
     const fireSettle = filtered.filter(r => r.distribute === '불꽃탁송').reduce((s, r) => s + (r.profit || 0), 0);
-    // 황성현/조윤호 정산은 본인 작업의 공급가 + 추가비용 기준
+    // 황성현/조윤호 정산은 본인 작업의 공급가 + 추가비용 기준 (미정산분만)
+    // 정산 기준일: 매월 10일. cutoff 이전은 이미 정산 완료, 이후만 미정산
+    const _today = new Date();
+    const _cutoffDay = 10;
+    const _cutoffDate = _today.getDate() >= _cutoffDay
+        ? new Date(_today.getFullYear(), _today.getMonth(), _cutoffDay)
+        : new Date(_today.getFullYear(), _today.getMonth() - 1, _cutoffDay);
     const calcPersonSummary = (person) => {
-        const items = filtered.filter(r => r.person === person);
+        const items = filtered.filter(r => r.person === person && new Date(r.date) > _cutoffDate);
         const supply = items.reduce((s, r) => {
             const total = (r.charge || 0) + (r.fuelCharge || 0);
             return s + (total - Math.round(total / 11));
@@ -850,8 +856,8 @@ function renderSummary() {
         <div class="card orange"><div class="label">기사지급 합계</div><div class="value">${fmt(totalDriverPay)}</div></div>
         <div class="card purple"><div class="label">총 수익</div><div class="value">${fmt(totalProfit)}</div></div>
         <div class="card teal"><div class="label">불꽃탁송 정산</div><div class="value">${fmt(fireSettle)}</div></div>
-        <div class="card" style="border-left:3px solid #ff9800;"><div class="label">황성현 정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#e65100;">${fmt(hwangSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${hwangData.count}건</div></div>
-        <div class="card" style="border-left:3px solid #795548;"><div class="label">조윤호 정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#795548;">${fmt(joSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${joData.count}건</div></div>
+        <div class="card" style="border-left:3px solid #ff9800;"><div class="label">황성현 미정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#e65100;">${fmt(hwangSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${hwangData.count}건 · ${fmtDate(_cutoffDate)} 이후</div></div>
+        <div class="card" style="border-left:3px solid #795548;"><div class="label">조윤호 미정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#795548;">${fmt(joSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${joData.count}건 · ${fmtDate(_cutoffDate)} 이후</div></div>
         <div class="card red"><div class="label">미청구 건수</div><div class="value">${pending}건</div></div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
             <div class="label" style="margin-bottom:10px;">대여종류별 현황 (청구금액 + 주유비)</div>
