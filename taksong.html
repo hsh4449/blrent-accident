@@ -799,27 +799,26 @@ function renderSummary() {
     const totalDriverPay = filtered.reduce((s, r) => s + (r.driverPay || 0), 0);
     const totalProfit = filtered.reduce((s, r) => s + (r.profit || 0), 0);
     const fireSettle = filtered.filter(r => r.distribute === '불꽃탁송').reduce((s, r) => s + (r.profit || 0), 0);
-    // 황성현/조윤호 정산은 본인 작업의 공급가 + 추가비용 기준 (미정산분만)
-    // 익월 10일 정산: N월 건은 (N+1)월 10일에 정산됨
-    // 오늘이 (N)월 10일을 지났으면 (N-1)월 말일까지 정산완료, (N)월 1일부터 미정산
-    // 오늘이 (N)월 10일 전이면 (N-2)월 말일까지 정산완료, (N-1)월 1일부터 미정산
-    const _today = new Date();
-    const _cutoffDate = _today.getDate() >= 10
-        ? new Date(_today.getFullYear(), _today.getMonth(), 0)        // 전월 말일
-        : new Date(_today.getFullYear(), _today.getMonth() - 1, 0);   // 전전월 말일
+    // 황성현/조윤호 정산: 총 정산해야 할 금액 - 정산받은 금액 = 남은 정산금액
+    // 날짜 무관, 전체 데이터 기준
+    const _allData = loadData();
+    const _allTransfers = loadTransfers();
     const calcPersonSummary = (person) => {
-        const items = filtered.filter(r => r.person === person && new Date(r.date) > _cutoffDate);
+        const items = _allData.filter(r => r.person === person);
         const supply = items.reduce((s, r) => {
             const total = (r.charge || 0) + (r.fuelCharge || 0);
             return s + (total - Math.round(total / 11));
         }, 0);
         const extras = items.reduce((s, r) => s + ((r.extras || []).reduce((ss, e) => ss + (parseInt(e.amount)||0), 0)), 0);
-        return { total: supply + extras, count: items.length };
+        const totalDue = supply + extras;
+        const paid = _allTransfers.filter(t => t.to === person).reduce((s, t) => s + (t.amount || 0), 0);
+        const remaining = totalDue - paid;
+        return { totalDue, paid, remaining, count: items.length };
     };
     const hwangData = calcPersonSummary('황성현');
     const joData = calcPersonSummary('조윤호');
-    const hwangSettle = hwangData.total;
-    const joSettle = joData.total;
+    const hwangSettle = hwangData.remaining;
+    const joSettle = joData.remaining;
     const reserve = filtered.filter(r => r.distribute === '적립').reduce((s, r) => s + (r.profit || 0), 0);
     const pending = filtered.filter(r => r.status === '청구전').length;
 
@@ -857,8 +856,16 @@ function renderSummary() {
         <div class="card orange"><div class="label">기사지급 합계</div><div class="value">${fmt(totalDriverPay)}</div></div>
         <div class="card purple"><div class="label">총 수익</div><div class="value">${fmt(totalProfit)}</div></div>
         <div class="card teal"><div class="label">불꽃탁송 정산</div><div class="value">${fmt(fireSettle)}</div></div>
-        <div class="card" style="border-left:3px solid #ff9800;"><div class="label">황성현 미정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#e65100;">${fmt(hwangSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${hwangData.count}건 · ${fmtDate(_cutoffDate)} 이후</div></div>
-        <div class="card" style="border-left:3px solid #795548;"><div class="label">조윤호 미정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#795548;">${fmt(joSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${joData.count}건 · ${fmtDate(_cutoffDate)} 이후</div></div>
+        <div class="card" style="border-left:3px solid #ff9800;">
+            <div class="label">황성현 남은 정산</div>
+            <div class="value" style="color:#e65100;">${fmt(hwangSettle)}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(hwangData.totalDue)} − 받음 ${fmt(hwangData.paid)}</div>
+        </div>
+        <div class="card" style="border-left:3px solid #795548;">
+            <div class="label">조윤호 남은 정산</div>
+            <div class="value" style="color:#795548;">${fmt(joSettle)}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(joData.totalDue)} − 받음 ${fmt(joData.paid)}</div>
+        </div>
         <div class="card red"><div class="label">미청구 건수</div><div class="value">${pending}건</div></div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
             <div class="label" style="margin-bottom:10px;">대여종류별 현황 (청구금액 + 주유비)</div>
@@ -1159,43 +1166,29 @@ function renderSettlement() {
         return { count: items.length, total, received, receivable };
     };
 
-    // 담당자별 정산 (공급가 기준)
-    // 익월 10일 정산: N월 건은 (N+1)월 10일에 정산
-    // 오늘이 (N)월 10일 지났으면 (N-1)월 말일까지 정산완료, (N)월 1일부터 미정산
-    // 오늘이 (N)월 10일 전이면 (N-2)월 말일까지 정산완료, (N-1)월 1일부터 미정산
-    const today = new Date();
-    const cutoffDay = 10;
-    const cutoffDate = today.getDate() >= cutoffDay
-        ? new Date(today.getFullYear(), today.getMonth(), 0)
-        : new Date(today.getFullYear(), today.getMonth() - 1, 0);
-    // 다음 정산일 (이번 달 10일을 지났으면 다음 달 10일, 아니면 이번 달 10일)
-    const nextSettleDate = today.getDate() >= cutoffDay
-        ? new Date(today.getFullYear(), today.getMonth() + 1, cutoffDay)
-        : new Date(today.getFullYear(), today.getMonth(), cutoffDay);
-    const fmtSettleDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-
+    // 담당자별 정산: 총 정산금액 - 정산받은 금액 = 남은 정산금액
+    // 전체 데이터 + 전체 입출금 기록 기준 (날짜 무관)
+    const allDataForSettle = loadData();
+    const allTfForSettle = loadTransfers();
     const calcPerson = (person) => {
-        const items = filtered.filter(r => r.person === person);
-        const getSupply = (r) => r.charge ? r.charge - Math.round(r.charge / 11) : 0;
+        const items = allDataForSettle.filter(r => r.person === person);
+        const getSupply = (r) => {
+            const t = (r.charge || 0) + (r.fuelCharge || 0);
+            return t ? t - Math.round(t / 11) : 0;
+        };
         const getExtras = (r) => (r.extras || []).reduce((s, e) => s + (parseInt(e.amount) || 0), 0);
-        const getRowTotal = (r) => getSupply(r) + getExtras(r);
 
-        const settledItems = items.filter(r => new Date(r.date) <= cutoffDate);
-        const unsettledItems = items.filter(r => new Date(r.date) > cutoffDate);
-
-        const settledTotal = settledItems.reduce((s, r) => s + getRowTotal(r), 0);
-        const unsettledTotal = unsettledItems.reduce((s, r) => s + getRowTotal(r), 0);
-        const unsettledSupply = unsettledItems.reduce((s, r) => s + getSupply(r), 0);
-        const unsettledExtras = unsettledItems.reduce((s, r) => s + getExtras(r), 0);
+        const totalSupply = items.reduce((s, r) => s + getSupply(r), 0);
+        const totalExtras = items.reduce((s, r) => s + getExtras(r), 0);
+        const totalDue = totalSupply + totalExtras;
+        const totalPaid = allTfForSettle.filter(t => t.to === person).reduce((s, t) => s + (t.amount || 0), 0);
+        const remaining = totalDue - totalPaid;
 
         return {
             count: items.length,
-            settledCount: settledItems.length,
-            settledTotal: settledTotal,
-            unsettledCount: unsettledItems.length,
-            unsettledTotal: unsettledTotal,
-            unsettledSupply: unsettledSupply,
-            unsettledExtras: unsettledExtras
+            totalSupply, totalExtras, totalDue,
+            totalPaid,
+            remaining
         };
     };
 
@@ -1268,35 +1261,22 @@ function renderSettlement() {
         </div>
     `;
 
-    // 입출금 기록에서 정산지급 금액 합산
-    const allTf = loadTransfers();
-    const periodTf = allTf.filter(t => {
-        const d = new Date(t.date);
-        if (d.getFullYear() !== parseInt(document.getElementById('settleYear').value)) return false;
-        const m = parseInt(document.getElementById('settleMonth').value);
-        if (m && (d.getMonth() + 1) !== m) return false;
-        return true;
-    });
-    const hwangTfPaid = periodTf.filter(t => t.to === '황성현').reduce((s, t) => s + t.amount, 0);
-    const joTfPaid = periodTf.filter(t => t.to === '조윤호').reduce((s, t) => s + t.amount, 0);
-
-    const renderPersonCard = (name, color, data, tfPaid) => {
-        const owed = data.unsettledTotal;
+    const renderPersonCard = (name, color, data) => {
         return `
         <div class="settle-card" style="border-left:4px solid ${color};">
             <h3 style="color:${color};">${name} 정산</h3>
-            <div style="font-size:11px;color:#888;margin-bottom:8px;">정산 기준: 매월 10일 | 다음 정산일: ${fmtSettleDate(nextSettleDate)}</div>
-            <div class="settle-row"><span>정산완료 (${fmtSettleDate(cutoffDate)} 이전)</span><span class="amount" style="color:#2e7d32;">${fmt(data.settledTotal)} <span style="font-size:11px;color:#888;">(${data.settledCount}건)</span></span></div>
-            <div class="settle-row"><span>이번 지급액</span><span class="amount" style="color:#2e7d32;">${fmt(tfPaid)}</span></div>
-            <div class="settle-row" style="background:#fff8e1;border-radius:6px;padding:8px;margin:4px 0;"><span style="font-weight:700;">미정산 (${fmtSettleDate(cutoffDate)} 이후)</span><span class="amount" style="color:#c62828;font-size:16px;">${fmt(owed)} <span style="font-size:11px;color:#888;">(${data.unsettledCount}건)</span></span></div>
-            ${data.unsettledExtras > 0 ? `<div class="settle-row" style="font-size:12px;color:#666;padding:2px 12px;"><span>↳ 공급가 ${fmt(data.unsettledSupply)} + 추가비용 ${fmt(data.unsettledExtras)}</span><span></span></div>` : ''}
+            <div style="font-size:11px;color:#888;margin-bottom:8px;">총 정산금액 − 정산받은 금액 = 남은 정산금액</div>
+            <div class="settle-row"><span>총 정산해야 할 금액 <span style="font-size:11px;color:#888;">(${data.count}건)</span></span><span class="amount" style="color:#1565c0;">${fmt(data.totalDue)}</span></div>
+            ${data.totalExtras > 0 ? `<div class="settle-row" style="font-size:12px;color:#666;padding:2px 12px;"><span>↳ 공급가 ${fmt(data.totalSupply)} + 추가비용 ${fmt(data.totalExtras)}</span><span></span></div>` : ''}
+            <div class="settle-row"><span>정산받은 금액</span><span class="amount" style="color:#2e7d32;">− ${fmt(data.totalPaid)}</span></div>
+            <div class="settle-row settle-total" style="background:#fff8e1;border-radius:6px;padding:10px;margin-top:6px;"><span style="font-weight:700;">남은 정산금액</span><span class="amount" style="color:#c62828;font-size:18px;">${fmt(data.remaining)}</span></div>
         </div>`;
     };
 
     // === 정산 카드 (황성현, 조윤호만) ===
     document.getElementById('settlementCards').innerHTML =
-        renderPersonCard('황성현', '#ff9800', hwangPerson, hwangTfPaid) +
-        renderPersonCard('조윤호', '#795548', joPerson, joTfPaid);
+        renderPersonCard('황성현', '#ff9800', hwangPerson) +
+        renderPersonCard('조윤호', '#795548', joPerson);
 
     // === 입출금 내역 테이블 ===
     const transfers = loadTransfers();
