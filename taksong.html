@@ -816,6 +816,17 @@ function renderSummary() {
     const reserve = filtered.filter(r => r.distribute === '적립').reduce((s, r) => s + (r.profit || 0), 0);
     const pending = filtered.filter(r => r.status === '청구전').length;
 
+    // 대여종류별 통계 (건수 + 청구금액(주유비포함))
+    const calcByCategory = (cat) => {
+        const items = filtered.filter(r => (r.category || '장기대여') === cat);
+        const total = items.reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0);
+        return { count: items.length, total };
+    };
+    const longRent = calcByCategory('장기대여');
+    const accidentRent = calcByCategory('사고대여');
+    const normalRent = calcByCategory('일반대여');
+    const etcRent = calcByCategory('기타');
+
     // 부가가치세 계산 (탁송 + 주유비 합산)
     const totalVat = filtered.reduce((s, r) => {
         const total = (r.charge || 0) + (r.fuelCharge || 0);
@@ -842,6 +853,31 @@ function renderSummary() {
         <div class="card" style="border-left:3px solid #ff9800;"><div class="label">황성현 정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#e65100;">${fmt(hwangSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${hwangData.count}건</div></div>
         <div class="card" style="border-left:3px solid #795548;"><div class="label">조윤호 정산 <small style="font-weight:400;color:#999;">(공급가+추가)</small></div><div class="value" style="color:#795548;">${fmt(joSettle)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${joData.count}건</div></div>
         <div class="card red"><div class="label">미청구 건수</div><div class="value">${pending}건</div></div>
+        <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
+            <div class="label" style="margin-bottom:10px;">대여종류별 현황 (청구금액 + 주유비)</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+                <div style="background:#e3f2fd;border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:12px;color:#1565c0;font-weight:700;">장기대여</div>
+                    <div style="font-size:20px;font-weight:800;color:#0d47a1;margin-top:4px;">${fmt(longRent.total)}</div>
+                    <div style="font-size:11px;color:#666;margin-top:2px;">${longRent.count}건</div>
+                </div>
+                <div style="background:#ffebee;border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:12px;color:#c62828;font-weight:700;">사고대여</div>
+                    <div style="font-size:20px;font-weight:800;color:#b71c1c;margin-top:4px;">${fmt(accidentRent.total)}</div>
+                    <div style="font-size:11px;color:#666;margin-top:2px;">${accidentRent.count}건</div>
+                </div>
+                <div style="background:#e8f5e9;border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:12px;color:#2e7d32;font-weight:700;">일반대여</div>
+                    <div style="font-size:20px;font-weight:800;color:#1b5e20;margin-top:4px;">${fmt(normalRent.total)}</div>
+                    <div style="font-size:11px;color:#666;margin-top:2px;">${normalRent.count}건</div>
+                </div>
+                <div style="background:#f3e5f5;border-radius:10px;padding:14px;text-align:center;">
+                    <div style="font-size:12px;color:#6a1b9a;font-weight:700;">기타</div>
+                    <div style="font-size:20px;font-weight:800;color:#4a148c;margin-top:4px;">${fmt(etcRent.total)}</div>
+                    <div style="font-size:11px;color:#666;margin-top:2px;">${etcRent.count}건</div>
+                </div>
+            </div>
+        </div>
         <div class="card" style="border-left:3px solid ${isPaid ? '#2e7d32' : '#d32f2f'};background:linear-gradient(135deg,${isPaid ? '#f1f8e9' : '#fff5f5'},#fff);grid-column:1/-1;">
             <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
                 <div>
