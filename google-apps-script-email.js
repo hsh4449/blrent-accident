@@ -1,19 +1,6 @@
 /**
  * 아레스렌트카 상담 신청 폼 처리
- * Google Sheets 저장 + 이메일 알림 + SMS 알림 (Solapi)
- *
- * ┌─────────────────────────────────────────────────────────────┐
- * │ Solapi SMS 설정 방법 (최초 1회만)                            │
- * │                                                             │
- * │ Apps Script 에디터 → 프로젝트 설정(⚙️) → 스크립트 속성       │
- * │ 아래 3개 키를 추가하세요:                                    │
- * │   - SOLAPI_API_KEY     : Solapi 콘솔 발급 API Key            │
- * │   - SOLAPI_API_SECRET  : Solapi 콘솔 발급 API Secret         │
- * │   - SOLAPI_FROM        : 발신번호 (예: 01024188272)          │
- * │   - SOLAPI_TO          : 수신번호 (예: 01048851862)          │
- * │                                                             │
- * │ 키를 코드에 직접 넣지 마세요. 레포가 public 입니다.          │
- * └─────────────────────────────────────────────────────────────┘
+ * Google Sheets 저장 + 이메일 알림 (간단 버전)
  */
 
 // ========================================
@@ -49,78 +36,12 @@ function doPost(e) {
     
     // 2. 이메일 알림 발송
     sendEmail(name, phone, carModel, accidentDate, message, timestamp);
-
-    // 3. SMS 알림 발송 (Solapi)
-    sendSMS(name, phone, carModel, accidentDate, message);
-
+    
     return ContentService.createTextOutput('success');
-
+    
   } catch (error) {
     Logger.log('Error: ' + error);
     return ContentService.createTextOutput('error');
-  }
-}
-
-// ========================================
-// SMS 발송 함수 (Solapi v4)
-// ========================================
-
-function sendSMS(name, phone, carModel, accidentDate, message) {
-  const props = PropertiesService.getScriptProperties();
-  const apiKey = props.getProperty('SOLAPI_API_KEY');
-  const apiSecret = props.getProperty('SOLAPI_API_SECRET');
-  const from = props.getProperty('SOLAPI_FROM');
-  const to = props.getProperty('SOLAPI_TO');
-
-  if (!apiKey || !apiSecret || !from || !to) {
-    Logger.log('SMS 스킵: Script Properties(SOLAPI_*) 미설정');
-    return;
-  }
-
-  // HMAC-SHA256 서명 생성
-  const date = new Date().toISOString();
-  const salt = Utilities.getUuid().replace(/-/g, '').substring(0, 32);
-  const signatureBytes = Utilities.computeHmacSha256Signature(date + salt, apiSecret);
-  const signature = signatureBytes.map(function(b) {
-    const v = (b < 0) ? b + 256 : b;
-    return ('0' + v.toString(16)).slice(-2);
-  }).join('');
-
-  const authorization = 'HMAC-SHA256 apiKey=' + apiKey +
-                        ', date=' + date +
-                        ', salt=' + salt +
-                        ', signature=' + signature;
-
-  // SMS 본문
-  const lines = ['[아레스렌트카] 상담신청 도착'];
-  lines.push('이름: ' + name);
-  lines.push('연락처: ' + phone);
-  if (carModel) lines.push('차량: ' + carModel);
-  if (accidentDate) lines.push('사고일: ' + accidentDate);
-  if (message) lines.push('문의: ' + message);
-  const text = lines.join('\n');
-
-  const payload = {
-    message: {
-      to: to.replace(/-/g, ''),
-      from: from.replace(/-/g, ''),
-      text: text
-    }
-  };
-
-  const options = {
-    method: 'post',
-    contentType: 'application/json',
-    headers: { 'Authorization': authorization },
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  };
-
-  try {
-    const response = UrlFetchApp.fetch('https://api.solapi.com/messages/v4/send', options);
-    Logger.log('SMS 응답 (' + response.getResponseCode() + '): ' + response.getContentText());
-  } catch (error) {
-    Logger.log('SMS 발송 실패: ' + error);
   }
 }
 
@@ -239,23 +160,11 @@ ${message || '없음'}
 function test() {
   sendEmail(
     '홍길동',
-    '010-1234-5678',
+    '010-1234-5678', 
     '소나타',
     '2026-01-27',
     '빠른 배차 부탁드립니다.',
     new Date()
   );
   Logger.log('테스트 이메일 발송 완료!');
-}
-
-// SMS 테스트 (Apps Script 에디터에서 직접 실행)
-function testSMS() {
-  sendSMS(
-    '홍길동',
-    '010-1234-5678',
-    '소나타',
-    '2026-01-27',
-    '빠른 배차 부탁드립니다.'
-  );
-  Logger.log('테스트 SMS 발송 시도 완료 - 로그에서 응답코드 확인');
 }
