@@ -534,18 +534,18 @@
         <table>
             <thead>
                 <tr>
-                    <th>날짜</th>
-                    <th>대여 차량번호</th>
-                    <th>대여 차종</th>
-                    <th>고객 차량번호</th>
                     <th>시작일</th>
                     <th>종료일</th>
                     <th>일수</th>
+                    <th>대여 차량번호</th>
+                    <th>대여 차종</th>
+                    <th>고객 차량번호</th>
                     <th>고객 차종</th>
                     <th>대여료<br><small>(부가세포함)</small></th>
                     <th>공급가</th>
                     <th>수수료%</th>
                     <th>수수료</th>
+                    <th>분배</th>
                     <th>처리상황</th>
                     <th>비고</th>
                     <th></th>
@@ -861,6 +861,7 @@ function renderSummary() {
     // 날짜 무관, 전체 데이터 기준
     const _allData = loadData();
     const _allTransfers = loadTransfers();
+    const _allCommissions = loadCommissions();
     const calcPersonSummary = (person) => {
         const items = _allData.filter(r => r.person === person);
         const supply = items.reduce((s, r) => {
@@ -868,10 +869,17 @@ function renderSummary() {
             return s + (total - Math.round(total / 11));
         }, 0);
         const extras = items.reduce((s, r) => s + ((r.extras || []).reduce((ss, e) => ss + (parseInt(e.amount)||0), 0)), 0);
-        const totalDue = supply + extras;
-        const paid = _allTransfers.filter(t => t.to === person).reduce((s, t) => s + (t.amount || 0), 0);
+        // 수수료입금완료된 사고대여 수수료의 분배 몫 (총/받은 양쪽에 동일 가산 → 남은 정산에는 영향 없음)
+        let commShare = 0;
+        _allCommissions.forEach(c => {
+            if (c.status !== '수수료입금완료') return;
+            const share = splitShares(c.split || '5:5');
+            commShare += Math.round((c.commission || 0) * share[person]);
+        });
+        const totalDue = supply + extras + commShare;
+        const paid = _allTransfers.filter(t => t.to === person).reduce((s, t) => s + (t.amount || 0), 0) + commShare;
         const remaining = totalDue - paid;
-        return { totalDue, paid, remaining, count: items.length };
+        return { totalDue, paid, remaining, count: items.length, commShare };
     };
     const hwangData = calcPersonSummary('황성현');
     const joData = calcPersonSummary('조윤호');
@@ -917,12 +925,12 @@ function renderSummary() {
         <div class="card" style="border-left:3px solid #ff9800;">
             <div class="label">황성현 남은 정산</div>
             <div class="value" style="color:#e65100;">${fmt(hwangSettle)}</div>
-            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(hwangData.totalDue)} − 받음 ${fmt(hwangData.paid)}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(hwangData.totalDue)} − 받음 ${fmt(hwangData.paid)}${hwangData.commShare>0?`<br>(수수료 ${fmt(hwangData.commShare)} 포함)`:''}</div>
         </div>
         <div class="card" style="border-left:3px solid #795548;">
             <div class="label">조윤호 남은 정산</div>
             <div class="value" style="color:#795548;">${fmt(joSettle)}</div>
-            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(joData.totalDue)} − 받음 ${fmt(joData.paid)}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(joData.totalDue)} − 받음 ${fmt(joData.paid)}${joData.commShare>0?`<br>(수수료 ${fmt(joData.commShare)} 포함)`:''}</div>
         </div>
         <div class="card red"><div class="label">미청구 건수</div><div class="value">${pending}건</div></div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
@@ -1225,9 +1233,10 @@ function renderSettlement() {
     };
 
     // 담당자별 정산: 총 정산금액 - 정산받은 금액 = 남은 정산금액
-    // 전체 데이터 + 전체 입출금 기록 기준 (날짜 무관)
+    // 전체 데이터 + 전체 입출금 기록 + 수수료입금완료된 사고대여 수수료 분배 몫 기준
     const allDataForSettle = loadData();
     const allTfForSettle = loadTransfers();
+    const allCommForSettle = loadCommissions();
     const calcPerson = (person) => {
         const items = allDataForSettle.filter(r => r.person === person);
         const getSupply = (r) => {
@@ -1238,13 +1247,23 @@ function renderSettlement() {
 
         const totalSupply = items.reduce((s, r) => s + getSupply(r), 0);
         const totalExtras = items.reduce((s, r) => s + getExtras(r), 0);
-        const totalDue = totalSupply + totalExtras;
-        const totalPaid = allTfForSettle.filter(t => t.to === person).reduce((s, t) => s + (t.amount || 0), 0);
+        // 수수료입금완료된 사고대여 수수료의 분배 몫
+        let commShare = 0;
+        let commCount = 0;
+        allCommForSettle.forEach(c => {
+            if (c.status !== '수수료입금완료') return;
+            const share = splitShares(c.split || '5:5');
+            const amt = Math.round((c.commission || 0) * share[person]);
+            if (amt > 0) { commShare += amt; commCount++; }
+        });
+        const totalDue = totalSupply + totalExtras + commShare;
+        const totalPaid = allTfForSettle.filter(t => t.to === person).reduce((s, t) => s + (t.amount || 0), 0) + commShare;
         const remaining = totalDue - totalPaid;
 
         return {
-            count: items.length,
+            count: items.length + commCount,
             totalSupply, totalExtras, totalDue,
+            commShare, commCount,
             totalPaid,
             remaining
         };
@@ -1320,13 +1339,17 @@ function renderSettlement() {
     `;
 
     const renderPersonCard = (name, color, data) => {
+        const breakdown = [];
+        if (data.totalSupply > 0) breakdown.push(`공급가 ${fmt(data.totalSupply)}`);
+        if (data.totalExtras > 0) breakdown.push(`추가비용 ${fmt(data.totalExtras)}`);
+        if (data.commShare > 0) breakdown.push(`사고대여 수수료 ${fmt(data.commShare)} <small style="color:#999;">(${data.commCount}건)</small>`);
         return `
         <div class="settle-card" style="border-left:4px solid ${color};">
             <h3 style="color:${color};">${name} 정산</h3>
             <div style="font-size:11px;color:#888;margin-bottom:8px;">총 정산금액 − 정산받은 금액 = 남은 정산금액</div>
             <div class="settle-row"><span>총 정산해야 할 금액 <span style="font-size:11px;color:#888;">(${data.count}건)</span></span><span class="amount" style="color:#1565c0;">${fmt(data.totalDue)}</span></div>
-            ${data.totalExtras > 0 ? `<div class="settle-row" style="font-size:12px;color:#666;padding:2px 12px;"><span>↳ 공급가 ${fmt(data.totalSupply)} + 추가비용 ${fmt(data.totalExtras)}</span><span></span></div>` : ''}
-            <div class="settle-row"><span>정산받은 금액</span><span class="amount" style="color:#2e7d32;">− ${fmt(data.totalPaid)}</span></div>
+            ${breakdown.length > 1 ? `<div class="settle-row" style="font-size:12px;color:#666;padding:2px 12px;"><span>↳ ${breakdown.join(' + ')}</span><span></span></div>` : ''}
+            <div class="settle-row"><span>정산받은 금액 <small style="color:#999;">(수수료입금완료 포함)</small></span><span class="amount" style="color:#2e7d32;">− ${fmt(data.totalPaid)}</span></div>
             <div class="settle-row settle-total" style="background:#fff8e1;border-radius:6px;padding:10px;margin-top:6px;"><span style="font-weight:700;">남은 정산금액</span><span class="amount" style="color:#c62828;font-size:18px;">${fmt(data.remaining)}</span></div>
         </div>`;
     };
@@ -1450,6 +1473,8 @@ function loadCommissions() {
                     r.rentStart = ''; r.rentEnd = '';
                     migrated = true;
                 }
+                // split 기본값 부여 (없으면 5:5)
+                if (!r.split) { r.split = '5:5'; migrated = true; }
             });
             if (migrated) saveCommissions(_memoryCommission);
             return _memoryCommission;
@@ -1471,18 +1496,19 @@ function nextCommissionId() {
 
 function addCommission() {
     const data = loadCommissions();
+    const today = new Date().toISOString().slice(0, 10);
     data.push({
         id: nextCommissionId(),
-        date: new Date().toISOString().slice(0, 10),
         rentCarNo: '',
         rentModel: '',
         customerCarNo: '',
-        rentStart: '',
+        rentStart: today,
         rentEnd: '',
         customerModel: '',
         depositAmount: 0,
         rate: 15,
         commission: 0,
+        split: '5:5',
         status: '대여중',
         note: ''
     });
@@ -1524,7 +1550,6 @@ function autoSaveCommission(id) {
 
     data[idx] = {
         id: id,
-        date: tr.querySelector('[data-cf="date"]').value,
         rentCarNo: tr.querySelector('[data-cf="rentCarNo"]').value.trim(),
         rentModel: tr.querySelector('[data-cf="rentModel"]').value.trim(),
         customerCarNo: tr.querySelector('[data-cf="customerCarNo"]').value.trim(),
@@ -1534,6 +1559,7 @@ function autoSaveCommission(id) {
         depositAmount: deposit,
         rate: rate,
         commission: commission,
+        split: tr.querySelector('[data-cf="split"]').value,
         status: tr.querySelector('[data-cf="status"]').value,
         note: tr.querySelector('[data-cf="note"]').value.trim()
     };
@@ -1549,7 +1575,10 @@ function initCommissionYearFilter() {
     const sel = document.getElementById('commYear');
     if (sel.options.length) return;
     const data = loadCommissions();
-    const years = new Set(data.map(r => new Date(r.date).getFullYear()));
+    const years = new Set();
+    data.forEach(r => {
+        if (r.rentStart) years.add(new Date(r.rentStart).getFullYear());
+    });
     years.add(new Date().getFullYear());
     const sorted = [...years].sort((a, b) => b - a);
     sel.innerHTML = sorted.map(y => `<option value="${y}">${y}년</option>`).join('');
@@ -1562,12 +1591,26 @@ function getFilteredCommission() {
     const month = parseInt(document.getElementById('commMonth').value);
     const status = document.getElementById('commStatus').value;
     return data.filter(r => {
-        const d = new Date(r.date);
-        if (d.getFullYear() !== year) return false;
-        if (month && (d.getMonth() + 1) !== month) return false;
+        // rentStart 없으면 모든 필터에 통과 (입력 대기 상태)
+        if (r.rentStart) {
+            const d = new Date(r.rentStart);
+            if (d.getFullYear() !== year) return false;
+            if (month && (d.getMonth() + 1) !== month) return false;
+        }
         if (status && r.status !== status) return false;
         return true;
-    }).sort((a, b) => new Date(b.date) - new Date(a.date) || b.id - a.id);
+    }).sort((a, b) => {
+        const da = a.rentStart ? new Date(a.rentStart) : new Date(0);
+        const db = b.rentStart ? new Date(b.rentStart) : new Date(0);
+        return db - da || b.id - a.id;
+    });
+}
+
+function splitShares(split) {
+    // 분배 비율 반환: { 황성현: 0~1, 조윤호: 0~1 }
+    if (split === '조윤호100%') return { 황성현: 0, 조윤호: 1 };
+    if (split === '황성현100%') return { 황성현: 1, 조윤호: 0 };
+    return { 황성현: 0.5, 조윤호: 0.5 }; // 5:5 (기본)
 }
 
 function renderCommissionSummary() {
@@ -1581,11 +1624,37 @@ function renderCommissionSummary() {
     const billed = list.filter(r => r.status === '청구완료').length;
     const rentPaid = list.filter(r => r.status === '대여료입금완료').length;
 
+    // 분배별 합계 (모든 건 기준, 수령 여부 무관)
+    let hwangTotal = 0, joTotal = 0;
+    let hwangReceived = 0, joReceived = 0;
+    list.forEach(r => {
+        const share = splitShares(r.split || '5:5');
+        const c = r.commission || 0;
+        const hAmt = Math.round(c * share.황성현);
+        const jAmt = c - hAmt; // 반올림 차이 보정
+        hwangTotal += hAmt;
+        joTotal += jAmt;
+        if (r.status === '수수료입금완료') {
+            hwangReceived += hAmt;
+            joReceived += jAmt;
+        }
+    });
+
     document.getElementById('commSummary').innerHTML = `
         <div class="card blue"><div class="label">총 입금액</div><div class="value">${fmt(totalDeposit)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${list.length}건</div></div>
         <div class="card purple"><div class="label">총 수수료</div><div class="value">${fmt(totalComm)}</div></div>
         <div class="card green"><div class="label">수수료 입금완료</div><div class="value">${fmt(received)}</div></div>
         <div class="card red"><div class="label">미입금 수수료</div><div class="value">${fmt(pending)}</div></div>
+        <div class="card" style="border-left:3px solid #ff9800;">
+            <div class="label">황성현 받을 수수료</div>
+            <div class="value" style="color:#e65100;">${fmt(hwangTotal - hwangReceived)}</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(hwangTotal)} − 받음 ${fmt(hwangReceived)}</div>
+        </div>
+        <div class="card" style="border-left:3px solid #795548;">
+            <div class="label">조윤호 받을 수수료</div>
+            <div class="value" style="color:#795548;">${fmt(joTotal - joReceived)}</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(joTotal)} − 받음 ${fmt(joReceived)}</div>
+        </div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
             <div class="label" style="margin-bottom:8px;">처리 단계별 건수</div>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
@@ -1626,6 +1695,7 @@ function renderCommission() {
     }
 
     const statuses = ['대여중','청구전','청구완료','대여료입금완료','수수료입금완료'];
+    const splits = ['조윤호100%','황성현100%','5:5'];
     const escAttr = (s) => String(s == null ? '' : s).replace(/"/g, '&quot;');
 
     tbody.innerHTML = list.map(r => {
@@ -1633,18 +1703,18 @@ function renderCommission() {
         const supply = r.depositAmount ? (r.depositAmount - Math.round(r.depositAmount / 11)) : 0;
         return `
         <tr id="comm-row-${r.id}">
-            <td><input type="date" class="inline-date" value="${r.date}" data-cf="date" onchange="autoSaveCommission(${r.id})"></td>
-            <td><input type="text" class="inline-input" style="width:70px;text-align:center;font-weight:700;" value="${escAttr(r.rentCarNo)}" data-cf="rentCarNo" onchange="autoSaveCommission(${r.id})"></td>
-            <td><input type="text" class="inline-input" style="width:90px;" value="${escAttr(r.rentModel)}" data-cf="rentModel" onchange="autoSaveCommission(${r.id})"></td>
-            <td><input type="text" class="inline-input" style="width:80px;text-align:center;" value="${escAttr(r.customerCarNo)}" data-cf="customerCarNo" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="date" class="inline-date" value="${r.rentStart||''}" data-cf="rentStart" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="date" class="inline-date" value="${r.rentEnd||''}" data-cf="rentEnd" onchange="autoSaveCommission(${r.id})"></td>
             <td class="text-right" id="comm-days-${r.id}" style="color:#1565c0;font-weight:700;">${days != null ? days + '일' : '-'}</td>
+            <td><input type="text" class="inline-input" style="width:70px;text-align:center;font-weight:700;" value="${escAttr(r.rentCarNo)}" data-cf="rentCarNo" onchange="autoSaveCommission(${r.id})"></td>
+            <td><input type="text" class="inline-input" style="width:90px;" value="${escAttr(r.rentModel)}" data-cf="rentModel" onchange="autoSaveCommission(${r.id})"></td>
+            <td><input type="text" class="inline-input" style="width:80px;text-align:center;" value="${escAttr(r.customerCarNo)}" data-cf="customerCarNo" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="text" class="inline-input" style="width:90px;" value="${escAttr(r.customerModel)}" data-cf="customerModel" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="number" class="inline-input" style="width:100px;text-align:right;font-weight:700;" value="${r.depositAmount||0}" data-cf="depositAmount" onchange="autoSaveCommission(${r.id})"></td>
             <td class="text-right" id="comm-supply-${r.id}" style="color:#0d47a1;font-size:13px;">${r.depositAmount ? fmt(supply) : '-'}</td>
             <td><input type="number" step="0.1" class="inline-input" style="width:55px;text-align:center;" value="${r.rate||0}" data-cf="rate" onchange="autoSaveCommission(${r.id})"></td>
             <td class="text-right" id="comm-amt-${r.id}" style="color:#6a1b9a;font-weight:800;font-size:14px;">${fmt(r.commission)}</td>
+            <td><select class="inline-select" data-cf="split" onchange="autoSaveCommission(${r.id})">${splits.map(s=>`<option value="${s}" ${s===(r.split||'5:5')?'selected':''}>${s}</option>`).join('')}</select></td>
             <td><select class="inline-select" data-cf="status" onchange="autoSaveCommission(${r.id})">${statuses.map(s=>`<option value="${s}" ${s===r.status?'selected':''}>${s}</option>`).join('')}</select></td>
             <td><input type="text" class="inline-input wide" style="width:110px;" value="${escAttr(r.note)}" data-cf="note" onchange="autoSaveCommission(${r.id})"></td>
             <td><span class="delete-btn" onclick="deleteCommission(${r.id})" title="삭제" style="font-size:20px;">&times;</span></td>
