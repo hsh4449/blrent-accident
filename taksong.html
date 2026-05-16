@@ -520,8 +520,11 @@
             <label>처리상황</label>
             <select id="commStatus" onchange="renderCommission()">
                 <option value="">전체</option>
-                <option value="미수령">미수령</option>
-                <option value="수령완료">수령완료</option>
+                <option value="대여중">대여중</option>
+                <option value="청구전">청구전</option>
+                <option value="청구완료">청구완료</option>
+                <option value="대여료입금완료">대여료입금완료</option>
+                <option value="수수료입금완료">수수료입금완료</option>
             </select>
         </div>
         <button class="btn-primary" onclick="addCommission()" style="margin-left:auto;">+ 수수료 기록</button>
@@ -535,7 +538,8 @@
                     <th>대여 차량번호</th>
                     <th>대여 차종</th>
                     <th>고객 차량번호</th>
-                    <th>대여기간</th>
+                    <th>시작일</th>
+                    <th>종료일</th>
                     <th>고객 차종</th>
                     <th>입금액</th>
                     <th>수수료%</th>
@@ -1432,7 +1436,22 @@ function loadCommissions() {
     if (_memoryCommission) return _memoryCommission;
     try {
         const saved = localStorage.getItem(COMMISSION_KEY);
-        if (saved) { _memoryCommission = JSON.parse(saved); return _memoryCommission; }
+        if (saved) {
+            _memoryCommission = JSON.parse(saved);
+            // 구 상태값 마이그레이션
+            let migrated = false;
+            _memoryCommission.forEach(r => {
+                if (r.status === '미수령') { r.status = '대여중'; migrated = true; }
+                if (r.status === '수령완료') { r.status = '수수료입금완료'; migrated = true; }
+                // 구 rentPeriod → rentStart/rentEnd 필드 신설 (값 변환 없이 빈 값으로)
+                if (r.rentPeriod !== undefined && r.rentStart === undefined) {
+                    r.rentStart = ''; r.rentEnd = '';
+                    migrated = true;
+                }
+            });
+            if (migrated) saveCommissions(_memoryCommission);
+            return _memoryCommission;
+        }
     } catch(e) {}
     _memoryCommission = [];
     return _memoryCommission;
@@ -1456,12 +1475,13 @@ function addCommission() {
         rentCarNo: '',
         rentModel: '',
         customerCarNo: '',
-        rentPeriod: '',
+        rentStart: '',
+        rentEnd: '',
         customerModel: '',
         depositAmount: 0,
         rate: 15,
         commission: 0,
-        status: '미수령',
+        status: '대여중',
         note: ''
     });
     saveCommissions(data);
@@ -1491,7 +1511,8 @@ function autoSaveCommission(id) {
         rentCarNo: tr.querySelector('[data-cf="rentCarNo"]').value.trim(),
         rentModel: tr.querySelector('[data-cf="rentModel"]').value.trim(),
         customerCarNo: tr.querySelector('[data-cf="customerCarNo"]').value.trim(),
-        rentPeriod: tr.querySelector('[data-cf="rentPeriod"]').value.trim(),
+        rentStart: tr.querySelector('[data-cf="rentStart"]').value,
+        rentEnd: tr.querySelector('[data-cf="rentEnd"]').value,
         customerModel: tr.querySelector('[data-cf="customerModel"]').value.trim(),
         depositAmount: deposit,
         rate: rate,
@@ -1534,15 +1555,43 @@ function renderCommissionSummary() {
     const list = getFilteredCommission();
     const totalDeposit = list.reduce((s, r) => s + (r.depositAmount || 0), 0);
     const totalComm = list.reduce((s, r) => s + (r.commission || 0), 0);
-    const received = list.filter(r => r.status === '수령완료').reduce((s, r) => s + (r.commission || 0), 0);
+    const received = list.filter(r => r.status === '수수료입금완료').reduce((s, r) => s + (r.commission || 0), 0);
     const pending = totalComm - received;
-    const pendingCount = list.filter(r => r.status === '미수령').length;
+    const renting = list.filter(r => r.status === '대여중').length;
+    const beforeBill = list.filter(r => r.status === '청구전').length;
+    const billed = list.filter(r => r.status === '청구완료').length;
+    const rentPaid = list.filter(r => r.status === '대여료입금완료').length;
 
     document.getElementById('commSummary').innerHTML = `
         <div class="card blue"><div class="label">총 입금액</div><div class="value">${fmt(totalDeposit)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${list.length}건</div></div>
         <div class="card purple"><div class="label">총 수수료</div><div class="value">${fmt(totalComm)}</div></div>
-        <div class="card green"><div class="label">수령 완료</div><div class="value">${fmt(received)}</div></div>
-        <div class="card red"><div class="label">미수령</div><div class="value">${fmt(pending)}</div><div style="font-size:11px;color:#888;margin-top:2px;">${pendingCount}건</div></div>
+        <div class="card green"><div class="label">수수료 입금완료</div><div class="value">${fmt(received)}</div></div>
+        <div class="card red"><div class="label">미입금 수수료</div><div class="value">${fmt(pending)}</div></div>
+        <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
+            <div class="label" style="margin-bottom:8px;">처리 단계별 건수</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;">
+                <div style="background:#e3f2fd;border-radius:10px;padding:12px;text-align:center;">
+                    <div style="font-size:12px;color:#1565c0;font-weight:700;">대여중</div>
+                    <div style="font-size:20px;font-weight:800;color:#0d47a1;margin-top:4px;">${renting}건</div>
+                </div>
+                <div style="background:#fce4ec;border-radius:10px;padding:12px;text-align:center;">
+                    <div style="font-size:12px;color:#c62828;font-weight:700;">청구전</div>
+                    <div style="font-size:20px;font-weight:800;color:#b71c1c;margin-top:4px;">${beforeBill}건</div>
+                </div>
+                <div style="background:#fff8e1;border-radius:10px;padding:12px;text-align:center;">
+                    <div style="font-size:12px;color:#f57f17;font-weight:700;">청구완료</div>
+                    <div style="font-size:20px;font-weight:800;color:#e65100;margin-top:4px;">${billed}건</div>
+                </div>
+                <div style="background:#e8f5e9;border-radius:10px;padding:12px;text-align:center;">
+                    <div style="font-size:12px;color:#2e7d32;font-weight:700;">대여료 입금완료</div>
+                    <div style="font-size:20px;font-weight:800;color:#1b5e20;margin-top:4px;">${rentPaid}건</div>
+                </div>
+                <div style="background:#f3e5f5;border-radius:10px;padding:12px;text-align:center;">
+                    <div style="font-size:12px;color:#6a1b9a;font-weight:700;">수수료 입금완료</div>
+                    <div style="font-size:20px;font-weight:800;color:#4a148c;margin-top:4px;">${list.filter(r=>r.status==='수수료입금완료').length}건</div>
+                </div>
+            </div>
+        </div>
     `;
 }
 
@@ -1552,12 +1601,12 @@ function renderCommission() {
     const tbody = document.getElementById('commissionBody');
 
     if (!list.length) {
-        tbody.innerHTML = '<tr><td colspan="12" style="padding:40px;color:#999;">기록이 없습니다. 우측 상단 "+ 수수료 기록" 버튼으로 추가하세요.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="13" style="padding:40px;color:#999;">기록이 없습니다. 우측 상단 "+ 수수료 기록" 버튼으로 추가하세요.</td></tr>';
         renderCommissionSummary();
         return;
     }
 
-    const statuses = ['미수령','수령완료'];
+    const statuses = ['대여중','청구전','청구완료','대여료입금완료','수수료입금완료'];
     const escAttr = (s) => String(s == null ? '' : s).replace(/"/g, '&quot;');
 
     tbody.innerHTML = list.map(r => `
@@ -1566,7 +1615,8 @@ function renderCommission() {
             <td><input type="text" class="inline-input" style="width:70px;text-align:center;font-weight:700;" value="${escAttr(r.rentCarNo)}" data-cf="rentCarNo" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="text" class="inline-input" style="width:90px;" value="${escAttr(r.rentModel)}" data-cf="rentModel" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="text" class="inline-input" style="width:80px;text-align:center;" value="${escAttr(r.customerCarNo)}" data-cf="customerCarNo" onchange="autoSaveCommission(${r.id})"></td>
-            <td><input type="text" class="inline-input" style="width:110px;" placeholder="예: 4/1~4/15" value="${escAttr(r.rentPeriod)}" data-cf="rentPeriod" onchange="autoSaveCommission(${r.id})"></td>
+            <td><input type="date" class="inline-date" value="${r.rentStart||''}" data-cf="rentStart" onchange="autoSaveCommission(${r.id})"></td>
+            <td><input type="date" class="inline-date" value="${r.rentEnd||''}" data-cf="rentEnd" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="text" class="inline-input" style="width:90px;" value="${escAttr(r.customerModel)}" data-cf="customerModel" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="number" class="inline-input" style="width:100px;text-align:right;font-weight:700;" value="${r.depositAmount||0}" data-cf="depositAmount" onchange="autoSaveCommission(${r.id})"></td>
             <td><input type="number" step="0.1" class="inline-input" style="width:55px;text-align:center;" value="${r.rate||0}" data-cf="rate" onchange="autoSaveCommission(${r.id})"></td>
