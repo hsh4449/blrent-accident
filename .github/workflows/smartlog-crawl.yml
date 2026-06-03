@@ -1,0 +1,29 @@
+name: 스마트로그 일일 미러
+
+on:
+  schedule:
+    # 매일 23:30 KST (14:30 UTC). self-healing 으로 최근 14일을 재수집·upsert 하므로
+    # GitHub Actions schedule cron 이 가끔 skip 해도 다음 성공 실행이 자동 backfill.
+    - cron: '30 14 * * *'
+  workflow_dispatch: # 수동 실행
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests supabase
+
+      - name: Run smartlog crawler
+        env:
+          SMLOG_ID: ${{ secrets.SMLOG_ID }}
+          SMLOG_PW: ${{ secrets.SMLOG_PW }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python analytics/smartlog/crawler.py
