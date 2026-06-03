@@ -68,9 +68,9 @@
 </div>
 
 <script>
-// ▼ 설정: 새 Supabase 프로젝트 값으로 채우세요
-const SUPABASE_URL = '__SUPABASE_URL__';
-const SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
+// 공유 blrent Supabase (RLS off, anon r/w)
+const SUPABASE_URL = 'https://jjwsnwnfhqcszwmjdcac.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqd3Nud25maHFjc3p3bWpkY2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTk3NjgsImV4cCI6MjA4NTMzNTc2OH0.8sH1l1fVKEc48qzT6u4qFyUDPZGaLndcYi8si21dtoc';
 
 const ENDPOINT = SUPABASE_URL.replace(/\/+$/,'') + '/rest/v1/ares_analytics';
 const $ = s => document.querySelector(s);
