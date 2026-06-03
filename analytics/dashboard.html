@@ -30,6 +30,8 @@
   .muted { color:var(--sub); }
   #status { padding:40px; text-align:center; color:var(--sub); }
   .err { color:#ff6b6b; }
+  /* Chart.js(maintainAspectRatio:false) 무한 증가 방지: 부모에 고정 높이 */
+  .cbox { position:relative; width:100%; }
   @media (max-width:820px){ .grid,.grid.two{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -51,12 +53,12 @@
   <div id="content" style="display:none;">
     <div class="kpis" id="kpis"></div>
     <div class="grid">
-      <div class="card"><h2>일별 방문 추이 (페이지뷰 / 순방문자)</h2><canvas id="chartDaily" height="110"></canvas></div>
-      <div class="card"><h2>유입경로</h2><canvas id="chartRef" height="220"></canvas></div>
+      <div class="card"><h2>일별 방문 추이 (페이지뷰 / 순방문자)</h2><div class="cbox" style="height:280px"><canvas id="chartDaily"></canvas></div></div>
+      <div class="card"><h2>유입경로</h2><div class="cbox" style="height:280px"><canvas id="chartRef"></canvas></div></div>
     </div>
     <div class="grid two">
-      <div class="card"><h2>기기 비율</h2><canvas id="chartDevice" height="200"></canvas></div>
-      <div class="card"><h2>버튼 전환 (클릭/신청)</h2><canvas id="chartConv" height="200"></canvas></div>
+      <div class="card"><h2>기기 비율</h2><div class="cbox" style="height:240px"><canvas id="chartDevice"></canvas></div></div>
+      <div class="card"><h2>버튼 전환 (클릭/신청)</h2><div class="cbox" style="height:240px"><canvas id="chartConv"></canvas></div></div>
     </div>
     <div class="card">
       <h2>최근 전환 이벤트 (전화·카톡·상담신청)</h2>
