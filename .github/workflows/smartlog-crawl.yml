@@ -2,9 +2,10 @@ name: 스마트로그 일일 미러
 
 on:
   schedule:
-    # 매일 23:30 KST (14:30 UTC). self-healing 으로 최근 14일을 재수집·upsert 하므로
-    # GitHub Actions schedule cron 이 가끔 skip 해도 다음 성공 실행이 자동 backfill.
-    - cron: '30 14 * * *'
+    # 매일 07:30 KST (22:30 UTC). 우리가 스마트로그에 가장 접근 안 하는 시간대라
+    # 크롤러 로그인이 사용자 세션과 겹칠 가능성 최소화.
+    # self-healing 으로 최근 14일을 재수집·upsert 하므로 cron 이 가끔 skip 해도 다음 실행이 자동 backfill.
+    - cron: '30 22 * * *'
   workflow_dispatch: # 수동 실행
 
 jobs:
