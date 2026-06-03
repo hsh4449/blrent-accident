@@ -8,8 +8,8 @@
 (function () {
   'use strict';
 
-  var SUPABASE_URL = '__SUPABASE_URL__';        // 예: https://xxxxxxxx.supabase.co
-  var SUPABASE_ANON_KEY = '__SUPABASE_ANON_KEY__';
+  var SUPABASE_URL = 'https://jjwsnwnfhqcszwmjdcac.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqd3Nud25maHFjc3p3bWpkY2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTk3NjgsImV4cCI6MjA4NTMzNTc2OH0.8sH1l1fVKEc48qzT6u4qFyUDPZGaLndcYi8si21dtoc';
 
   // 설정 전이면 즉시 중단
   if (SUPABASE_URL.indexOf('__') === 0 || SUPABASE_ANON_KEY.indexOf('__') === 0) return;
