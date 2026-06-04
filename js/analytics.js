@@ -14,7 +14,8 @@
   // 설정 전이면 즉시 중단
   if (SUPABASE_URL.indexOf('__') === 0 || SUPABASE_ANON_KEY.indexOf('__') === 0) return;
 
-  var ENDPOINT = SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/ares_analytics';
+  // /track 엣지펑션 경유 — IP·지역(geo)을 서버측에서 부착해 Supabase 저장
+  var ENDPOINT = '/track';
 
   // ---- util: throttle (선언은 호이스팅됨) ----
   function throttle(fn, wait) {
@@ -104,12 +105,7 @@
       fetch(ENDPOINT, {
         method: 'POST',
         keepalive: true, // 페이지 떠날 때도 전송 보장
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-          'Prefer': 'return=minimal'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       }).catch(function () {});
     } catch (e) {}
