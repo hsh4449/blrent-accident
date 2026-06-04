@@ -39,6 +39,8 @@
   .devbar > div { display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700; min-width:0; white-space:nowrap; }
   .devnone { color:var(--sub); font-size:13px; }
   .devmeta { font-size:12px; color:var(--sub); margin-top:2px; }
+  tr.vclick { cursor:pointer; }
+  tr.vclick:hover td { background:#1e222b; }
   @media (max-width:820px){ .grid,.grid.two{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -220,8 +222,8 @@ function render(rows) {
   const vmap = {};
   rows.forEach(r => {
     const id=r.visitor_id; if(!id) return;
-    const v=vmap[id]||(vmap[id]={visits:0,last:r.created_at,dev:r.device,os:r.os,inflow:null,conv:{},ip:null,region:null});
-    if(r.event_type==='pageview') v.visits++;
+    const v=vmap[id]||(vmap[id]={visits:0,last:r.created_at,dev:r.device,os:r.os,inflow:null,conv:{},ip:null,region:null,ev:[]});
+    if(r.event_type==='pageview'){ v.visits++; v.ev.push({t:r.created_at, inflow:inflowOf(r.path,r.referrer_host)}); }
     if(r.created_at>v.last) v.last=r.created_at;
     if(r.device) v.dev=r.device; if(r.os) v.os=r.os;
     if(!v.inflow){ const inf=inflowOf(r.path,r.referrer_host); if(inf) v.inflow=inf; }
@@ -232,9 +234,15 @@ function render(rows) {
   const vlist=Object.values(vmap).sort((a,b)=>a.last<b.last?1:-1).slice(0,80);
   $('#visitors tbody').innerHTML = vlist.length ? vlist.map(v => {
     const conv=Object.keys(v.conv).map(k=>convIco[k]+(v.conv[k]>1?v.conv[k]:'')).join(' ')||'-';
-    const rep=v.visits>=2 ? '<b style="color:#ffb454">'+v.visits+'회</b>' : v.visits+'회';
-    return '<tr><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+(v.inflow||'-')+
+    const repeat=v.visits>=2;
+    const rep=repeat ? '<b style="color:#ffb454">'+v.visits+'회 ▾</b>' : v.visits+'회';
+    const main='<tr class="vrow'+(repeat?' vclick':'')+'"><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+(v.inflow||'-')+
       '</td><td>'+(v.dev||'')+' / '+(v.os||'')+'</td><td>'+conv+'</td><td>'+(v.ip||'—')+'</td><td>'+(v.region||'—')+'</td></tr>';
+    if(!repeat) return main;
+    const times=v.ev.slice().sort((a,b)=>a.t<b.t?1:-1).map((e,i)=>
+      (v.visits-i)+'. '+new Date(e.t).toLocaleString('ko-KR')+(e.inflow?' · '+e.inflow:'')).join('<br>');
+    const detail='<tr class="vdetail" style="display:none"><td colspan="7" style="background:#15171d;color:#9aa0aa;font-size:12px;line-height:1.7">📅 방문 이력 ('+v.visits+'회):<br>'+times+'</td></tr>';
+    return main+detail;
   }).join('') : '<tr><td colspan="7" class="muted">방문자 없음</td></tr>';
 }
 
@@ -257,6 +265,12 @@ async function load() {
 }
 $('#range').addEventListener('change', load);
 $('#refresh').addEventListener('click', load);
+// 중복방문자 행 클릭 → 방문 시각 이력 펼치기/접기
+$('#visitors').addEventListener('click', e => {
+  const tr = e.target.closest('tr.vclick'); if (!tr) return;
+  const d = tr.nextElementSibling;
+  if (d && d.classList.contains('vdetail')) d.style.display = (d.style.display === 'none' ? 'table-row' : 'none');
+});
 load();
 </script>
 </body>
