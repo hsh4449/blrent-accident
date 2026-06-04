@@ -177,15 +177,23 @@ function render(rows) {
   ];
   $('#kpis').innerHTML = kpis.map(k => '<div class="kpi"><div class="label">'+k[0]+'</div><div class="value">'+k[1]+'</div></div>').join('');
 
-  // 일별 추이
+  // 일별 추이 — 재방문자 = 그날 방문자 중 누적 2회 이상 방문(같은 날 재방문 포함)
+  const pvCount = {};   // visitor_id → 전체 기간 방문(페이지뷰) 횟수
+  pv.forEach(r => { if(r.visitor_id) pvCount[r.visitor_id]=(pvCount[r.visitor_id]||0)+1; });
   const byDay = {};
-  pv.forEach(r => { const d = dayKey(r.created_at); (byDay[d] = byDay[d] || {pv:0, v:new Set()}); byDay[d].pv++; if(r.visitor_id) byDay[d].v.add(r.visitor_id); });
+  pv.forEach(r => {
+    const d = dayKey(r.created_at);
+    const b = byDay[d] = byDay[d] || {pv:0, v:new Set(), rv:new Set()};
+    b.pv++;
+    if(r.visitor_id){ b.v.add(r.visitor_id); if(pvCount[r.visitor_id] >= 2) b.rv.add(r.visitor_id); }
+  });
   const days = Object.keys(byDay).sort();
   drawChart('chartDaily', 'line', {
     labels: days,
     datasets: [
       { label:'페이지뷰', data: days.map(d=>byDay[d].pv), borderColor:'#4f8cff', backgroundColor:'rgba(79,140,255,.15)', fill:true, tension:.3 },
-      { label:'순방문자', data: days.map(d=>byDay[d].v.size), borderColor:'#46d39a', backgroundColor:'transparent', tension:.3 }
+      { label:'순방문자', data: days.map(d=>byDay[d].v.size), borderColor:'#46d39a', backgroundColor:'transparent', tension:.3 },
+      { label:'재방문자', data: days.map(d=>byDay[d].rv.size), borderColor:'#ffb454', backgroundColor:'transparent', borderDash:[5,4], tension:.3 }
     ]
   });
 
