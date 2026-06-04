@@ -77,6 +77,13 @@
         <th>시각</th><th>유형</th><th>유입</th><th>기기</th><th>OS</th><th>브라우저</th>
       </tr></thead><tbody></tbody></table></div>
     </div>
+    <div class="card">
+      <h2>방문자 상세 (중복방문 · 유입 · 기기 · IP · 지역)</h2>
+      <div style="overflow-x:auto;"><table id="visitors"><thead><tr>
+        <th>최근 방문</th><th>방문수</th><th>유입 (키워드/경로)</th><th>기기/OS</th><th>전환</th><th>IP</th><th>지역</th>
+      </tr></thead><tbody></tbody></table></div>
+      <p class="muted" style="font-size:12px;margin-top:8px;">방문수 2회 이상 = 중복방문(관심 높음). IP·지역은 수집 장치 적용 후 방문부터 표시됩니다.</p>
+    </div>
   </div>
 </div>
 
@@ -203,6 +210,32 @@ function render(rows) {
     '<tr><td>'+new Date(r.created_at).toLocaleString('ko-KR')+'</td><td>'+(label[r.event_type]||r.event_type)+
     '</td><td>'+(r.utm_source||r.referrer_host||'직접')+'</td><td>'+(r.device||'')+'</td><td>'+(r.os||'')+'</td><td>'+(r.browser||'')+'</td></tr>'
   ).join('') : '<tr><td colspan="6" class="muted">전환 이벤트 없음</td></tr>';
+
+  // 방문자 상세 (중복방문 · 유입 · IP · 지역)
+  function inflowOf(path, ref){
+    if(path){ var m=/[?&]n_keyword=([^&]+)/.exec(path); if(m) return '🔍 '+decodeURIComponent(m[1].replace(/\+/g,' ')); }
+    if(ref){ if(/naver/i.test(ref))return '네이버'; if(/google/i.test(ref))return '구글'; if(/kakao|daum/i.test(ref))return '카카오/다음'; return ref; }
+    return '직접유입';
+  }
+  const vmap = {};
+  rows.forEach(r => {
+    const id=r.visitor_id; if(!id) return;
+    const v=vmap[id]||(vmap[id]={visits:0,last:r.created_at,dev:r.device,os:r.os,inflow:null,conv:{},ip:null,region:null});
+    if(r.event_type==='pageview') v.visits++;
+    if(r.created_at>v.last) v.last=r.created_at;
+    if(r.device) v.dev=r.device; if(r.os) v.os=r.os;
+    if(!v.inflow){ const inf=inflowOf(r.path,r.referrer_host); if(inf) v.inflow=inf; }
+    if(['click_phone','click_kakao','submit_consult'].includes(r.event_type)) v.conv[r.event_type]=(v.conv[r.event_type]||0)+1;
+    const ex=r.extra||{}; if(ex.ip) v.ip=ex.ip; if(ex.region||ex.city) v.region=[ex.region,ex.city].filter(Boolean).join(' ');
+  });
+  const convIco={click_phone:'📞',click_kakao:'💬',submit_consult:'✅'};
+  const vlist=Object.values(vmap).sort((a,b)=>a.last<b.last?1:-1).slice(0,80);
+  $('#visitors tbody').innerHTML = vlist.length ? vlist.map(v => {
+    const conv=Object.keys(v.conv).map(k=>convIco[k]+(v.conv[k]>1?v.conv[k]:'')).join(' ')||'-';
+    const rep=v.visits>=2 ? '<b style="color:#ffb454">'+v.visits+'회</b>' : v.visits+'회';
+    return '<tr><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+(v.inflow||'-')+
+      '</td><td>'+(v.dev||'')+' / '+(v.os||'')+'</td><td>'+conv+'</td><td>'+(v.ip||'—')+'</td><td>'+(v.region||'—')+'</td></tr>';
+  }).join('') : '<tr><td colspan="7" class="muted">방문자 없음</td></tr>';
 }
 
 function drawChart(id, type, data, opts) {
