@@ -125,7 +125,7 @@ function fmtDuration(sec) {
   const m = Math.floor(sec/60), s = sec%60;
   return m ? (m + '분 ' + s + '초') : (s + '초');
 }
-function dayKey(iso){ return iso.slice(0,10); }
+function dayKey(iso){ return kstDate(iso); }   // 일별 추이도 KST 00:00 기준으로 끊음
 
 // 유입 채널 분류 — referrer 없어도 단서(브라우저=Naver, n_keyword)로 네이버를 잡아냄
 function channelOf(r){
