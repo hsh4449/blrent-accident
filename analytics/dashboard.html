@@ -88,7 +88,7 @@
         <select id="vdate"><option value="all">전체 기간</option></select>
       </div>
       <div style="overflow-x:auto;"><table id="visitors"><thead><tr>
-        <th>최근 방문</th><th>방문수</th><th>유입 (키워드/경로)</th><th>기기/OS</th><th>전환</th><th>IP</th><th>지역</th>
+        <th>최근 방문</th><th>방문수</th><th>유입 (키워드/경로)</th><th>기기/OS</th><th>체류</th><th>전환</th><th>IP</th><th>지역</th>
       </tr></thead><tbody></tbody></table></div>
       <p class="muted" style="font-size:12px;margin-top:8px;">방문수 2회 이상 = 중복방문(관심 높음). IP·지역은 수집 장치 적용 후 방문부터 표시됩니다.</p>
     </div>
@@ -272,8 +272,9 @@ function renderVisitors(rows, dateFilter){
   const vmap = {};
   src.forEach(r => {
     const id=r.visitor_id; if(!id) return;
-    const v=vmap[id]||(vmap[id]={visits:0,last:r.created_at,dev:r.device,os:r.os,inflow:null,conv:{},ip:null,region:null,ev:[]});
+    const v=vmap[id]||(vmap[id]={visits:0,last:r.created_at,dev:r.device,os:r.os,inflow:null,conv:{},ip:null,region:null,ev:[],dwell:0});
     if(r.event_type==='pageview'){ v.visits++; v.ev.push({t:r.created_at, inflow:inflowOf(r)}); }
+    if(r.event_type==='page_exit' && r.duration_sec) v.dwell += r.duration_sec;
     if(r.created_at>v.last) v.last=r.created_at;
     if(r.device) v.dev=r.device; if(r.os) v.os=r.os;
     if(r.event_type==='pageview' && !v.inflow){ const inf=inflowOf(r); if(inf) v.inflow=inf; }
@@ -287,13 +288,13 @@ function renderVisitors(rows, dateFilter){
     const repeat=v.visits>=2;
     const rep=repeat ? '<b style="color:#ffb454">'+v.visits+'회 ▾</b>' : v.visits+'회';
     const main='<tr class="vrow'+(repeat?' vclick':'')+'"><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+(v.inflow||'-')+
-      '</td><td>'+(v.dev||'')+' / '+(v.os||'')+'</td><td>'+conv+'</td><td>'+(v.ip||'—')+'</td><td>'+(v.region||'—')+'</td></tr>';
+      '</td><td>'+(v.dev||'')+' / '+(v.os||'')+'</td><td>'+(v.dwell?fmtDuration(v.dwell):'—')+'</td><td>'+conv+'</td><td>'+(v.ip||'—')+'</td><td>'+(v.region||'—')+'</td></tr>';
     if(!repeat) return main;
     const times=v.ev.slice().sort((a,b)=>a.t<b.t?1:-1).map((e,i)=>
       (v.visits-i)+'. '+new Date(e.t).toLocaleString('ko-KR')+(e.inflow?' · '+e.inflow:'')).join('<br>');
-    const detail='<tr class="vdetail" style="display:none"><td colspan="7" style="background:#15171d;color:#9aa0aa;font-size:12px;line-height:1.7">📅 방문 이력 ('+v.visits+'회):<br>'+times+'</td></tr>';
+    const detail='<tr class="vdetail" style="display:none"><td colspan="8" style="background:#15171d;color:#9aa0aa;font-size:12px;line-height:1.7">📅 방문 이력 ('+v.visits+'회):<br>'+times+'</td></tr>';
     return main+detail;
-  }).join('') : '<tr><td colspan="7" class="muted">해당 날짜 방문자 없음</td></tr>';
+  }).join('') : '<tr><td colspan="8" class="muted">해당 날짜 방문자 없음</td></tr>';
 }
 
 function drawChart(id, type, data, opts) {
