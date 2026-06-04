@@ -32,6 +32,13 @@
   .err { color:#ff6b6b; }
   /* Chart.js(maintainAspectRatio:false) 무한 증가 방지: 부모에 고정 높이 */
   .cbox { position:relative; width:100%; }
+  /* 기기별 전환 채널 */
+  .devrow { display:grid; grid-template-columns:96px 1fr; align-items:center; gap:12px; margin:12px 0; }
+  .devrow .dl { font-weight:600; font-size:14px; }
+  .devbar { display:flex; height:30px; border-radius:7px; overflow:hidden; background:#23262e; }
+  .devbar > div { display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700; min-width:0; white-space:nowrap; }
+  .devnone { color:var(--sub); font-size:13px; }
+  .devmeta { font-size:12px; color:var(--sub); margin-top:2px; }
   @media (max-width:820px){ .grid,.grid.two{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -59,6 +66,10 @@
     <div class="grid two">
       <div class="card"><h2>기기 비율</h2><div class="cbox" style="height:240px"><canvas id="chartDevice"></canvas></div></div>
       <div class="card"><h2>버튼 전환 (클릭/신청)</h2><div class="cbox" style="height:240px"><canvas id="chartConv"></canvas></div></div>
+    </div>
+    <div class="card">
+      <h2>기기별 전환 채널 (전화 vs 카톡)</h2>
+      <div id="devConv"></div>
     </div>
     <div class="card">
       <h2>최근 전환 이벤트 (전화·카톡·상담신청)</h2>
@@ -167,6 +178,23 @@ function render(rows) {
     labels:['전화','카톡','상담신청'],
     datasets:[{ data:[phone,kakao,consult], backgroundColor:['#4f8cff','#ffb454','#46d39a'] }]
   }, { plugins:{ legend:{ display:false } } });
+
+  // 기기별 전환 채널 (전화 vs 카톡)
+  const devLabel = { mobile:'📱 모바일', desktop:'💻 데스크톱', tablet:'📲 태블릿' };
+  const devConvHtml = ['mobile','desktop','tablet'].map(dv => {
+    const p = rows.filter(r => r.event_type === 'click_phone' && r.device === dv).length;
+    const k = rows.filter(r => r.event_type === 'click_kakao' && r.device === dv).length;
+    const tot = p + k;
+    const name = devLabel[dv] || dv;
+    if (!tot) return '<div class="devrow"><span class="dl">'+name+'</span><span class="devnone">전화·카톡 전환 없음</span></div>';
+    const pp = Math.round(p/tot*100), kp = 100 - pp;
+    const segs =
+      (p ? '<div style="width:'+pp+'%;background:#4f8cff">전화 '+p+'</div>' : '') +
+      (k ? '<div style="width:'+kp+'%;background:#ffb454">카톡 '+k+'</div>' : '');
+    return '<div class="devrow"><span class="dl">'+name+'</span><div><div class="devbar">'+segs+'</div>'+
+      '<div class="devmeta">전화 '+pp+'% · 카톡 '+kp+'% (합 '+tot+'건)</div></div></div>';
+  }).join('');
+  $('#devConv').innerHTML = devConvHtml;
 
   // 최근 전환 테이블
   const conv = rows.filter(r => ['click_phone','click_kakao','submit_consult'].includes(r.event_type)).slice(0,40);
