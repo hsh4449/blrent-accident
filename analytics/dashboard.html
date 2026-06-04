@@ -149,6 +149,19 @@ function inflowOf(r){
   return ch;
 }
 
+// 지역 영문→한글 (Netlify geo 는 영문만 줌). 미매핑은 접미사만 한글화
+const KO_SIDO = {'Seoul':'서울','Busan':'부산','Incheon':'인천','Daegu':'대구','Daejeon':'대전','Gwangju':'광주','Ulsan':'울산','Sejong':'세종','Gyeonggi-do':'경기','Gangwon-do':'강원','Gangwon':'강원','Chungcheongbuk-do':'충북','Chungcheongnam-do':'충남','Jeollabuk-do':'전북','Jeollanam-do':'전남','Gyeongsangbuk-do':'경북','Gyeongsangnam-do':'경남','Jeju':'제주','Jeju-do':'제주'};
+const KO_GU = {'Jongno-gu':'종로구','Jung-gu':'중구','Yongsan-gu':'용산구','Seongdong-gu':'성동구','Gwangjin-gu':'광진구','Dongdaemun-gu':'동대문구','Jungnang-gu':'중랑구','Seongbuk-gu':'성북구','Gangbuk-gu':'강북구','Dobong-gu':'도봉구','Nowon-gu':'노원구','Eunpyeong-gu':'은평구','Seodaemun-gu':'서대문구','Mapo-gu':'마포구','Yangcheon-gu':'양천구','Gangseo-gu':'강서구','Guro-gu':'구로구','Geumcheon-gu':'금천구','Yeongdeungpo-gu':'영등포구','Dongjak-gu':'동작구','Gwanak-gu':'관악구','Seocho-gu':'서초구','Gangnam-gu':'강남구','Songpa-gu':'송파구','Gangdong-gu':'강동구','Gimpo-si':'김포시','Goyang-si':'고양시','Namyangju-si':'남양주시','Namyangju':'남양주시','Suwon-si':'수원시','Seongnam-si':'성남시','Yongin-si':'용인시','Bucheon-si':'부천시','Ansan-si':'안산시','Anyang-si':'안양시','Pyeongtaek-si':'평택시','Hwaseong-si':'화성시','Uijeongbu-si':'의정부시','Cheonan-si':'천안시','Cheongju-si':'청주시','Jeonju-si':'전주시','Gumi-si':'구미시'};
+function koGeo(region, city){
+  const r = region ? (KO_SIDO[region] || region) : '';
+  let c = '';
+  // 도시명이 시/도명과 같거나(서울/인천 등 광역시) 시/도급이면 중복이라 생략
+  if(city && city !== region && !KO_SIDO[city]){
+    c = KO_GU[city] || city.replace(/-gu$/,'구').replace(/-si$/,'시').replace(/-gun$/,'군');
+  }
+  return [r, c].filter(Boolean).join(' ');
+}
+
 let allRows = [];   // 마지막으로 불러온 전체 rows (방문자 표 날짜필터용)
 
 function render(rows) {
@@ -265,7 +278,7 @@ function renderVisitors(rows, dateFilter){
     if(r.device) v.dev=r.device; if(r.os) v.os=r.os;
     if(r.event_type==='pageview' && !v.inflow){ const inf=inflowOf(r); if(inf) v.inflow=inf; }
     if(['click_phone','click_kakao','submit_consult'].includes(r.event_type)) v.conv[r.event_type]=(v.conv[r.event_type]||0)+1;
-    const ex=r.extra||{}; if(ex.ip) v.ip=ex.ip; if(ex.region||ex.city) v.region=[ex.region,ex.city].filter(Boolean).join(' ');
+    const ex=r.extra||{}; if(ex.ip) v.ip=ex.ip; const g=koGeo(ex.region,ex.city); if(g) v.region=g;
   });
   const convIco={click_phone:'📞',click_kakao:'💬',submit_consult:'✅'};
   const vlist=Object.values(vmap).sort((a,b)=>a.last<b.last?1:-1).slice(0,200);
