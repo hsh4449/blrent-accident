@@ -133,6 +133,16 @@ def collect(s, today):
     for row in ((ref or {}).get('list') or []):
         dimension.append(_dim_row(snap, 'referrer', row.get('url'), row))
 
+    # 방문 집중 — 요일(get_time) + 시간대(get_time type=hour)
+    wk, params = call_log_api(s, 'get_time', start, today)
+    archive('log_api', 'get_time:weekday', params, wk)
+    for row in ((wk or {}).get('list') or []):
+        dimension.append(_dim_row(snap, 'weekday', row.get('dayofweek'), row))
+    hr, params = call_log_api(s, 'get_time', start, today, type='hour')
+    archive('log_api', 'get_time:hour', params, hr)
+    for row in ((hr or {}).get('list') or []):
+        dimension.append(_dim_row(snap, 'hour', row.get('hour'), row))
+
     # 4) 그 외 dashboard 지표는 원본 아카이브만 (대시보드에서 raw 조회)
     for m in ['dailyCount', 'networkVisitLast30day', 'totalCodeVisitLast30day',
               'itypeConversion', 'adVisitByItype', 'getNaverAdBid']:
