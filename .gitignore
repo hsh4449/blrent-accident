@@ -31,3 +31,9 @@ build/
 # 임시 파일
 *.tmp
 .cache/
+
+# Local Netlify folder
+.netlify
+
+# Claude Code 로컬 설정
+.claude/
