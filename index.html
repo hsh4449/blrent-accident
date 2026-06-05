@@ -138,6 +138,42 @@
         </div>
     </section>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">
+                사고대차 1위 업체
+            </h1>
+            <p class="hero-description">사고 후 걱정 없는 이동,<br><span class="hero-line2">오늘도 <span id="heroCount" style="color:#FF6B00;font-weight:800;">000명</span>의 고객님께서 함께 해주셨습니다</span></p>
+            
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="customer-count">68,661+</div>
+                    <div class="stat-label">누적 고객</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1시간 30분</div>
+                    <div class="stat-label">평균 배차시간</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24시간</div>
+                    <div class="stat-label">연중무휴 상담</div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+      /* Hero 함께한 인원수: 날짜 기반으로 매일 1회 결정(132~224), 하루 고정 */
+      (function(){
+        var d=new Date();
+        var seed=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+        var x=Math.sin(seed)*10000; x=x-Math.floor(x);
+        var n=132+Math.floor(x*93); /* 132~224 */
+        var el=document.getElementById('heroCount');
+        if(el) el.textContent=n.toLocaleString()+'명';
+      })();
+    </script>
+
     <!-- 6월 한정 이벤트 배너 (토글) -->
     <section class="evt-section">
       <style>
@@ -167,7 +203,7 @@
         }
         .evt-panel{ background:#fff; max-height:0; overflow:hidden; opacity:0; transition:max-height .5s ease, opacity .4s ease; }
         .evt-section.open .evt-panel{ max-height:2200px; opacity:1; }
-        .evt-card{ width:100%; background:#fff; overflow:hidden; }
+        .evt-card{ width:100%; background:#fff; overflow:hidden; margin-top:14px; }
         .evt-hero img{ width:100%; display:block; }
         .evt-inner{ max-width:1200px; margin:0 auto; padding:26px 16px 36px; }
         .evt-benefits{ display:flex; gap:16px; flex-wrap:wrap; }
@@ -204,7 +240,11 @@
             <div class="evt-b">
               <div class="top"><span class="num">2</span><span class="name">지인추천 1+1</span></div>
               <div class="big">3만 + 3만 <small>(총 6만원 주유상품권)</small></div>
-              <ul><li>· 추천한 분, 추천받은 분 모두 지급</li><li>· 추천받은 지인 6일 이상 이용 시</li></ul>
+              <ul>
+                <li>· 추천한 분 <b style="color:#F26522">3만원</b> 지급</li>
+                <li>· 추천받은 분 <b style="color:#F26522">3만원</b> 지급</li>
+                <li>· 추천받은 지인 6일 이상 이용 시</li>
+              </ul>
             </div>
           </div>
           <div class="evt-cta"><button type="button" onclick="document.getElementById('consultForm').scrollIntoView({behavior:'smooth'})">사고대차 상담 신청하기</button></div>
@@ -221,31 +261,6 @@
           </div><!-- /.evt-inner -->
         </div>
       </div>
-    </section>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1 class="hero-title">
-                사고대차 1위 업체
-            </h1>
-            <p class="hero-description">사고 후 걱정 없는 이동,<br>아레스렌트카가 함께합니다</p>
-            
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-number" id="customer-count">68,661+</div>
-                    <div class="stat-label">누적 고객</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">1시간 30분</div>
-                    <div class="stat-label">평균 배차시간</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">24시간</div>
-                    <div class="stat-label">연중무휴 상담</div>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- Service Cards -->

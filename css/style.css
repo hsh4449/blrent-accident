@@ -303,6 +303,12 @@ body {
     line-height: 1.6;
     margin-bottom: var(--spacing-xl);
 }
+/* '오늘도 N명의 고객님께서...' 한 줄 유지: 화면 폭에 맞춰 폰트 자동 축소 */
+.hero-line2 {
+    white-space: nowrap;
+    display: inline-block;
+    font-size: clamp(12px, 3.8vw, var(--font-lg));
+}
 
 .hero-stats {
     display: grid;
