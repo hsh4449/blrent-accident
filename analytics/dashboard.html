@@ -42,6 +42,11 @@
   tr.vclick { cursor:pointer; }
   tr.vclick:hover td { background:#1e222b; }
   @media (max-width:820px){ .grid,.grid.two{ grid-template-columns:1fr; } }
+  /* 탭 */
+  .tabs { display:flex; gap:4px; margin-bottom:18px; border-bottom:1px solid var(--line); }
+  .tabbtn { background:transparent; color:var(--sub); border:none; border-bottom:2px solid transparent; padding:11px 18px; font-size:14.5px; font-weight:700; cursor:pointer; }
+  .tabbtn.active { color:var(--accent); border-bottom-color:var(--accent); }
+  #adframe { width:100%; border:0; min-height:600px; background:transparent; display:block; }
 </style>
 </head>
 <body>
@@ -58,6 +63,11 @@
 </header>
 
 <div class="wrap">
+  <div class="tabs">
+    <button class="tabbtn active" data-tab="visit">방문 분석</button>
+    <button class="tabbtn" data-tab="ad">광고 분석 (스마트로그)</button>
+  </div>
+  <div id="tab-visit">
   <div id="status">불러오는 중…</div>
   <div id="content" style="display:none;">
     <div class="kpis" id="kpis"></div>
@@ -92,6 +102,10 @@
       </tr></thead><tbody></tbody></table></div>
       <p class="muted" style="font-size:12px;margin-top:8px;">방문수 2회 이상 = 중복방문(관심 높음). IP·지역은 수집 장치 적용 후 방문부터 표시됩니다.</p>
     </div>
+  </div><!-- /#content -->
+  </div><!-- /#tab-visit -->
+  <div id="tab-ad" style="display:none;">
+    <iframe id="adframe" title="광고 분석 (스마트로그)"></iframe>
   </div>
 </div>
 
@@ -322,6 +336,18 @@ $('#visitors').addEventListener('click', e => {
   const tr = e.target.closest('tr.vclick'); if (!tr) return;
   const d = tr.nextElementSibling;
   if (d && d.classList.contains('vdetail')) d.style.display = (d.style.display === 'none' ? 'table-row' : 'none');
+});
+// 탭 전환 (방문 분석 / 광고 분석) — 광고 탭은 smartlog 대시보드를 iframe 으로 임베드(첫 클릭 시 로드)
+document.querySelectorAll('.tabbtn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabbtn').forEach(x => x.classList.remove('active'));
+  b.classList.add('active');
+  const ad = b.dataset.tab === 'ad';
+  $('#tab-visit').style.display = ad ? 'none' : 'block';
+  $('#tab-ad').style.display = ad ? 'block' : 'none';
+  if (ad) { const f = $('#adframe'); if (!f.getAttribute('src')) f.src = 'smartlog-dashboard.html?embed=1'; }
+}));
+window.addEventListener('message', e => {
+  if (e.data && e.data.type === 'adheight') { const f = $('#adframe'); if (f) f.style.height = (e.data.h + 12) + 'px'; }
 });
 load();
 </script>
