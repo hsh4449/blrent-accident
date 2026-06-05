@@ -140,17 +140,22 @@
         @keyframes evtGlow {0%,100%{box-shadow:0 8px 24px rgba(242,101,34,.35);}50%{box-shadow:0 10px 34px rgba(242,101,34,.6),0 0 22px rgba(242,101,34,.35);}}
         @keyframes evtShine {0%{transform:translateX(-120%) skewX(-20deg);}55%,100%{transform:translateX(320%) skewX(-20deg);}}
         @keyframes evtTri {0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
-        .evt-btn{ position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
-          border:none; cursor:pointer; border-radius:16px; padding:18px 22px; color:#fff; font-size:18px; font-weight:800; letter-spacing:-.3px;
+        .evt-btn{ position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+          border:none; cursor:pointer; border-radius:14px; padding:15px 18px; color:#fff; font-size:16.5px; font-weight:800; letter-spacing:-.3px;
           background:linear-gradient(100deg,#D9531A,#F26522,#FF8A4C,#F26522,#D9531A); background-size:200% auto;
-          animation:evtGradient 4s linear infinite, evtGlow 2.4s ease-in-out infinite; }
+          animation:evtGradient 4s linear infinite, evtGlow 2.6s ease-in-out infinite; }
         .evt-btn:active{ transform:scale(.98); }
         .evt-shine{ position:absolute; top:0; left:0; width:40%; height:100%; pointer-events:none;
-          background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent); animation:evtShine 3.2s ease-in-out infinite; }
-        .evt-tri{ display:inline-block; width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #fff; animation:evtTri 1.3s ease-in-out infinite; }
-        .evt-tris{ position:relative; display:inline-flex; gap:5px; transition:transform .3s ease; }
+          background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); animation:evtShine 3.4s ease-in-out infinite; }
+        .evt-tri{ display:inline-block; width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:8px solid #fff; animation:evtTri 1.3s ease-in-out infinite; }
+        .evt-tris{ position:relative; display:inline-flex; gap:4px; flex-shrink:0; transition:transform .3s ease; }
         .evt-section.open .evt-tris{ transform:rotate(180deg); }
-        .evt-label{ position:relative; }
+        .evt-label{ position:relative; word-break:keep-all; line-height:1.3; }
+        @media (max-width:520px){
+          .evt-btn{ font-size:15px; padding:13px 12px; gap:7px; border-radius:13px; }
+          .evt-tris{ gap:3px; }
+          .evt-tri{ border-left:4px solid transparent; border-right:4px solid transparent; border-top:7px solid #fff; }
+        }
         .evt-panel{ max-height:0; overflow:hidden; opacity:0; transition:max-height .5s ease, opacity .4s ease; }
         .evt-section.open .evt-panel{ max-height:1600px; opacity:1; }
         .evt-card{ margin-top:18px; background:#fff; border:1px solid #ffe2d2; border-radius:16px; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,.06); }
