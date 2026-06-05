@@ -132,6 +132,80 @@
         </div>
     </section>
 
+    <!-- 6월 한정 이벤트 배너 (토글) -->
+    <section class="evt-section">
+      <style>
+        .evt-section{ max-width:680px; margin:18px auto 0; padding:0 16px; }
+        @keyframes evtGradient {0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
+        @keyframes evtGlow {0%,100%{box-shadow:0 8px 24px rgba(242,101,34,.35);}50%{box-shadow:0 10px 34px rgba(242,101,34,.6),0 0 22px rgba(242,101,34,.35);}}
+        @keyframes evtShine {0%{transform:translateX(-120%) skewX(-20deg);}55%,100%{transform:translateX(320%) skewX(-20deg);}}
+        @keyframes evtTri {0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
+        .evt-btn{ position:relative; overflow:hidden; width:100%; display:flex; align-items:center; justify-content:center; gap:12px;
+          border:none; cursor:pointer; border-radius:16px; padding:18px 22px; color:#fff; font-size:18px; font-weight:800; letter-spacing:-.3px;
+          background:linear-gradient(100deg,#D9531A,#F26522,#FF8A4C,#F26522,#D9531A); background-size:200% auto;
+          animation:evtGradient 4s linear infinite, evtGlow 2.4s ease-in-out infinite; }
+        .evt-btn:active{ transform:scale(.98); }
+        .evt-shine{ position:absolute; top:0; left:0; width:40%; height:100%; pointer-events:none;
+          background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent); animation:evtShine 3.2s ease-in-out infinite; }
+        .evt-tri{ display:inline-block; width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:9px solid #fff; animation:evtTri 1.3s ease-in-out infinite; }
+        .evt-tris{ position:relative; display:inline-flex; gap:5px; transition:transform .3s ease; }
+        .evt-section.open .evt-tris{ transform:rotate(180deg); }
+        .evt-label{ position:relative; }
+        .evt-panel{ max-height:0; overflow:hidden; opacity:0; transition:max-height .5s ease, opacity .4s ease; }
+        .evt-section.open .evt-panel{ max-height:1600px; opacity:1; }
+        .evt-card{ margin-top:18px; background:#fff; border:1px solid #ffe2d2; border-radius:16px; overflow:hidden; box-shadow:0 4px 18px rgba(0,0,0,.06); }
+        .evt-hero img{ width:100%; display:block; }
+        .evt-benefits{ display:flex; gap:14px; padding:20px; flex-wrap:wrap; }
+        .evt-b{ flex:1; min-width:220px; border:1px solid #f0f0f0; border-radius:12px; padding:18px; }
+        .evt-b .top{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+        .evt-b .num{ width:24px; height:24px; border-radius:50%; background:#F26522; color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+        .evt-b .name{ font-weight:800; color:#1a1a1a; }
+        .evt-b .big{ font-size:28px; font-weight:800; color:#1a1a1a; }
+        .evt-b .big small{ font-size:15px; font-weight:700; color:#888; }
+        .evt-b ul{ margin:12px 0 0; padding:0; list-style:none; color:#888; font-size:13px; line-height:1.7; }
+        .evt-cta{ padding:0 20px 22px; }
+        .evt-cta button{ width:100%; border:none; cursor:pointer; border-radius:12px; padding:16px; background:#F26522; color:#fff; font-size:16px; font-weight:800; }
+        .evt-cta button:hover{ opacity:.92; }
+        .evt-note{ background:#f7f7f7; border-top:1px solid #eee; padding:18px 22px; }
+        .evt-note p{ margin:0 0 8px; font-size:12px; font-weight:800; color:#555; }
+        .evt-note ol{ margin:0; padding-left:18px; color:#9a9a9a; font-size:11px; line-height:1.7; }
+      </style>
+      <button class="evt-btn" type="button" onclick="this.closest('.evt-section').classList.toggle('open')">
+        <span class="evt-shine"></span>
+        <span class="evt-tris"><span class="evt-tri"></span><span class="evt-tri" style="animation-delay:.13s"></span><span class="evt-tri" style="animation-delay:.26s"></span></span>
+        <span class="evt-label">아레스렌트카 이벤트 확인하기</span>
+        <span class="evt-tris"><span class="evt-tri" style="animation-delay:.26s"></span><span class="evt-tri" style="animation-delay:.13s"></span><span class="evt-tri"></span></span>
+      </button>
+      <div class="evt-panel">
+        <div class="evt-card">
+          <div class="evt-hero"><img src="img/event-jun-fuel.jpg" alt="6월 한정 이벤트 - 사고대차 이용하고 주유비 최대 6만원 받기" loading="lazy"></div>
+          <div class="evt-benefits">
+            <div class="evt-b">
+              <div class="top"><span class="num">1</span><span class="name">주유비 지원</span></div>
+              <div class="big">5만원 <small>주유상품권</small></div>
+              <ul><li>· 2,400cc 이상 차량 사고대차 이용</li><li>· 6일 이상 이용 시 지급</li></ul>
+            </div>
+            <div class="evt-b">
+              <div class="top"><span class="num">2</span><span class="name">지인추천 1+1</span></div>
+              <div class="big">3만 + 3만 <small>(총 6만원)</small></div>
+              <ul><li>· 추천한 분, 추천받은 분 모두 지급</li><li>· 추천받은 지인 6일 이상 이용 시</li></ul>
+            </div>
+          </div>
+          <div class="evt-cta"><button type="button" onclick="document.getElementById('consultForm').scrollIntoView({behavior:'smooth'})">사고대차 상담 신청하기</button></div>
+          <div class="evt-note">
+            <p>꼭 확인해 주세요</p>
+            <ol>
+              <li>본 혜택은 2026년 6월 30일까지 신규 대차 건에 한해 적용됩니다.</li>
+              <li>아레스렌트카 사고대차 이용 고객에 한해 적용됩니다.</li>
+              <li>주유상품권은 정상 대차 완료(반납) 확인 후 지급됩니다.</li>
+              <li>지인추천 지원은 추천받은 지인의 정상 대차 완료 확인 후 양측에 지급됩니다.</li>
+              <li>재고 상황에 따라 상품권 종류가 변경되거나 조기 종료될 수 있습니다.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
