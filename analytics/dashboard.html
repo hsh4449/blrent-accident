@@ -47,11 +47,14 @@
   .tabbtn { background:transparent; color:var(--sub); border:none; border-bottom:2px solid transparent; padding:11px 18px; font-size:14.5px; font-weight:700; cursor:pointer; }
   .tabbtn.active { color:var(--accent); border-bottom-color:var(--accent); }
   #adframe { width:100%; border:0; min-height:600px; background:transparent; display:block; }
+  .gohome { background:var(--accent); color:#fff; text-decoration:none; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:700; white-space:nowrap; }
+  .gohome:hover { filter:brightness(1.1); }
 </style>
 </head>
 <body>
 <header>
   <h1>📊 아레스렌트카 방문 분석</h1>
+  <a class="gohome" href="/" target="_blank" rel="noopener">🏠 아레스렌트카 사이트</a>
   <span class="spacer"></span>
   <select id="range">
     <option value="1">오늘</option>
