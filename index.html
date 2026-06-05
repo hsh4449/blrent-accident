@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
+
+    <!-- 파비콘 (ARES 로고) — 브라우저 탭/검색결과 아이콘 -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="192x192" href="/img/favicon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+
     <!-- ========================================
          2번의 SEO 최적화 메타태그 (그대로 유지)
     ======================================== -->
@@ -159,22 +165,23 @@
           .evt-btn{ font-size:15px; padding:14px 12px; gap:8px; }
           .evt-chev{ font-size:13px; }
         }
-        .evt-panel{ background:#f8f9fa; padding:0 16px; max-height:0; overflow:hidden; opacity:0; transition:max-height .5s ease, opacity .4s ease; }
-        .evt-section.open .evt-panel{ max-height:1600px; opacity:1; }
-        .evt-card{ max-width:820px; margin:30px auto 36px; background:#fff; border:1px solid #ffe2d2; border-radius:16px; overflow:hidden; box-shadow:0 6px 22px rgba(0,0,0,.07); }
+        .evt-panel{ background:#fff; max-height:0; overflow:hidden; opacity:0; transition:max-height .5s ease, opacity .4s ease; }
+        .evt-section.open .evt-panel{ max-height:2200px; opacity:1; }
+        .evt-card{ width:100%; background:#fff; overflow:hidden; }
         .evt-hero img{ width:100%; display:block; }
-        .evt-benefits{ display:flex; gap:14px; padding:20px; flex-wrap:wrap; }
-        .evt-b{ flex:1; min-width:220px; border:1px solid #f0f0f0; border-radius:12px; padding:18px; }
+        .evt-inner{ max-width:1200px; margin:0 auto; padding:26px 16px 36px; }
+        .evt-benefits{ display:flex; gap:16px; flex-wrap:wrap; }
+        .evt-b{ flex:1; min-width:240px; border:1px solid #eee; border-radius:12px; padding:20px; background:#fafafa; }
         .evt-b .top{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
         .evt-b .num{ width:24px; height:24px; border-radius:50%; background:#F26522; color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
         .evt-b .name{ font-weight:800; color:#1a1a1a; }
         .evt-b .big{ font-size:28px; font-weight:800; color:#1a1a1a; }
         .evt-b .big small{ font-size:15px; font-weight:700; color:#888; }
         .evt-b ul{ margin:12px 0 0; padding:0; list-style:none; color:#888; font-size:13px; line-height:1.7; }
-        .evt-cta{ padding:0 20px 22px; }
+        .evt-cta{ padding:18px 0 0; }
         .evt-cta button{ width:100%; border:none; cursor:pointer; border-radius:12px; padding:16px; background:#F26522; color:#fff; font-size:16px; font-weight:800; }
         .evt-cta button:hover{ opacity:.92; }
-        .evt-note{ background:#f7f7f7; border-top:1px solid #eee; padding:18px 22px; }
+        .evt-note{ background:#f7f7f7; border:1px solid #eee; border-radius:12px; padding:18px 20px; margin-top:20px; }
         .evt-note p{ margin:0 0 8px; font-size:12px; font-weight:800; color:#555; }
         .evt-note ol{ margin:0; padding-left:18px; color:#9a9a9a; font-size:11px; line-height:1.7; }
       </style>
@@ -187,6 +194,7 @@
       <div class="evt-panel">
         <div class="evt-card">
           <div class="evt-hero"><img src="img/event-jun-fuel.jpg" alt="6월 한정 이벤트 - 사고대차 이용하고 주유비 최대 6만원 받기" loading="lazy"></div>
+          <div class="evt-inner">
           <div class="evt-benefits">
             <div class="evt-b">
               <div class="top"><span class="num">1</span><span class="name">주유비 지원</span></div>
@@ -210,6 +218,7 @@
               <li>재고 상황에 따라 상품권 종류가 변경되거나 조기 종료될 수 있습니다.</li>
             </ol>
           </div>
+          </div><!-- /.evt-inner -->
         </div>
       </div>
     </section>
