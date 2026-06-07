@@ -134,8 +134,9 @@
     var a = e.target.closest && e.target.closest('a');
     if (!a) return;
     var href = a.getAttribute('href') || '';
-    if (href.indexOf('tel:') === 0) send({ event_type: 'click_phone', extra: { href: href } });
-    else if (href.indexOf('kakao.com') !== -1) send({ event_type: 'click_kakao', extra: { href: href } });
+    var cta = a.getAttribute('data-cta') || null;
+    if (href.indexOf('tel:') === 0) send({ event_type: 'click_phone', extra: { href: href, cta: cta } });
+    else if (href.indexOf('kakao.com') !== -1) send({ event_type: 'click_kakao', extra: { href: href, cta: cta } });
   }, true);
 
   // ---- 4) 상담신청 폼 제출 ----

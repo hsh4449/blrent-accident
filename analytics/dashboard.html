@@ -88,6 +88,11 @@
       <div id="devConv"></div>
     </div>
     <div class="card">
+      <h2>버튼별 전화 전환 비교 (이벤트배너 vs 연락처 vs 고정버튼)</h2>
+      <div id="ctaConv"></div>
+      <p class="muted" style="font-size:12px;margin-top:8px;">전환율 = 해당 버튼 전화클릭 ÷ 순방문자. 꼬리표(data-cta) 적용 후 발생한 클릭만 구분됩니다. 그 이전 클릭은 <b>미분류</b>로 표시됩니다.</p>
+    </div>
+    <div class="card">
       <h2>최근 전환 이벤트 (전화·카톡·상담신청)</h2>
       <div style="overflow-x:auto;"><table id="recent"><thead><tr>
         <th>시각</th><th>유형</th><th>유입</th><th>기기</th><th>OS</th><th>브라우저</th>
@@ -265,6 +270,28 @@ function render(rows) {
       '<div class="devmeta">전화 '+pp+'% · 카톡 '+kp+'% (합 '+tot+'건)</div></div></div>';
   }).join('');
   $('#devConv').innerHTML = devConvHtml;
+
+  // 버튼별 전화 전환 비교 — extra.cta 로 구분
+  const ctaLabel = { 'evt-banner':'🎁 이벤트 배너', 'contact':'📍 연락처 섹션', 'fixed':'📌 고정 하단버튼' };
+  const ctaColor = { 'evt-banner':'#ff6b6b', 'contact':'#4f8cff', 'fixed':'#46d39a', '미분류':'#94a3b8' };
+  const phoneRows = rows.filter(r => r.event_type === 'click_phone');
+  const ctaCount = {};
+  phoneRows.forEach(r => { const c = (r.extra && r.extra.cta) || '미분류'; ctaCount[c] = (ctaCount[c]||0)+1; });
+  const order = ['evt-banner','contact','fixed'].filter(c => ctaCount[c]);
+  if (ctaCount['미분류']) order.push('미분류');
+  const vcount = visitors.size || 0;
+  const maxCta = Math.max(1, ...Object.values(ctaCount));
+  const ctaHtml = order.length ? order.map(c => {
+    const n = ctaCount[c];
+    const name = ctaLabel[c] || c;
+    const rate = vcount ? (n/vcount*100).toFixed(1) : '0';
+    const w = Math.round(n/maxCta*100);
+    const col = ctaColor[c] || '#94a3b8';
+    return '<div class="devrow"><span class="dl">'+name+'</span><div>'+
+      '<div class="devbar"><div style="width:'+w+'%;background:'+col+'">'+n+'건</div></div>'+
+      '<div class="devmeta">전화클릭 '+n+'건 · 방문자대비 '+rate+'%</div></div></div>';
+  }).join('') : '<div class="devrow"><span class="devnone">아직 전화 클릭이 없습니다.</span></div>';
+  $('#ctaConv').innerHTML = ctaHtml;
 
   // 최근 전환 테이블
   const conv = rows.filter(r => ['click_phone','click_kakao','submit_consult'].includes(r.event_type)).slice(0,40);
