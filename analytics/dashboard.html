@@ -55,6 +55,9 @@
   .dayarrow:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
   .dayarrow:disabled { opacity:.3; cursor:default; }
   #dayLabel { text-align:center; font-size:13px; color:var(--sub); margin-bottom:8px; font-weight:600; }
+  /* 정렬 가능한 표 헤더 */
+  table.sortable thead th { cursor:pointer; user-select:none; }
+  table.sortable thead th:hover { color:var(--accent); }
 </style>
 </head>
 <body>
@@ -126,8 +129,8 @@
     </div>
     <div class="card">
       <h2>🔑 키워드별 전환 (어떤 검색어가 전화·카톡을 부르나)</h2>
-      <div style="overflow-x:auto;"><table id="kwconv"><thead><tr>
-        <th>키워드</th><th>유입(클릭)</th><th>순방문</th><th>📞 전화</th><th>💬 카톡</th><th>✅ 상담</th><th>전환율</th>
+      <div style="overflow-x:auto;"><table id="kwconv" class="sortable"><thead><tr>
+        <th data-k="k">키워드</th><th data-k="clicks">유입(클릭)</th><th data-k="uv">순방문</th><th data-k="phone">📞 전화</th><th data-k="kakao">💬 카톡</th><th data-k="consult">✅ 상담</th><th data-k="rate">전환율</th>
       </tr></thead><tbody></tbody></table></div>
       <p class="muted" style="font-size:12px;margin-top:8px;line-height:1.6;">
         네이버 검색광고 키워드(<b>n_keyword</b>)별 집계. 📞·💬·✅ 는 <b>클릭 횟수</b>(한 사람이 여러 번 누르면 합산).
@@ -145,7 +148,9 @@
       <div style="overflow-x:auto;"><table id="visitors"><thead><tr>
         <th>최근 방문</th><th>방문수</th><th>유입 (키워드/경로)</th><th>기기/OS</th><th>체류</th><th>전환</th><th>IP</th><th>지역</th><th>유형</th>
       </tr></thead><tbody></tbody></table></div>
-      <p class="muted" style="font-size:12px;margin-top:8px;">방문수 2회 이상 = 중복방문(관심 높음). IP·지역은 수집 장치 적용 후 방문부터 표시됩니다.</p>
+      <p class="muted" style="font-size:12px;margin-top:8px;line-height:1.7;">방문수 2회 이상 = 중복방문(관심 높음). IP·지역은 수집 장치 적용 후 방문부터 표시.<br>
+        <b>유형</b> — 📱<b>KT·SKT·LG U+</b> = 통신사(정상 고객) · 👤일반 = 기타 정상 ISP · <b style="color:#ff6b6b">🛡VPN의심</b> = 우회접속(주의) · 🤖봇 = 데이터센터/네이버봇 · 🏢내부 = 우리.
+        대부분 정상이라 비슷하게 보이는 게 정상이고, <b>VPN·봇이 들어오면 여기서 바로 빨갛게/구분되어 뜹니다.</b></p>
     </div>
   </div><!-- /#content -->
   </div><!-- /#tab-visit -->
@@ -205,21 +210,34 @@ function isNaverBot(ip){
   return !!(d && /naver|nhn/i.test(d.org||''));                       // API org 기반 보강
 }
 
-// IP 분류 → 아이콘/라벨/제외여부.  네이버봇·데이터센터·내부 = 제외, VPN·통신사·ISP = 표시
+// ASN 회사명 → 한국 통신사 한글명 (ipapi.is is_mobile 이 한국 통신사를 잘 못 잡아서 org 로 직접 판별)
+function carrierOf(org){
+  const o=org||'';
+  if(/korea telecom|\bKT\b|kt corp/i.test(o)) return 'KT';
+  if(/sk ?telecom|sktelecom/i.test(o)) return 'SKT';
+  if(/sk ?broadband|skbroadband/i.test(o)) return 'SK브로드밴드';
+  if(/lg ?u\+|lguplus|uplus|dacom|powercomm/i.test(o)) return 'LG U+';
+  return null;
+}
+// IP 분류 → 아이콘/라벨/제외여부.  네이버봇·데이터센터·내부 = 제외, VPN·통신사·일반 = 표시
 function classifyIp(ip){
   if (INTERNAL_IPS.has(ip)) return { icon:'🏢', label:'내부(우리)', excl:true, org:'우리 사무실' };
   if (isNaverBot(ip))       return { icon:'🤖', label:'네이버봇',    excl:true, org:'NAVER Cloud' };
   const d = ip && ipIntel[ip];
   if (!d) return { icon:'', label:'', excl:false, org:'' };
-  if (d.dc)                  return { icon:'🤖', label:'데이터센터/봇', excl:true,  org:d.org };
-  if (d.vpn||d.proxy||d.tor) return { icon:'🛡', label:'VPN/프록시',    excl:false, org:d.org };
-  if (d.mobile)              return { icon:'📱', label:'통신사',         excl:false, org:d.org };
-  return                            { icon:'🏠', label:'ISP',           excl:false, org:d.org };
+  if (d.dc)                  return { icon:'🤖', label:'데이터센터',  excl:true,  org:d.org };
+  if (d.vpn||d.proxy||d.tor) return { icon:'🛡', label:'VPN의심',     excl:false, org:d.org };
+  const car = carrierOf(d.org);
+  if (car)                   return { icon:'📱', label:car,           excl:false, org:d.org };
+  if (d.mobile)              return { icon:'📱', label:'통신사',       excl:false, org:d.org };
+  return                            { icon:'👤', label:'일반',         excl:false, org:d.org };
 }
 function ipExcluded(r){ const ip=(r.extra||{}).ip; return ip ? classifyIp(ip).excl : false; }
 let viewRows = [];     // 제외필터 적용된 현재 보기 rows (핸들러 공유)
 let dayCursor = 'all'; // 'all' 또는 'YYYY-MM-DD'(KST) — 일자 이동 화살표
 let availDays = [];    // 현재 보기의 가용 일자(내림차순)
+let kwList = [];                       // 키워드별 전환 집계 결과
+let kwSort = { key:'clicks', dir:-1 }; // 키워드표 정렬 상태(dir -1=내림차순, 1=오름차순)
 
 function setStatus(msg, isErr) {
   const el = $('#status');
@@ -447,12 +465,24 @@ function renderKeyword(rows){
     const k=kwByVid[r.visitor_id] || kwOf(r); if(!k || !agg[k]) return;
     agg[k][t]++; if(r.visitor_id) agg[k].convVids.add(r.visitor_id);
   });
-  const list=Object.entries(agg).map(([k,a])=>{
+  kwList=Object.entries(agg).map(([k,a])=>{
     const conv=a.phone+a.kakao+a.consult;
     // 전환율 = 전환한 순방문자 ÷ 순방문자 (0~100%). 📞·💬·✅ 컬럼은 클릭 횟수
     return {k,clicks:a.clicks,uv:a.vids.size,phone:a.phone,kakao:a.kakao,consult:a.consult,conv,rate:a.vids.size?a.convVids.size/a.vids.size*100:0};
-  }).sort((x,y)=>y.clicks-x.clicks);
-  $('#kwconv tbody').innerHTML = list.length ? list.map(r=>{
+  });
+  renderKwTable();
+}
+// 키워드 표 정렬 + 렌더 (헤더 클릭으로 오름/내림 전환, kwSort 상태 사용)
+function renderKwTable(){
+  const {key,dir}=kwSort;
+  kwList.sort((a,b)=> key==='k'
+    ? dir*String(a.k).localeCompare(String(b.k),'ko')
+    : dir*((a[key]||0)-(b[key]||0)));
+  document.querySelectorAll('#kwconv thead th').forEach(th=>{
+    if(!th.dataset.base) th.dataset.base=th.textContent;
+    th.textContent=th.dataset.base+(th.dataset.k===key?(dir<0?' ▼':' ▲'):'');
+  });
+  $('#kwconv tbody').innerHTML = kwList.length ? kwList.map(r=>{
     const rateCol=r.conv?'#46d39a':'#9aa0aa';
     return '<tr><td><b>'+esc(r.k)+'</b></td><td>'+r.clicks+'</td><td>'+r.uv+'</td>'+
       '<td>'+(r.phone||'-')+'</td><td>'+(r.kakao||'-')+'</td><td>'+(r.consult||'-')+'</td>'+
@@ -530,7 +560,8 @@ function renderVisitors(rows, dateFilter){
     const repeat=v.visits>=2;
     const rep=repeat ? '<b style="color:#ffb454">'+v.visits+'회 ▾</b>' : v.visits+'회';
     const cls=v.ip?classifyIp(v.ip):{icon:'',label:''};
-    const typ=cls.label?(cls.icon+' '+cls.label):'—';
+    let typ=cls.label?(cls.icon+' '+esc(cls.label)):'—';
+    if(cls.icon==='🛡') typ='<b style="color:#ff6b6b">'+typ+'</b>';   // VPN의심 강조
     const main='<tr class="vrow'+(repeat?' vclick':'')+'"><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+esc(v.inflow||'-')+
       '</td><td>'+esc((v.dev||'')+' / '+(v.os||''))+'</td><td>'+(v.dwell?fmtDuration(v.dwell):'—')+'</td><td>'+conv+'</td><td>'+esc(v.ip||'—')+'</td><td>'+esc(v.region||'—')+'</td><td>'+typ+'</td></tr>';
     if(!repeat) return main;
@@ -597,6 +628,13 @@ $('#exclBots').addEventListener('change', safeRender);             // 재조회 
 $('#dayPrev').addEventListener('click', () => stepDay(-1));         // ‹ 전날(과거)
 $('#dayNext').addEventListener('click', () => stepDay(1));          // › 다음날
 $('#vdate').addEventListener('change', () => renderVisitors(viewRows, $('#vdate').value));
+// 키워드 표 헤더 클릭 → 해당 컬럼 정렬(같은 컬럼 재클릭 시 오름/내림 토글)
+$('#kwconv thead').addEventListener('click', e => {
+  const th = e.target.closest('th'); if(!th || !th.dataset.k) return;
+  if(kwSort.key===th.dataset.k) kwSort.dir = -kwSort.dir;
+  else kwSort = { key:th.dataset.k, dir: th.dataset.k==='k' ? 1 : -1 };  // 숫자=내림 먼저, 키워드=오름 먼저
+  renderKwTable();
+});
 // 중복방문자 행 클릭 → 방문 시각 이력 펼치기/접기
 $('#visitors').addEventListener('click', e => {
   const tr = e.target.closest('tr.vclick'); if (!tr) return;
