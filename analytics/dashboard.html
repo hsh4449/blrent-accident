@@ -49,6 +49,12 @@
   #adframe { width:100%; border:0; min-height:600px; background:transparent; display:block; }
   .gohome { background:var(--accent); color:#fff; text-decoration:none; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:700; white-space:nowrap; }
   .gohome:hover { filter:brightness(1.1); }
+  /* 일자 이동 화살표 */
+  .dayrow { display:flex; align-items:stretch; gap:10px; margin-bottom:24px; }
+  .dayarrow { font-size:26px; font-weight:700; padding:0 16px; line-height:1; background:var(--card); border:1px solid var(--line); border-radius:12px; color:var(--txt); cursor:pointer; display:flex; align-items:center; }
+  .dayarrow:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+  .dayarrow:disabled { opacity:.3; cursor:default; }
+  #dayLabel { text-align:center; font-size:13px; color:var(--sub); margin-bottom:8px; font-weight:600; }
 </style>
 </head>
 <body>
@@ -63,6 +69,9 @@
     <option value="90">최근 90일</option>
   </select>
   <button id="refresh">새로고침</button>
+  <label style="font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--sub);">
+    <input type="checkbox" id="exclBots" checked> 🤖 봇·내부 제외
+  </label>
 </header>
 
 <div class="wrap">
@@ -73,7 +82,14 @@
   <div id="tab-visit">
   <div id="status">불러오는 중…</div>
   <div id="content" style="display:none;">
-    <div class="kpis" id="kpis"></div>
+    <div class="dayrow">
+      <button id="dayPrev" class="dayarrow" title="이전 날(과거)">‹</button>
+      <div style="flex:1;">
+        <div id="dayLabel"></div>
+        <div class="kpis" id="kpis" style="margin-bottom:0;"></div>
+      </div>
+      <button id="dayNext" class="dayarrow" title="다음 날">›</button>
+    </div>
     <div class="grid">
       <div class="card"><h2>일별 방문 추이 (페이지뷰 / 순방문자)</h2><div class="cbox" style="height:280px"><canvas id="chartDaily"></canvas></div></div>
       <div class="card"><h2>유입경로</h2><div class="cbox" style="height:240px"><canvas id="chartRef"></canvas></div>
@@ -92,11 +108,32 @@
       <div id="ctaConv"></div>
       <p class="muted" style="font-size:12px;margin-top:8px;">전환율 = 해당 버튼 전화클릭 ÷ 순방문자. 꼬리표(data-cta) 적용 후 발생한 클릭만 구분됩니다. 그 이전 클릭은 <b>미분류</b>로 표시됩니다.</p>
     </div>
+    <div class="card" style="border:1px solid #5a2d2d;">
+      <h2>🚨 부정클릭·업자 의심 탐지</h2>
+      <div id="fraud"></div>
+      <p class="muted" style="font-size:12px;margin-top:10px;line-height:1.6;">
+        <b>예산소진 의심</b> = 광고(검색키워드) 3회 이상 유입 + 전환 0 + 평균체류 5초 미만 ·
+        <b>쿠키세탁 의심</b> = 같은 IP에서 방문자ID 3개 이상(쿠키 지우고 재방문) ·
+        <b>업자 정탐 의심</b> = 재방문 + 데스크톱 + 스크롤 75%+ + 평균체류 60초+ + 전환 0.
+        IP 기반 항목은 수집장치(/track) 적용 후 방문부터 잡힙니다. <b>의심일 뿐 단정 아님</b> — 네이버·구글 신고 시 증거로 활용하세요.
+      </p>
+    </div>
     <div class="card">
       <h2>최근 전환 이벤트 (전화·카톡·상담신청)</h2>
       <div style="overflow-x:auto;"><table id="recent"><thead><tr>
         <th>시각</th><th>유형</th><th>유입</th><th>기기</th><th>OS</th><th>브라우저</th>
       </tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card">
+      <h2>🔑 키워드별 전환 (어떤 검색어가 전화·카톡을 부르나)</h2>
+      <div style="overflow-x:auto;"><table id="kwconv"><thead><tr>
+        <th>키워드</th><th>유입(클릭)</th><th>순방문</th><th>📞 전화</th><th>💬 카톡</th><th>✅ 상담</th><th>전환율</th>
+      </tr></thead><tbody></tbody></table></div>
+      <p class="muted" style="font-size:12px;margin-top:8px;line-height:1.6;">
+        네이버 검색광고 키워드(<b>n_keyword</b>)별 집계. 📞·💬·✅ 는 <b>클릭 횟수</b>(한 사람이 여러 번 누르면 합산).
+        <b>전환율 = 전환한 순방문자 ÷ 순방문자</b> (0~100%). <b>봇·내부 제외</b> 토글이 켜져 있으면 봇 트래픽을 뺀 수치입니다.
+        한 방문자가 여러 키워드면 <b>첫 유입 키워드</b>에 귀속됩니다.
+      </p>
     </div>
     <div class="card">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
@@ -106,7 +143,7 @@
         <select id="vdate"><option value="all">전체 기간</option></select>
       </div>
       <div style="overflow-x:auto;"><table id="visitors"><thead><tr>
-        <th>최근 방문</th><th>방문수</th><th>유입 (키워드/경로)</th><th>기기/OS</th><th>체류</th><th>전환</th><th>IP</th><th>지역</th>
+        <th>최근 방문</th><th>방문수</th><th>유입 (키워드/경로)</th><th>기기/OS</th><th>체류</th><th>전환</th><th>IP</th><th>지역</th><th>유형</th>
       </tr></thead><tbody></tbody></table></div>
       <p class="muted" style="font-size:12px;margin-top:8px;">방문수 2회 이상 = 중복방문(관심 높음). IP·지역은 수집 장치 적용 후 방문부터 표시됩니다.</p>
     </div>
@@ -125,6 +162,64 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const ENDPOINT = SUPABASE_URL.replace(/\/+$/,'') + '/rest/v1/ares_analytics';
 const $ = s => document.querySelector(s);
 const charts = {};
+
+// ── IP 인텔리전스 (ipapi.is — 키 없이 CORS 허용, 벌크 100개/콜) ──────────
+// 우리 사무실/내부 IP — 분석에서 제외 (LG DACOM ISP라 자동탐지 불가, 수동 등록)
+const INTERNAL_IPS = new Set(['106.247.75.165']);
+let ipIntel = {};
+try { ipIntel = JSON.parse(localStorage.getItem('ares_ipintel') || '{}'); } catch(e){ ipIntel = {}; }
+function saveIpIntel(){ try { localStorage.setItem('ares_ipintel', JSON.stringify(ipIntel)); } catch(e){} }
+
+// 방문 rows 의 IP들을 모아 미조회분만 벌크 조회 → 캐시 (분류는 거의 안 변함)
+async function enrichIps(rows){
+  const ips = [...new Set(rows.map(r => (r.extra||{}).ip).filter(Boolean))];
+  const todo = ips.filter(ip => !ipIntel[ip]);
+  for (let i=0; i<todo.length; i+=100){
+    const chunk = todo.slice(i, i+100);
+    try {
+      const res = await fetch('https://api.ipapi.is/', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ ips: chunk })
+      });
+      const data = await res.json();
+      chunk.forEach(ip => {
+        const d = data[ip];
+        if (d) ipIntel[ip] = {
+          dc: !!d.is_datacenter, vpn: !!d.is_vpn, proxy: !!d.is_proxy,
+          tor: !!d.is_tor, mobile: !!d.is_mobile,
+          org: ((d.asn||{}).org) || ((d.company||{}).name) || ''
+        };
+      });
+    } catch(e){ /* 네트워크 실패 시 분류 생략 — 크래시 방지 */ }
+  }
+  saveIpIntel();
+}
+
+// 네이버 광고검수 봇(NAVER Cloud/NHN) — API가 일부(211.249.x)를 datacenter로 안 줘서 누락됨.
+// API 죽어도/누락해도 항상 걸러지게 알려진 대역을 하드코딩. (데이터 오염 방지)
+const NAVER_BOT_PREFIXES = ['110.93.150.','114.111.32.','211.249.46.','211.249.40.'];
+function isNaverBot(ip){
+  if (!ip) return false;
+  if (NAVER_BOT_PREFIXES.some(p => ip.indexOf(p)===0)) return true;   // 하드코딩 우선(오프라인 동작)
+  const d = ipIntel[ip];
+  return !!(d && /naver|nhn/i.test(d.org||''));                       // API org 기반 보강
+}
+
+// IP 분류 → 아이콘/라벨/제외여부.  네이버봇·데이터센터·내부 = 제외, VPN·통신사·ISP = 표시
+function classifyIp(ip){
+  if (INTERNAL_IPS.has(ip)) return { icon:'🏢', label:'내부(우리)', excl:true, org:'우리 사무실' };
+  if (isNaverBot(ip))       return { icon:'🤖', label:'네이버봇',    excl:true, org:'NAVER Cloud' };
+  const d = ip && ipIntel[ip];
+  if (!d) return { icon:'', label:'', excl:false, org:'' };
+  if (d.dc)                  return { icon:'🤖', label:'데이터센터/봇', excl:true,  org:d.org };
+  if (d.vpn||d.proxy||d.tor) return { icon:'🛡', label:'VPN/프록시',    excl:false, org:d.org };
+  if (d.mobile)              return { icon:'📱', label:'통신사',         excl:false, org:d.org };
+  return                            { icon:'🏠', label:'ISP',           excl:false, org:d.org };
+}
+function ipExcluded(r){ const ip=(r.extra||{}).ip; return ip ? classifyIp(ip).excl : false; }
+let viewRows = [];     // 제외필터 적용된 현재 보기 rows (핸들러 공유)
+let dayCursor = 'all'; // 'all' 또는 'YYYY-MM-DD'(KST) — 일자 이동 화살표
+let availDays = [];    // 현재 보기의 가용 일자(내림차순)
 
 function setStatus(msg, isErr) {
   const el = $('#status');
@@ -161,8 +256,10 @@ function channelOf(r){
   if (/n_keyword=/.test(r.path||'') || r.browser === 'Naver') return '네이버';
   return '직접·북마크';
 }
-// KST(한국시간) 기준 날짜 'YYYY-MM-DD' — 00:00 으로 끊음
-function kstDate(iso){ return new Date(new Date(iso).getTime()+9*3600*1000).toISOString().slice(0,10); }
+// HTML 이스케이프 — 외부인이 URL(n_keyword 등)로 조작 가능한 값을 innerHTML 에 넣기 전 처리(저장형 XSS 방지)
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// KST(한국시간) 기준 날짜 'YYYY-MM-DD' — 00:00 으로 끊음 (잘못된 created_at 은 '' 반환)
+function kstDate(iso){ const t=new Date(iso).getTime(); if(isNaN(t)) return ''; return new Date(t+9*3600*1000).toISOString().slice(0,10); }
 function inflowOf(r){
   const m = /[?&]n_keyword=([^&]+)/.exec(r.path||'');
   if(m) return '🔍 '+decodeURIComponent(m[1].replace(/\+/g,' '));
@@ -186,8 +283,18 @@ function koGeo(region, city){
 
 let allRows = [];   // 마지막으로 불러온 전체 rows (방문자 표 날짜필터용)
 
-function render(rows) {
-  if (!rows.length) { setStatus('아직 수집된 데이터가 없습니다. (트래커 설치 후 방문이 발생하면 표시됩니다)'); return; }
+function render(allData) {
+  // 봇(데이터센터)·내부 IP 제외 토글
+  const excl = $('#exclBots') ? $('#exclBots').checked : true;
+  const rows0 = excl ? allData.filter(r => !ipExcluded(r)) : allData;   // 기간 전체(봇 제외)
+  // 일자 이동: 가용 일자 계산 + 커서 클램프
+  availDays = [...new Set(rows0.filter(r=>r.event_type==='pageview').map(r=>kstDate(r.created_at)).filter(Boolean))].sort().reverse();
+  if (dayCursor!=='all' && !availDays.includes(dayCursor)) dayCursor='all';
+  const rows = dayCursor==='all' ? rows0 : rows0.filter(r => kstDate(r.created_at)===dayCursor);
+  viewRows = rows;
+  updateDayNav();
+  if (!allData.length) { setStatus('아직 수집된 데이터가 없습니다. (트래커 설치 후 방문이 발생하면 표시됩니다)'); return; }
+  if (!rows.length) { setStatus(excl ? '표시할 데이터가 없습니다 — 모두 봇·내부로 제외됨 (헤더의 "봇·내부 제외" 해제 시 표시)' : '해당 일자에 데이터가 없습니다'); return; }
   $('#status').style.display = 'none';
   $('#content').style.display = 'block';
 
@@ -213,10 +320,11 @@ function render(rows) {
   $('#kpis').innerHTML = kpis.map(k => '<div class="kpi"><div class="label">'+k[0]+'</div><div class="value">'+k[1]+'</div></div>').join('');
 
   // 일별 추이 — 재방문자 = 그날 방문자 중 누적 2회 이상 방문(같은 날 재방문 포함)
+  const pvAll = rows0.filter(r => r.event_type === 'pageview');   // 일별 추이는 일자 스코프 무시(전체 맥락 유지)
   const pvCount = {};   // visitor_id → 전체 기간 방문(페이지뷰) 횟수
-  pv.forEach(r => { if(r.visitor_id) pvCount[r.visitor_id]=(pvCount[r.visitor_id]||0)+1; });
+  pvAll.forEach(r => { if(r.visitor_id) pvCount[r.visitor_id]=(pvCount[r.visitor_id]||0)+1; });
   const byDay = {};
-  pv.forEach(r => {
+  pvAll.forEach(r => {
     const d = dayKey(r.created_at);
     const b = byDay[d] = byDay[d] || {pv:0, v:new Set(), rv:new Set()};
     b.pv++;
@@ -293,12 +401,18 @@ function render(rows) {
   }).join('') : '<div class="devrow"><span class="devnone">아직 전화 클릭이 없습니다.</span></div>';
   $('#ctaConv').innerHTML = ctaHtml;
 
+  // 부정클릭·업자 의심 탐지
+  renderFraud(rows);
+
+  // 키워드별 전환
+  renderKeyword(rows);
+
   // 최근 전환 테이블
   const conv = rows.filter(r => ['click_phone','click_kakao','submit_consult'].includes(r.event_type)).slice(0,40);
   const label = { click_phone:'📞 전화', click_kakao:'💬 카톡', submit_consult:'✅ 상담신청' };
   $('#recent tbody').innerHTML = conv.length ? conv.map(r =>
     '<tr><td>'+new Date(r.created_at).toLocaleString('ko-KR')+'</td><td>'+(label[r.event_type]||r.event_type)+
-    '</td><td>'+(r.utm_source||r.referrer_host||'직접')+'</td><td>'+(r.device||'')+'</td><td>'+(r.os||'')+'</td><td>'+(r.browser||'')+'</td></tr>'
+    '</td><td>'+esc(r.utm_source||r.referrer_host||'직접')+'</td><td>'+esc(r.device||'')+'</td><td>'+esc(r.os||'')+'</td><td>'+esc(r.browser||'')+'</td></tr>'
   ).join('') : '<tr><td colspan="6" class="muted">전환 이벤트 없음</td></tr>';
 
   // 방문자 상세 — 날짜 드롭다운 채우고 렌더 (KST 일자별)
@@ -307,6 +421,90 @@ function render(rows) {
   sel.innerHTML = '<option value="all">전체 기간</option>' + dates.map(d=>'<option value="'+d+'">'+d+'</option>').join('');
   sel.value = (prev && (prev==='all' || dates.includes(prev))) ? prev : 'all';
   renderVisitors(rows, sel.value);
+}
+
+// path 에서 네이버 검색광고 키워드(n_keyword) 추출
+function kwOf(r){
+  const m=/[?&]n_keyword=([^&]+)/.exec(r.path||'');
+  return m?decodeURIComponent(m[1].replace(/\+/g,' ')):null;
+}
+// 키워드별 전환 — 어떤 검색어가 전화/카톡/상담을 부르나
+function renderKeyword(rows){
+  const convTypes={click_phone:'phone',click_kakao:'kakao',submit_consult:'consult'};
+  const kwByVid={};   // visitor_id → 첫(최초) 유입 키워드
+  const agg={};       // keyword → 집계
+  const get=k=>agg[k]||(agg[k]={clicks:0,vids:new Set(),phone:0,kakao:0,consult:0,convVids:new Set()});
+  // 1) 유입(페이지뷰) 집계. rows 가 최신순이라 덮어쓰면 마지막=가장 오래된=첫 유입 키워드가 남음
+  rows.forEach(r=>{
+    if(r.event_type!=='pageview') return;
+    const k=kwOf(r); if(!k) return;
+    const a=get(k); a.clicks++; if(r.visitor_id) a.vids.add(r.visitor_id);
+    if(r.visitor_id) kwByVid[r.visitor_id]=k;
+  });
+  // 2) 전환 귀속 — 방문자의 첫 키워드(없으면 그 이벤트 path). 탭수와 별개로 '전환한 방문자'도 집계
+  rows.forEach(r=>{
+    const t=convTypes[r.event_type]; if(!t) return;
+    const k=kwByVid[r.visitor_id] || kwOf(r); if(!k || !agg[k]) return;
+    agg[k][t]++; if(r.visitor_id) agg[k].convVids.add(r.visitor_id);
+  });
+  const list=Object.entries(agg).map(([k,a])=>{
+    const conv=a.phone+a.kakao+a.consult;
+    // 전환율 = 전환한 순방문자 ÷ 순방문자 (0~100%). 📞·💬·✅ 컬럼은 클릭 횟수
+    return {k,clicks:a.clicks,uv:a.vids.size,phone:a.phone,kakao:a.kakao,consult:a.consult,conv,rate:a.vids.size?a.convVids.size/a.vids.size*100:0};
+  }).sort((x,y)=>y.clicks-x.clicks);
+  $('#kwconv tbody').innerHTML = list.length ? list.map(r=>{
+    const rateCol=r.conv?'#46d39a':'#9aa0aa';
+    return '<tr><td><b>'+esc(r.k)+'</b></td><td>'+r.clicks+'</td><td>'+r.uv+'</td>'+
+      '<td>'+(r.phone||'-')+'</td><td>'+(r.kakao||'-')+'</td><td>'+(r.consult||'-')+'</td>'+
+      '<td style="color:'+rateCol+';font-weight:700">'+r.rate.toFixed(1)+'%</td></tr>';
+  }).join('') : '<tr><td colspan="7" class="muted">키워드 유입 데이터 없음</td></tr>';
+}
+
+// 부정클릭·업자 의심 탐지 — 기존 데이터로 3개 룰 적용
+function renderFraud(rows){
+  const convTypes=['click_phone','click_kakao','submit_consult'];
+  const vmap={}, ipVids={};
+  rows.forEach(r=>{
+    const id=r.visitor_id; if(!id) return;
+    const v=vmap[id]||(vmap[id]={id,visits:0,ad:0,conv:0,dwell:0,exits:0,scroll:0,dev:r.device,ip:null,region:null,last:r.created_at,adDays:new Set()});
+    if(r.event_type==='pageview'){ v.visits++; if(/^🔍/.test(inflowOf(r)||'')){ v.ad++; v.adDays.add(kstDate(r.created_at)); } }
+    if(r.event_type==='page_exit' && r.duration_sec){ v.dwell+=r.duration_sec; v.exits++; }
+    if(typeof r.scroll_depth==='number' && r.scroll_depth>v.scroll) v.scroll=r.scroll_depth;
+    if(convTypes.includes(r.event_type)) v.conv++;
+    if(r.device) v.dev=r.device;
+    if(r.created_at>v.last) v.last=r.created_at;
+    const ex=r.extra||{}; if(ex.ip){ v.ip=ex.ip; (ipVids[ex.ip]=ipVids[ex.ip]||new Set()).add(id); }
+    const g=koGeo(ex.region,ex.city); if(g) v.region=g;
+  });
+  const vis=Object.values(vmap);
+  const avg=v=>v.exits?Math.round(v.dwell/v.exits):0;   // 체류 보고(page_exit)된 방문 기준 평균(미보고는 0 아님)
+  const who=v=>(v.region?esc(v.region)+' · ':'')+esc(v.ip||('ID '+String(v.id).slice(0,8)));
+
+  // 예산소진: 광고 3회+ · 전환0 · 체류데이터 있고 평균 5초 미만(체류 미보고자는 '불명'이라 제외)
+  const r1=vis.filter(v=>v.ad>=3 && v.conv===0 && v.exits>0 && avg(v)<5).sort((a,b)=>b.ad-a.ad);
+  const r3=vis.filter(v=>v.visits>=2 && v.conv===0 && v.dev==='desktop' && v.scroll>=75 && avg(v)>=60).sort((a,b)=>b.dwell-a.dwell);
+  const r2=Object.entries(ipVids).filter(([,s])=>s.size>=3).map(([ip,s])=>({ip,n:s.size})).sort((a,b)=>b.n-a.n);
+  const r4=vis.filter(v=>v.adDays.size>=2 && v.conv===0).sort((a,b)=>b.adDays.size-a.adDays.size);
+
+  const block=(title,color,count,bodyHtml)=>
+    '<div style="margin-bottom:14px;"><div style="font-weight:700;color:'+color+';margin-bottom:6px;">'+
+    title+' <span style="background:'+color+';color:#0d0f13;border-radius:10px;padding:1px 8px;font-size:12px;">'+count+'</span></div>'+
+    (count? bodyHtml : '<div class="muted" style="font-size:13px;">해당 없음 ✅</div>')+'</div>';
+
+  const r1Body='<div style="overflow-x:auto;"><table><thead><tr><th>방문자</th><th>광고유입</th><th>방문</th><th>평균체류</th></tr></thead><tbody>'+
+    r1.slice(0,30).map(v=>'<tr><td>'+who(v)+'</td><td><b style="color:#ff6b6b">'+v.ad+'회</b></td><td>'+v.visits+'회</td><td>'+avg(v)+'초</td></tr>').join('')+'</tbody></table></div>';
+  const r2Body='<div style="overflow-x:auto;"><table><thead><tr><th>IP</th><th>방문자ID 수</th></tr></thead><tbody>'+
+    r2.slice(0,30).map(x=>'<tr><td>'+esc(x.ip)+'</td><td><b style="color:#ffb454">'+x.n+'개</b></td></tr>').join('')+'</tbody></table></div>';
+  const r3Body='<div style="overflow-x:auto;"><table><thead><tr><th>방문자</th><th>방문</th><th>스크롤</th><th>평균체류</th></tr></thead><tbody>'+
+    r3.slice(0,30).map(v=>'<tr><td>'+who(v)+'</td><td>'+v.visits+'회</td><td>'+v.scroll+'%</td><td>'+fmtDuration(avg(v))+'</td></tr>').join('')+'</tbody></table></div>';
+  const r4Body='<div style="overflow-x:auto;"><table><thead><tr><th>방문자</th><th>광고클릭 일수</th><th>총 광고유입</th></tr></thead><tbody>'+
+    r4.slice(0,30).map(v=>'<tr><td>'+who(v)+'</td><td><b style="color:#4f8cff">'+v.adDays.size+'일</b></td><td>'+v.ad+'회</td></tr>').join('')+'</tbody></table></div>';
+
+  $('#fraud').innerHTML =
+    block('💸 예산소진 의심','#ff6b6b',r1.length,r1Body)+
+    block('🧼 쿠키세탁 의심','#ffb454',r2.length,r2Body)+
+    block('🕵 업자 정탐 의심','#a78bfa',r3.length,r3Body)+
+    block('🔁 반복 광고클릭 의심 (여러 날·전환0)','#4f8cff',r4.length,r4Body);
 }
 
 // 방문자 상세 표 렌더 (dateFilter='all' 또는 'YYYY-MM-DD' KST)
@@ -331,14 +529,43 @@ function renderVisitors(rows, dateFilter){
     const conv=Object.keys(v.conv).map(k=>convIco[k]+(v.conv[k]>1?v.conv[k]:'')).join(' ')||'-';
     const repeat=v.visits>=2;
     const rep=repeat ? '<b style="color:#ffb454">'+v.visits+'회 ▾</b>' : v.visits+'회';
-    const main='<tr class="vrow'+(repeat?' vclick':'')+'"><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+(v.inflow||'-')+
-      '</td><td>'+(v.dev||'')+' / '+(v.os||'')+'</td><td>'+(v.dwell?fmtDuration(v.dwell):'—')+'</td><td>'+conv+'</td><td>'+(v.ip||'—')+'</td><td>'+(v.region||'—')+'</td></tr>';
+    const cls=v.ip?classifyIp(v.ip):{icon:'',label:''};
+    const typ=cls.label?(cls.icon+' '+cls.label):'—';
+    const main='<tr class="vrow'+(repeat?' vclick':'')+'"><td>'+new Date(v.last).toLocaleString('ko-KR')+'</td><td>'+rep+'</td><td>'+esc(v.inflow||'-')+
+      '</td><td>'+esc((v.dev||'')+' / '+(v.os||''))+'</td><td>'+(v.dwell?fmtDuration(v.dwell):'—')+'</td><td>'+conv+'</td><td>'+esc(v.ip||'—')+'</td><td>'+esc(v.region||'—')+'</td><td>'+typ+'</td></tr>';
     if(!repeat) return main;
     const times=v.ev.slice().sort((a,b)=>a.t<b.t?1:-1).map((e,i)=>
-      (v.visits-i)+'. '+new Date(e.t).toLocaleString('ko-KR')+(e.inflow?' · '+e.inflow:'')).join('<br>');
-    const detail='<tr class="vdetail" style="display:none"><td colspan="8" style="background:#15171d;color:#9aa0aa;font-size:12px;line-height:1.7">📅 방문 이력 ('+v.visits+'회):<br>'+times+'</td></tr>';
+      (v.visits-i)+'. '+new Date(e.t).toLocaleString('ko-KR')+(e.inflow?' · '+esc(e.inflow):'')).join('<br>');
+    const detail='<tr class="vdetail" style="display:none"><td colspan="9" style="background:#15171d;color:#9aa0aa;font-size:12px;line-height:1.7">📅 방문 이력 ('+v.visits+'회):<br>'+times+'</td></tr>';
     return main+detail;
-  }).join('') : '<tr><td colspan="8" class="muted">해당 날짜 방문자 없음</td></tr>';
+  }).join('') : '<tr><td colspan="9" class="muted">해당 날짜 방문자 없음</td></tr>';
+}
+
+// 일자 이동 네비게이션 라벨/화살표 상태 갱신
+function updateDayNav(){
+  const lbl=$('#dayLabel'), prev=$('#dayPrev'), next=$('#dayNext');
+  if(!lbl) return;
+  if(dayCursor==='all'){
+    lbl.textContent='전체 기간 (최근 '+$('#range').value+'일)';
+  } else {
+    const d=new Date(dayCursor+'T00:00:00+09:00');
+    const wd=['일','월','화','수','목','금','토'][d.getDay()];
+    lbl.textContent='📅 '+dayCursor+' ('+wd+'요일)';
+  }
+  const i=availDays.indexOf(dayCursor);
+  prev.disabled = availDays.length===0 || (dayCursor!=='all' && i>=availDays.length-1); // 가장 과거면 비활성
+  next.disabled = (dayCursor==='all');                                                  // 최신(전체)이면 비활성
+}
+// dir: -1 = 과거(‹), +1 = 미래(›).  availDays 는 내림차순(0=최근)
+function stepDay(dir){
+  if(!availDays.length) return;
+  if(dir<0){
+    if(dayCursor==='all') dayCursor=availDays[0];
+    else { const i=availDays.indexOf(dayCursor); if(i<availDays.length-1) dayCursor=availDays[i+1]; }
+  } else {
+    if(dayCursor!=='all'){ const i=availDays.indexOf(dayCursor); dayCursor=(i<=0)?'all':availDays[i-1]; }
+  }
+  try { render(allRows); } catch(e){ setStatus('오류: '+e.message, true); }
 }
 
 function drawChart(id, type, data, opts) {
@@ -355,12 +582,21 @@ function drawChart(id, type, data, opts) {
 async function load() {
   if (SUPABASE_URL.indexOf('__') === 0) { setStatus('⚙️ dashboard.html 상단의 SUPABASE_URL / SUPABASE_ANON_KEY 를 먼저 채워주세요.', true); return; }
   setStatus('불러오는 중…');
-  try { allRows = await fetchRows(parseInt($('#range').value,10)); render(allRows); }
+  try {
+    allRows = await fetchRows(parseInt($('#range').value,10));
+    setStatus('IP 분류 조회 중…');
+    await enrichIps(allRows);
+    render(allRows);
+  }
   catch (e) { setStatus('오류: ' + e.message, true); }
 }
+function safeRender(){ try { render(allRows); } catch(e){ setStatus('오류: '+e.message, true); } }
 $('#range').addEventListener('change', load);
 $('#refresh').addEventListener('click', load);
-$('#vdate').addEventListener('change', () => renderVisitors(allRows, $('#vdate').value));
+$('#exclBots').addEventListener('change', safeRender);             // 재조회 없이 토글 적용
+$('#dayPrev').addEventListener('click', () => stepDay(-1));         // ‹ 전날(과거)
+$('#dayNext').addEventListener('click', () => stepDay(1));          // › 다음날
+$('#vdate').addEventListener('change', () => renderVisitors(viewRows, $('#vdate').value));
 // 중복방문자 행 클릭 → 방문 시각 이력 펼치기/접기
 $('#visitors').addEventListener('click', e => {
   const tr = e.target.closest('tr.vclick'); if (!tr) return;
