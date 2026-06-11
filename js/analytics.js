@@ -131,7 +131,11 @@
 
   // ---- 3) 클릭 추적 (전화 / 카카오) ----
   document.addEventListener('click', function (e) {
-    var a = e.target.closest && e.target.closest('a');
+    if (!e.target.closest) return;
+    // data-track 표시된 요소(버튼 등) 클릭 — 커스텀 이벤트(예: 이벤트배너 열기)
+    var tracked = e.target.closest('[data-track]');
+    if (tracked) send({ event_type: 'click_event', extra: { label: tracked.getAttribute('data-track') } });
+    var a = e.target.closest('a');
     if (!a) return;
     var href = a.getAttribute('href') || '';
     var cta = a.getAttribute('data-cta') || null;
