@@ -322,6 +322,7 @@ function render(allData) {
   const phone = rows.filter(r => r.event_type === 'click_phone').length;
   const kakao = rows.filter(r => r.event_type === 'click_kakao').length;
   const consult = rows.filter(r => r.event_type === 'submit_consult').length;
+  const evtOpen = rows.filter(r => r.event_type === 'click_event' && r.extra && r.extra.label === 'evt-open').length;
   const avgDur = exits.length ? Math.round(exits.reduce((a,r)=>a+r.duration_sec,0)/exits.length) : 0;
   const ctr = pv.length ? (((phone+kakao+consult)/pv.length)*100).toFixed(1) : '0';
 
@@ -333,6 +334,7 @@ function render(allData) {
     ['전화 클릭', phone.toLocaleString()],
     ['카톡 클릭', kakao.toLocaleString()],
     ['상담신청', consult.toLocaleString()],
+    ['🎁 이벤트배너 클릭', evtOpen.toLocaleString()],
     ['전환율', ctr + '<small>%</small>']
   ];
   $('#kpis').innerHTML = kpis.map(k => '<div class="kpi"><div class="label">'+k[0]+'</div><div class="value">'+k[1]+'</div></div>').join('');
