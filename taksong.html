@@ -1310,40 +1310,8 @@ function renderSettlement() {
     const periodChargeIn = filtered.filter(r => r.status === '입금완료').reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0);
     const periodDriverPay = filtered.reduce((s, r) => s + (r.driverPay || 0), 0);
 
-    // 적금 정보
-    const savingMonths = 10; // 2026-02 시작, 매월 5일
-    const savingDue = '2027년 1월 5일';
-
-    // === 계좌 현황 ===
+    // === 기간별 입출금 흐름 ===
     document.getElementById('accountCards').innerHTML = `
-        <div class="settle-card" style="border-left:4px solid #1565c0;grid-column:1/-1;">
-            <h3 style="color:#1565c0;">계좌 현황</h3>
-            <div style="display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:8px;align-items:stretch;">
-                <div style="background:#e3f2fd;border-radius:10px;padding:16px;text-align:center;">
-                    <div style="font-size:12px;color:#1565c0;font-weight:600;">불꽃탁송계좌</div>
-                    <div style="font-size:11px;color:#888;">하나은행</div>
-                    <div class="acct-balance" style="color:#1565c0;margin:8px 0;">${fmt(ACCOUNTS.fire.initBalance)}원</div>
-                    <div class="acct-sub">고객 청구금액 입금</div>
-                    <div class="acct-sub">적금/마일리지 출금</div>
-                </div>
-                <div class="flow-arrow">&#8644;</div>
-                <div style="background:#e8f5e9;border-radius:10px;padding:16px;text-align:center;">
-                    <div style="font-size:12px;color:#2e7d32;font-weight:600;">마일리지통장</div>
-                    <div style="font-size:11px;color:#888;">탁송기사 지급용</div>
-                    <div class="acct-balance" style="color:#2e7d32;margin:8px 0;">${fmt(ACCOUNTS.mileage.initBalance)}원</div>
-                    <div class="acct-sub">탁송비 80% 기사지급</div>
-                    <div class="acct-sub">부족 시 불꽃에서 충전</div>
-                </div>
-                <div class="flow-arrow">&#8594;</div>
-                <div style="background:#fff3e0;border-radius:10px;padding:16px;text-align:center;">
-                    <div style="font-size:12px;color:#e65100;font-weight:600;">적금</div>
-                    <div style="font-size:11px;color:#888;">매월 5일 자동이체</div>
-                    <div class="acct-balance" style="color:#e65100;margin:8px 0;">${fmt(ACCOUNTS.saving.initBalance)}원</div>
-                    <div class="acct-sub">만기: ${savingDue}</div>
-                    <div class="acct-sub">불꽃탁송계좌에서 출금</div>
-                </div>
-            </div>
-        </div>
         <div class="settle-card" style="border-left:4px solid #455a64;grid-column:1/-1;">
             <h3 style="color:#455a64;">기간별 입출금 흐름</h3>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
