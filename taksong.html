@@ -60,6 +60,8 @@
         .badge-driver { background: #e3f2fd; color: #1565c0; }
         .badge-me { background: #e8f5e9; color: #2e7d32; }
         .badge-boss { background: #fff3e0; color: #e65100; }
+        .badge-sin { background: #f3e5f5; color: #6a1b9a; }
+        .badge-jeon { background: #e0f2f1; color: #00695c; }
 
         /* 상태 뱃지 */
         .status { display: inline-block; padding: 4px 12px; border-radius: 14px; font-size: 12px; font-weight: 600; }
@@ -279,6 +281,8 @@
                 <option value="탁송기사">탁송기사</option>
                 <option value="황성현">황성현</option>
                 <option value="조윤호">조윤호</option>
+                <option value="신동석">신동석</option>
+                <option value="전동환">전동환</option>
             </select>
         </div>
         <div>
@@ -353,6 +357,8 @@
                         <th>불꽃탁송</th>
                         <th>황성현</th>
                         <th>조윤호</th>
+                        <th>신동석</th>
+                        <th>전동환</th>
                         <th>적립</th>
                     </tr>
                 </thead>
@@ -465,6 +471,8 @@
                 <select id="tfTo">
                     <option value="황성현">황성현</option>
                     <option value="조윤호">조윤호</option>
+                    <option value="신동석">신동석</option>
+                    <option value="전동환">전동환</option>
                     <option value="불꽃탁송계좌">불꽃탁송계좌</option>
                     <option value="마일리지통장">마일리지통장</option>
                     <option value="적금">적금</option>
@@ -635,6 +643,8 @@
                     <option value="탁송기사">탁송기사</option>
                     <option value="황성현">황성현</option>
                     <option value="조윤호">조윤호</option>
+                    <option value="신동석">신동석</option>
+                    <option value="전동환">전동환</option>
                 </select>
             </div>
             <div class="form-group">
@@ -675,6 +685,8 @@
                     <option value="불꽃탁송">불꽃탁송 정산</option>
                     <option value="황성현">황성현 정산</option>
                     <option value="조윤호">조윤호 정산</option>
+                    <option value="신동석">신동석 정산</option>
+                    <option value="전동환">전동환 정산</option>
                     <option value="적립">적립</option>
                 </select>
             </div>
@@ -883,8 +895,12 @@ function renderSummary() {
     };
     const hwangData = calcPersonSummary('황성현');
     const joData = calcPersonSummary('조윤호');
+    const sinData = calcPersonSummary('신동석');
+    const jeonData = calcPersonSummary('전동환');
     const hwangSettle = hwangData.remaining;
     const joSettle = joData.remaining;
+    const sinSettle = sinData.remaining;
+    const jeonSettle = jeonData.remaining;
     const reserve = filtered.filter(r => r.distribute === '적립').reduce((s, r) => s + (r.profit || 0), 0);
     const pending = filtered.filter(r => r.status === '청구전').length;
 
@@ -931,6 +947,16 @@ function renderSummary() {
             <div class="label">조윤호 남은 정산</div>
             <div class="value" style="color:#795548;">${fmt(joSettle)}</div>
             <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(joData.totalDue)} − 받음 ${fmt(joData.paid)}${joData.commShare>0?`<br>(수수료 ${fmt(joData.commShare)} 포함)`:''}</div>
+        </div>
+        <div class="card" style="border-left:3px solid #6a1b9a;">
+            <div class="label">신동석 남은 정산</div>
+            <div class="value" style="color:#6a1b9a;">${fmt(sinSettle)}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(sinData.totalDue)} − 받음 ${fmt(sinData.paid)}${sinData.commShare>0?`<br>(수수료 ${fmt(sinData.commShare)} 포함)`:''}</div>
+        </div>
+        <div class="card" style="border-left:3px solid #00695c;">
+            <div class="label">전동환 남은 정산</div>
+            <div class="value" style="color:#00695c;">${fmt(jeonSettle)}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">총 ${fmt(jeonData.totalDue)} − 받음 ${fmt(jeonData.paid)}${jeonData.commShare>0?`<br>(수수료 ${fmt(jeonData.commShare)} 포함)`:''}</div>
         </div>
         <div class="card red"><div class="label">미청구 건수</div><div class="value">${pending}건</div></div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
@@ -1057,8 +1083,8 @@ function renderTable() {
     const selOpt = (options, selected) => options.map(o =>
         `<option value="${o}" ${o===selected?'selected':''}>${o}</option>`
     ).join('');
-    const persons = ['탁송기사','황성현','조윤호'];
-    const distributes = ['불꽃탁송','황성현','조윤호','적립'];
+    const persons = ['탁송기사','황성현','조윤호','신동석','전동환'];
+    const distributes = ['불꽃탁송','황성현','조윤호','신동석','전동환','적립'];
     const statuses = ['청구전','청구완료','입금완료'];
     const rates = [0, 20, 100];
     const categories = ['장기대여','사고대여','일반대여','기타'];
@@ -1167,7 +1193,7 @@ function onTransferTypeChange() {
     const to = document.getElementById('tfTo');
     if (type === '정산지급') {
         from.value = '불꽃탁송계좌';
-        to.innerHTML = '<option value="황성현">황성현</option><option value="조윤호">조윤호</option>';
+        to.innerHTML = '<option value="황성현">황성현</option><option value="조윤호">조윤호</option><option value="신동석">신동석</option><option value="전동환">전동환</option>';
     } else if (type === '계좌이체') {
         from.value = '불꽃탁송계좌';
         to.innerHTML = '<option value="마일리지통장">마일리지통장</option><option value="불꽃탁송계좌">불꽃탁송계좌</option>';
@@ -1175,7 +1201,7 @@ function onTransferTypeChange() {
         from.value = '불꽃탁송계좌';
         to.innerHTML = '<option value="적금">적금</option>';
     } else if (type === '기타출금') {
-        to.innerHTML = '<option value="외부">외부</option><option value="황성현">황성현</option><option value="조윤호">조윤호</option>';
+        to.innerHTML = '<option value="외부">외부</option><option value="황성현">황성현</option><option value="조윤호">조윤호</option><option value="신동석">신동석</option><option value="전동환">전동환</option>';
     } else if (type === '기타입금') {
         from.innerHTML = '<option value="외부">외부</option>';
         to.innerHTML = '<option value="불꽃탁송계좌">불꽃탁송계좌</option><option value="마일리지통장">마일리지통장</option>';
@@ -1271,6 +1297,8 @@ function renderSettlement() {
 
     const hwangPerson = calcPerson('황성현');
     const joPerson = calcPerson('조윤호');
+    const sinPerson = calcPerson('신동석');
+    const jeonPerson = calcPerson('전동환');
 
     // 계좌 흐름 (전체 데이터 기준)
     const allData = loadData();
@@ -1354,10 +1382,12 @@ function renderSettlement() {
         </div>`;
     };
 
-    // === 정산 카드 (황성현, 조윤호만) ===
+    // === 정산 카드 (황성현, 조윤호, 신동석, 전동환) ===
     document.getElementById('settlementCards').innerHTML =
         renderPersonCard('황성현', '#ff9800', hwangPerson) +
-        renderPersonCard('조윤호', '#795548', joPerson);
+        renderPersonCard('조윤호', '#795548', joPerson) +
+        renderPersonCard('신동석', '#6a1b9a', sinPerson) +
+        renderPersonCard('전동환', '#00695c', jeonPerson);
 
     // === 입출금 내역 테이블 ===
     const transfers = loadTransfers();
@@ -1607,10 +1637,13 @@ function getFilteredCommission() {
 }
 
 function splitShares(split) {
-    // 분배 비율 반환: { 황성현: 0~1, 조윤호: 0~1 }
-    if (split === '조윤호100%') return { 황성현: 0, 조윤호: 1 };
-    if (split === '황성현100%') return { 황성현: 1, 조윤호: 0 };
-    return { 황성현: 0.5, 조윤호: 0.5 }; // 5:5 (기본)
+    // 분배 비율 반환: { 황성현, 조윤호, 신동석, 전동환 } 각 0~1
+    const base = { 황성현: 0, 조윤호: 0, 신동석: 0, 전동환: 0 };
+    if (split === '조윤호100%') return { ...base, 조윤호: 1 };
+    if (split === '황성현100%') return { ...base, 황성현: 1 };
+    if (split === '신동석100%') return { ...base, 신동석: 1 };
+    if (split === '전동환100%') return { ...base, 전동환: 1 };
+    return { ...base, 황성현: 0.5, 조윤호: 0.5 }; // 5:5 (기본)
 }
 
 function renderCommissionSummary() {
@@ -1625,19 +1658,21 @@ function renderCommissionSummary() {
     const rentPaid = list.filter(r => r.status === '대여료입금완료').length;
 
     // 분배별 합계 (모든 건 기준, 수령 여부 무관)
-    let hwangTotal = 0, joTotal = 0;
-    let hwangReceived = 0, joReceived = 0;
+    const COMM_PERSONS = ['황성현','조윤호','신동석','전동환'];
+    const commTotal = { 황성현:0, 조윤호:0, 신동석:0, 전동환:0 };
+    const commReceived = { 황성현:0, 조윤호:0, 신동석:0, 전동환:0 };
     list.forEach(r => {
         const share = splitShares(r.split || '5:5');
         const c = r.commission || 0;
-        const hAmt = Math.round(c * share.황성현);
-        const jAmt = c - hAmt; // 반올림 차이 보정
-        hwangTotal += hAmt;
-        joTotal += jAmt;
-        if (r.status === '수수료입금완료') {
-            hwangReceived += hAmt;
-            joReceived += jAmt;
-        }
+        // 반올림 차이는 분배받는 마지막 인원에게 몰아줌
+        const active = COMM_PERSONS.filter(p => share[p] > 0);
+        let assigned = 0;
+        active.forEach((p, i) => {
+            const amt = (i === active.length - 1) ? (c - assigned) : Math.round(c * share[p]);
+            assigned += amt;
+            commTotal[p] += amt;
+            if (r.status === '수수료입금완료') commReceived[p] += amt;
+        });
     });
 
     document.getElementById('commSummary').innerHTML = `
@@ -1647,13 +1682,23 @@ function renderCommissionSummary() {
         <div class="card red"><div class="label">미입금 수수료</div><div class="value">${fmt(pending)}</div></div>
         <div class="card" style="border-left:3px solid #ff9800;">
             <div class="label">황성현 받을 수수료</div>
-            <div class="value" style="color:#e65100;">${fmt(hwangTotal - hwangReceived)}</div>
-            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(hwangTotal)} − 받음 ${fmt(hwangReceived)}</div>
+            <div class="value" style="color:#e65100;">${fmt(commTotal.황성현 - commReceived.황성현)}</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(commTotal.황성현)} − 받음 ${fmt(commReceived.황성현)}</div>
         </div>
         <div class="card" style="border-left:3px solid #795548;">
             <div class="label">조윤호 받을 수수료</div>
-            <div class="value" style="color:#795548;">${fmt(joTotal - joReceived)}</div>
-            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(joTotal)} − 받음 ${fmt(joReceived)}</div>
+            <div class="value" style="color:#795548;">${fmt(commTotal.조윤호 - commReceived.조윤호)}</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(commTotal.조윤호)} − 받음 ${fmt(commReceived.조윤호)}</div>
+        </div>
+        <div class="card" style="border-left:3px solid #6a1b9a;">
+            <div class="label">신동석 받을 수수료</div>
+            <div class="value" style="color:#6a1b9a;">${fmt(commTotal.신동석 - commReceived.신동석)}</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(commTotal.신동석)} − 받음 ${fmt(commReceived.신동석)}</div>
+        </div>
+        <div class="card" style="border-left:3px solid #00695c;">
+            <div class="label">전동환 받을 수수료</div>
+            <div class="value" style="color:#00695c;">${fmt(commTotal.전동환 - commReceived.전동환)}</div>
+            <div style="font-size:11px;color:#888;margin-top:2px;">총 ${fmt(commTotal.전동환)} − 받음 ${fmt(commReceived.전동환)}</div>
         </div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
             <div class="label" style="margin-bottom:8px;">처리 단계별 건수</div>
@@ -1695,7 +1740,7 @@ function renderCommission() {
     }
 
     const statuses = ['대여중','청구전','청구완료','대여료입금완료','수수료입금완료'];
-    const splits = ['조윤호100%','황성현100%','5:5'];
+    const splits = ['조윤호100%','황성현100%','신동석100%','전동환100%','5:5'];
     const escAttr = (s) => String(s == null ? '' : s).replace(/"/g, '&quot;');
 
     tbody.innerHTML = list.map(r => {
@@ -1729,7 +1774,7 @@ function getMonthlyStats() {
     const data = loadData();
     const year = parseInt(document.getElementById('filterYear').value);
     const months = {};
-    for (let m = 1; m <= 12; m++) months[m] = { count: 0, fee: 0, driverPay: 0, charge: 0, profit: 0, fire: 0, hwang: 0, jo: 0, reserve: 0 };
+    for (let m = 1; m <= 12; m++) months[m] = { count: 0, fee: 0, driverPay: 0, charge: 0, profit: 0, fire: 0, hwang: 0, jo: 0, sin: 0, jeon: 0, reserve: 0 };
 
     data.forEach(r => {
         const d = new Date(r.date);
@@ -1743,6 +1788,8 @@ function getMonthlyStats() {
         if (r.distribute === '불꽃탁송') months[m].fire += r.profit || 0;
         if (r.distribute === '황성현') months[m].hwang += r.profit || 0;
         if (r.distribute === '조윤호') months[m].jo += r.profit || 0;
+        if (r.distribute === '신동석') months[m].sin += r.profit || 0;
+        if (r.distribute === '전동환') months[m].jeon += r.profit || 0;
         if (r.distribute === '적립') months[m].reserve += r.profit || 0;
     });
     return months;
@@ -1775,12 +1822,12 @@ function renderMonthly() {
     }).join('');
 
     // 테이블
-    let totalRow = { count:0, fee:0, driverPay:0, charge:0, profit:0, fire:0, hwang:0, jo:0, reserve:0 };
+    let totalRow = { count:0, fee:0, driverPay:0, charge:0, profit:0, fire:0, hwang:0, jo:0, sin:0, jeon:0, reserve:0 };
     const tbody = document.getElementById('monthlyTableBody');
     tbody.innerHTML = Object.entries(stats).filter(([m, s]) => s.count > 0).map(([m, s]) => {
         totalRow.count += s.count; totalRow.fee += s.fee; totalRow.driverPay += s.driverPay;
         totalRow.charge += s.charge; totalRow.profit += s.profit;
-        totalRow.fire += s.fire; totalRow.hwang += s.hwang; totalRow.jo += s.jo; totalRow.reserve += s.reserve;
+        totalRow.fire += s.fire; totalRow.hwang += s.hwang; totalRow.jo += s.jo; totalRow.sin += s.sin; totalRow.jeon += s.jeon; totalRow.reserve += s.reserve;
         return `<tr>
             <td><strong>${m}월</strong></td>
             <td>${s.count}건</td>
@@ -1791,6 +1838,8 @@ function renderMonthly() {
             <td class="text-right" style="color:#2e7d32;">${fmt(s.fire)}</td>
             <td class="text-right" style="color:#e65100;">${fmt(s.hwang)}</td>
             <td class="text-right" style="color:#795548;">${fmt(s.jo)}</td>
+            <td class="text-right" style="color:#6a1b9a;">${fmt(s.sin)}</td>
+            <td class="text-right" style="color:#00695c;">${fmt(s.jeon)}</td>
             <td class="text-right" style="color:#1565c0;">${fmt(s.reserve)}</td>
         </tr>`;
     }).join('');
@@ -1805,6 +1854,8 @@ function renderMonthly() {
         <td class="text-right month-total" style="color:#2e7d32;">${fmt(totalRow.fire)}</td>
         <td class="text-right month-total" style="color:#e65100;">${fmt(totalRow.hwang)}</td>
         <td class="text-right month-total" style="color:#795548;">${fmt(totalRow.jo)}</td>
+        <td class="text-right month-total" style="color:#6a1b9a;">${fmt(totalRow.sin)}</td>
+        <td class="text-right month-total" style="color:#00695c;">${fmt(totalRow.jeon)}</td>
         <td class="text-right month-total" style="color:#1565c0;">${fmt(totalRow.reserve)}</td>
     </tr>`;
 }
@@ -1894,7 +1945,7 @@ function openDayDetail(year, month, day) {
     `;
 
     document.getElementById('dayDetailList').innerHTML = items.map(r => {
-        const personClass = r.person === '탁송기사' ? 'badge-driver' : r.person === '황성현' ? 'badge-me' : 'badge-boss';
+        const personClass = { '탁송기사':'badge-driver', '황성현':'badge-me', '조윤호':'badge-boss', '신동석':'badge-sin', '전동환':'badge-jeon' }[r.person] || 'badge-boss';
         const statusClass = r.status === '입금완료' ? 'status-paid' : r.status === '청구완료' ? 'status-invoiced' : 'status-pending';
         return `<div class="day-detail-item">
             <div class="day-detail-left">
@@ -2080,6 +2131,8 @@ function onPersonChange() {
     if (person === '탁송기사') dist.value = '불꽃탁송';
     else if (person === '황성현') dist.value = '황성현';
     else if (person === '조윤호') dist.value = '조윤호';
+    else if (person === '신동석') dist.value = '신동석';
+    else if (person === '전동환') dist.value = '전동환';
     calcFee();
     calcProfit();
 }
@@ -2198,8 +2251,8 @@ function startInlineEdit(id) {
         `<option value="${o}" ${o===selected?'selected':''}>${o}</option>`
     ).join('');
 
-    const persons = ['탁송기사','황성현','조윤호'];
-    const distributes = ['불꽃탁송','황성현','조윤호','적립'];
+    const persons = ['탁송기사','황성현','조윤호','신동석','전동환'];
+    const distributes = ['불꽃탁송','황성현','조윤호','신동석','전동환','적립'];
     const statuses = ['청구전','청구완료','입금완료'];
 
     const rates = [0, 20, 100];
@@ -2235,6 +2288,8 @@ function inlinePersonChange(id, sel) {
     if (person === '탁송기사') distSel.value = '불꽃탁송';
     else if (person === '황성현') distSel.value = '황성현';
     else if (person === '조윤호') distSel.value = '조윤호';
+    else if (person === '신동석') distSel.value = '신동석';
+    else if (person === '전동환') distSel.value = '전동환';
     inlineCalc(id);
 }
 
