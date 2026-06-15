@@ -487,9 +487,26 @@ body {
     color: var(--text-dark);
     margin-top: var(--spacing-xl);
     margin-bottom: var(--spacing-md);
-    padding-left: 4px;
     border-left: 4px solid var(--primary-orange);
     padding-left: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.brand-toggle {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--primary-orange);
+    background: var(--bg-white);
+    border: 1px solid var(--primary-orange);
+    border-radius: 999px;
+    padding: 4px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.brand-toggle:active {
+    background: var(--primary-orange);
+    color: var(--bg-white);
 }
 
 /* Swiper 컨테이너 */
