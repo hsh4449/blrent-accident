@@ -457,10 +457,11 @@ body {
     .lineup-row { flex-wrap: wrap; justify-content: center; }
     .lineup-row .model-row { flex: 0 1 46%; }   /* 모바일 2열, 홀로 남아도 안 커지고 가운데 */
 }
-/* PC: 카드 폭 캡 + 가운데 정렬 + 이미지 3:2(원본 1264x848) 고정으로 행마다 규격 통일 */
+/* PC: 카드 폭 캡 + 왼쪽 정렬 + 이미지 3:2(원본 1264x848) 고정으로 행마다 규격 통일 */
 @media (min-width: 768px) {
-    .lineup-row { justify-content: center; }
+    .lineup-row { justify-content: flex-start; }   /* PC는 왼쪽 정렬 (모바일은 가운데 유지) */
     .lineup-row .model-row { flex: 0 1 360px; }
+    .lineup-row .model-label { justify-content: flex-start; }   /* PC 라벨도 카드 왼쪽 끝에 맞춤 */
     .lineup-row .modelSwiper .vehicle-image { height: auto; aspect-ratio: 3 / 2; }
 }
 .model-label {
