@@ -158,6 +158,26 @@ document.querySelectorAll('.modelSwiper').forEach(container => {
     });
 });
 
+// 브랜드별 라인업 접기/펼치기 토글 (브랜드명 옆 버튼)
+document.querySelectorAll('.vehicle-section-title').forEach(title => {
+    const rows = [];
+    let el = title.nextElementSibling;
+    while (el && !el.classList.contains('vehicle-section-title')) {
+        if (el.classList.contains('model-row')) rows.push(el);
+        el = el.nextElementSibling;
+    }
+    if (!rows.length) return;
+    const btn = document.createElement('button');
+    btn.className = 'brand-toggle';
+    btn.textContent = '접기';
+    btn.addEventListener('click', () => {
+        const collapsed = rows[0].style.display === 'none';
+        rows.forEach(r => { r.style.display = collapsed ? '' : 'none'; });
+        btn.textContent = collapsed ? '접기' : '라인업 보기';
+    });
+    title.appendChild(btn);
+});
+
 // 고객후기 슬라이더 (왼쪽으로 자동 흐름)
 const reviewSwiper = new Swiper('.reviewSwiper', {
     slidesPerView: 1,
