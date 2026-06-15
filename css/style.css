@@ -478,10 +478,12 @@ body {
     height: 150px;
 }
 @media (min-width: 768px) {
-    .modelSwiper .swiper-slide { width: 31%; }
+    .modelSwiper .swiper-slide { width: 31%; }   /* 태블릿/PC: 3개 기준, 적으면 가운데 */
+    .modelSwiper .vehicle-image { height: 190px; }
 }
 @media (min-width: 1024px) {
-    .modelSwiper .swiper-slide { width: 23%; }
+    .modelSwiper .swiper-slide { width: 31%; }
+    .modelSwiper .vehicle-image { height: 210px; }
 }
 
 /* 섹션 타이틀 */
