@@ -454,8 +454,8 @@ body {
     width: 100%;
 }
 @media (max-width: 767px) {
-    .lineup-row { flex-wrap: wrap; }
-    .lineup-row .model-row { flex: 1 1 46%; }   /* 모바일 2열 */
+    .lineup-row { flex-wrap: wrap; justify-content: center; }
+    .lineup-row .model-row { flex: 0 1 46%; }   /* 모바일 2열, 홀로 남아도 안 커지고 가운데 */
 }
 .model-label {
     display: flex;
