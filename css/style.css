@@ -467,6 +467,10 @@ body {
 .modelSwiper .vehicle-info {
     display: none;
 }
+/* 배지(인기/프리미엄/NEW/컨버터블 등) 전부 숨김 */
+.vehicle-badge {
+    display: none;
+}
 .modelSwiper .vehicle-card {
     height: auto;          /* 사진 높이에 맞춤 (기본 220px 고정 해제) */
 }
