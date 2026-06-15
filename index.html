@@ -174,10 +174,20 @@
       })();
     </script>
 
-    <!-- 6월 한정 이벤트 배너 (토글) -->
-    <section class="evt-section">
+    <!-- 6월 한정 이벤트 팝업(모달) -->
+    <div class="evt-modal" id="evtModal">
       <style>
         .evt-section{ width:100%; margin:0; padding:0; }
+        .evt-modal{ position:fixed; inset:0; z-index:3000; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(0,0,0,.6); opacity:0; visibility:hidden; transition:opacity .3s ease, visibility .3s ease; }
+        .evt-modal.show{ opacity:1; visibility:visible; }
+        .evt-modal-box{ position:relative; background:#fff; width:100%; max-width:460px; max-height:88vh; overflow-y:auto; border-radius:16px; box-shadow:0 20px 60px rgba(0,0,0,.45); transform:translateY(24px); transition:transform .3s ease; }
+        .evt-modal.show .evt-modal-box{ transform:translateY(0); }
+        .evt-close{ position:absolute; top:10px; right:10px; z-index:2; width:34px; height:34px; border:none; border-radius:50%; background:rgba(0,0,0,.5); color:#fff; font-size:22px; line-height:34px; text-align:center; cursor:pointer; padding:0; }
+        .evt-modal-foot{ display:flex; gap:8px; padding:12px 16px 18px; }
+        .evt-modal-foot button{ flex:1; padding:13px; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+        .evt-dismiss{ background:#eee; color:#666; }
+        .evt-closebtn{ background:#F26522; color:#fff; }
+        .evt-modal .evt-inner{ padding:20px 16px 8px; }
         @keyframes evtGradient {0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
         @keyframes evtGlow {0%,100%{box-shadow:0 8px 24px rgba(242,101,34,.35);}50%{box-shadow:0 10px 34px rgba(242,101,34,.6),0 0 22px rgba(242,101,34,.35);}}
         @keyframes evtShine {0%{transform:translateX(-120%) skewX(-20deg);}55%,100%{transform:translateX(320%) skewX(-20deg);}}
@@ -222,13 +232,8 @@
         .evt-note p{ margin:0 0 8px; font-size:12px; font-weight:800; color:#555; }
         .evt-note ol{ margin:0; padding-left:18px; color:#9a9a9a; font-size:11px; line-height:1.7; }
       </style>
-      <button class="evt-btn" type="button" data-track="evt-open" onclick="this.closest('.evt-section').classList.toggle('open')">
-        <span class="evt-shine"></span>
-        <span class="evt-chev l">❯❯❯</span>
-        <span class="evt-label">아레스렌트카 이벤트 확인하기</span>
-        <span class="evt-chev r">❮❮❮</span>
-      </button>
-      <div class="evt-panel">
+      <div class="evt-modal-box">
+        <button class="evt-close" type="button" aria-label="닫기">&times;</button>
         <div class="evt-card">
           <div class="evt-hero"><img src="img/event-jun-fuel.jpg" alt="6월 한정 이벤트 - 사고대차 이용하고 주유비 최대 6만원 받기" loading="lazy"></div>
           <div class="evt-inner">
@@ -261,8 +266,25 @@
           </div>
           </div><!-- /.evt-inner -->
         </div>
+        <div class="evt-modal-foot">
+          <button class="evt-dismiss" type="button">오늘 하루 보지 않기</button>
+          <button class="evt-closebtn" type="button">닫기</button>
+        </div>
       </div>
-    </section>
+    </div>
+    <script>
+    (function(){
+      var modal=document.getElementById('evtModal'); if(!modal) return;
+      var KEY='evtHideUntil';
+      try{ if(localStorage.getItem(KEY)===new Date().toDateString()) return; }catch(e){}
+      setTimeout(function(){ modal.classList.add('show'); }, 700);
+      function closeModal(){ modal.classList.remove('show'); }
+      modal.querySelector('.evt-close').addEventListener('click', closeModal);
+      modal.querySelector('.evt-closebtn').addEventListener('click', closeModal);
+      modal.querySelector('.evt-dismiss').addEventListener('click', function(){ try{ localStorage.setItem(KEY,new Date().toDateString()); }catch(e){} closeModal(); });
+      modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
+    })();
+    </script>
 
     <!-- Service Cards -->
     <section class="service" id="service">
