@@ -145,7 +145,7 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 모든 차량 슬라이더 초기화 (모바일은 2열 그리드로 보여주므로 스와이퍼 미초기화)
+// 차량 슬라이더: PC는 스와이퍼, 모바일은 2열 그리드 + 브랜드당 4대 기본 노출 + 더보기
 if (window.innerWidth > 767) {
     document.querySelectorAll('.vehicleSwiper').forEach(container => {
         new Swiper(container, {
@@ -157,12 +157,44 @@ if (window.innerWidth > 767) {
             },
         });
     });
+} else {
+    // 모바일: 재고가 늘어도 페이지가 끝없이 길어지지 않도록 브랜드당 4대만 우선 노출
+    const VISIBLE = 4;
+    document.querySelectorAll('.vehicleSwiper').forEach(sw => {
+        const slides = sw.querySelectorAll('.swiper-slide');
+        if (slides.length <= VISIBLE) return;
+        const btn = document.createElement('button');
+        btn.className = 'vehicle-more-btn';
+        btn.textContent = `더보기 (+${slides.length - VISIBLE}대)`;
+        btn.addEventListener('click', () => {
+            sw.classList.add('expanded');
+            btn.remove();
+        });
+        sw.insertAdjacentElement('afterend', btn);
+    });
 }
 
-// 고객후기 슬라이더
+// 모델별 색상/재고 슬라이더 (PC/모바일 공통, 옆으로 슬라이드)
+document.querySelectorAll('.modelSwiper').forEach(container => {
+    new Swiper(container, {
+        slidesPerView: 'auto',
+        spaceBetween: 12,
+        grabCursor: true,
+        watchOverflow: true,
+    });
+});
+
+// 고객후기 슬라이더 (왼쪽으로 자동 흐름)
 const reviewSwiper = new Swiper('.reviewSwiper', {
     slidesPerView: 1,
     spaceBetween: 16,
+    loop: true,
+    autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+    },
+    speed: 700,
     pagination: {
         el: '.reviewSwiper .swiper-pagination',
         clickable: true,

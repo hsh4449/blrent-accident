@@ -80,7 +80,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     
     <!-- CSS (1번 구조 - 분리된 파일) -->
-    <link rel="stylesheet" href="css/style.css?v=mobile3">
+    <link rel="stylesheet" href="css/style.css?v=mobile5">
 
 </head>
 <body>
@@ -343,19 +343,94 @@
                 <div class="swiper-pagination"></div>
             </div>
 
-            <!-- BMW -->
+            <!-- BMW (모델별 가로 슬라이더: 색상/재고는 옆으로 슬라이드) -->
             <h3 class="vehicle-section-title">BMW</h3>
-            <div class="swiper vehicleSwiper">
-                <div class="swiper-wrapper">
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/bmw 5.png" alt="BMW 5시리즈" loading="lazy"><span class="vehicle-badge badge-popular">인기</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW 5 Series</h3><p class="vehicle-description">역동적인 주행 감각</p></div></div></div>
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/bmw 7.png" alt="BMW 7시리즈" loading="lazy"><span class="vehicle-badge badge-premium">프리미엄</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW 7 Series</h3><p class="vehicle-description">BMW의 철학</p></div></div></div>
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/new/x7.png" alt="BMW X7" loading="lazy"><span class="vehicle-badge badge-new">NEW</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X7</h3><p class="vehicle-description">풀사이즈의 위엄</p></div></div></div>
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/x6.png" alt="BMW X6" loading="lazy"><span class="vehicle-badge badge-popular">인기</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X6</h3><p class="vehicle-description">뜨거운 본능</p></div></div></div>
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/x5.png" alt="BMW X5" loading="lazy"><span class="vehicle-badge badge-popular">인기</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X5</h3><p class="vehicle-description">끝없는 편안함</p></div></div></div>
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/m4.png" alt="BMW M4 컨버터블" loading="lazy"><span class="vehicle-badge badge-premium">컨버터블</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW M4 컨버터블</h3><p class="vehicle-description">BMW 역동감</p></div></div></div>
-                    <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/z4.png" alt="BMW Z4" loading="lazy"><span class="vehicle-badge badge-premium">컨버터블</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW Z4 로드스터</h3><p class="vehicle-description">BMW의 빛나는별</p></div></div></div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW Z4 로드스터 <span class="model-count">4색</span></h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/z4.png" alt="BMW Z4 화이트" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW Z4</h3><p class="vehicle-description">화이트</p></div></div></div>
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/z4red.png" alt="BMW Z4 레드" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW Z4</h3><p class="vehicle-description">레드</p></div></div></div>
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/z4blue.png" alt="BMW Z4 블루" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW Z4</h3><p class="vehicle-description">블루</p></div></div></div>
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/z4black.png" alt="BMW Z4 블랙" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW Z4</h3><p class="vehicle-description">블랙</p></div></div></div>
+                    </div>
                 </div>
-                <div class="swiper-pagination"></div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW 420i 컨버터블 <span class="model-count">2색</span></h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW 420i 컨버터블_화이트.png" alt="BMW 420i 컨버터블 화이트" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW 420i 컨버터블</h3><p class="vehicle-description">화이트</p></div></div></div>
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW 420i 컨버터블_블랙.png" alt="BMW 420i 컨버터블 블랙" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW 420i 컨버터블</h3><p class="vehicle-description">블랙</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW X6 <span class="model-count">2대</span></h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW X6 xDrive.png" alt="BMW X6" loading="lazy"><span class="vehicle-badge badge-popular">인기</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X6</h3><p class="vehicle-description">뜨거운 본능</p></div></div></div>
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW X6 xDrive_2.png" alt="BMW X6" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X6</h3><p class="vehicle-description">화이트</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW X3 <span class="model-count">2대</span></h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW X3 20 xDrive.png" alt="BMW X3" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X3 xDrive</h3><p class="vehicle-description">실용의 정석</p></div></div></div>
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW X3 20 xDrive_2.png" alt="BMW X3" loading="lazy"></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X3 xDrive</h3><p class="vehicle-description">실용의 정석</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW 5 Series</h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW 5시리즈 블랙.png" alt="BMW 5시리즈" loading="lazy"><span class="vehicle-badge badge-popular">인기</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW 5 Series</h3><p class="vehicle-description">역동적인 주행 감각</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW X7</h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW X7 xDrive.png" alt="BMW X7" loading="lazy"><span class="vehicle-badge badge-new">NEW</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW X7</h3><p class="vehicle-description">풀사이즈의 위엄</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW 840i 그란쿠페</h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW 840i 그란쿠페.png" alt="BMW 840i 그란쿠페" loading="lazy"><span class="vehicle-badge badge-premium">프리미엄</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW 840i 그란쿠페</h3><p class="vehicle-description">우아한 4도어 쿠페</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW M4 컨버터블 컴페티션</h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW M4컨버터블 컴패티션.png" alt="BMW M4 컨버터블 컴페티션" loading="lazy"><span class="vehicle-badge badge-premium">컨버터블</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW M4 컨버터블</h3><p class="vehicle-description">M의 오픈 퍼포먼스</p></div></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-row">
+                <h4 class="model-label">BMW M2 쿠페</h4>
+                <div class="swiper modelSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><div class="vehicle-card"><div class="vehicle-image"><img src="img/cars/BMW M2쿠페.png" alt="BMW M2 쿠페" loading="lazy"><span class="vehicle-badge badge-premium">M 퍼포먼스</span></div><div class="vehicle-info"><h3 class="vehicle-name">BMW M2 쿠페</h3><p class="vehicle-description">순수 드라이빙</p></div></div></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Porsche -->
@@ -818,7 +893,7 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     
     <!-- JavaScript (1번 구조 - 분리된 파일) -->
-    <script src="js/main.js?v=mobile1" defer></script>
+    <script src="js/main.js?v=mobile5" defer></script>
 
     <!-- 자체 방문 분석 트래커 (Supabase) -->
     <!-- v2: /track 엣지펑션 경유(IP·지역 수집)로 전환. ?v 로 재방문자 캐시 강제 갱신 -->
