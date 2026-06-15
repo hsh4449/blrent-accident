@@ -461,18 +461,20 @@ body {
 @media (min-width: 768px) {
     .lineup-row { justify-content: flex-start; }   /* PC는 왼쪽 정렬 (모바일은 가운데 유지) */
     .lineup-row .model-row { flex: 0 1 360px; }
-    .lineup-row .model-label { justify-content: flex-start; }   /* PC 라벨도 카드 왼쪽 끝에 맞춤 */
     .lineup-row .modelSwiper .vehicle-image { height: auto; aspect-ratio: 3 / 2; }
 }
 .model-label {
     display: flex;
     align-items: center;
-    justify-content: center;   /* 차량명 가운데 정렬 (가운데 모인 카드와 맞춤) */
+    justify-content: center;   /* 모바일: 차량명 가운데 정렬 */
     gap: var(--spacing-xs);
     font-size: var(--font-base);
     font-weight: 700;
     color: var(--text-dark);
     margin-bottom: var(--spacing-sm);
+}
+@media (min-width: 768px) {
+    .model-label { justify-content: flex-start; }   /* PC: 모든 라벨 왼쪽 정렬 */
 }
 .model-count {
     font-size: var(--font-xs);
