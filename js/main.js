@@ -169,11 +169,11 @@ document.querySelectorAll('.vehicle-section-title').forEach(title => {
     if (!rows.length) return;
     const btn = document.createElement('button');
     btn.className = 'brand-toggle';
-    btn.textContent = '접기';
+    btn.textContent = '접기 ▴';
     btn.addEventListener('click', () => {
         const collapsed = rows[0].style.display === 'none';
         rows.forEach(r => { r.style.display = collapsed ? '' : 'none'; });
-        btn.textContent = collapsed ? '접기' : '라인업 보기';
+        btn.textContent = collapsed ? '접기 ▴' : '라인업 보기 ▾';
     });
     title.appendChild(btn);
 });

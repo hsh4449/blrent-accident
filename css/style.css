@@ -494,19 +494,23 @@ body {
     justify-content: space-between;
 }
 .brand-toggle {
-    font-size: var(--font-xs);
-    font-weight: 600;
-    color: var(--primary-orange);
-    background: var(--bg-white);
-    border: 1px solid var(--primary-orange);
+    font-size: var(--font-sm);
+    font-weight: 700;
+    color: var(--bg-white);
+    background: var(--primary-orange);
+    border: none;
     border-radius: 999px;
-    padding: 4px 12px;
+    padding: 8px 18px;
     cursor: pointer;
     white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(245, 130, 32, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.brand-toggle:hover {
+    box-shadow: 0 5px 14px rgba(245, 130, 32, 0.6);
 }
 .brand-toggle:active {
-    background: var(--primary-orange);
-    color: var(--bg-white);
+    transform: scale(0.95);
 }
 
 /* Swiper 컨테이너 */
