@@ -145,17 +145,19 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 모든 차량 슬라이더 초기화
-document.querySelectorAll('.vehicleSwiper').forEach(container => {
-    new Swiper(container, {
-        ...vehicleSwiperConfig,
-        pagination: {
-            el: container.querySelector('.swiper-pagination'),
-            clickable: true,
-            dynamicBullets: true,
-        },
+// 모든 차량 슬라이더 초기화 (모바일은 2열 그리드로 보여주므로 스와이퍼 미초기화)
+if (window.innerWidth > 767) {
+    document.querySelectorAll('.vehicleSwiper').forEach(container => {
+        new Swiper(container, {
+            ...vehicleSwiperConfig,
+            pagination: {
+                el: container.querySelector('.swiper-pagination'),
+                clickable: true,
+                dynamicBullets: true,
+            },
+        });
     });
-});
+}
 
 // 고객후기 슬라이더
 const reviewSwiper = new Swiper('.reviewSwiper', {
