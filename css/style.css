@@ -442,6 +442,7 @@ body {
 .model-label {
     display: flex;
     align-items: center;
+    justify-content: center;   /* 차량명 가운데 정렬 (가운데 모인 카드와 맞춤) */
     gap: var(--spacing-xs);
     font-size: var(--font-base);
     font-weight: 700;
