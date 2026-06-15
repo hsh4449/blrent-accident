@@ -164,7 +164,7 @@ document.querySelectorAll('.vehicle-section-title').forEach(title => {
     const rows = [];
     let el = title.nextElementSibling;
     while (el && !el.classList.contains('vehicle-section-title')) {
-        if (el.classList.contains('model-row')) rows.push(el);
+        if (el.classList.contains('model-row') || el.classList.contains('lineup-row')) rows.push(el);
         el = el.nextElementSibling;
     }
     if (!rows.length) return;
