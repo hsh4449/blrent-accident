@@ -145,42 +145,16 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 차량 슬라이더: PC는 스와이퍼, 모바일은 2열 그리드 + 브랜드당 4대 기본 노출 + 더보기
-if (window.innerWidth > 767) {
-    document.querySelectorAll('.vehicleSwiper').forEach(container => {
-        new Swiper(container, {
-            ...vehicleSwiperConfig,
-            pagination: {
-                el: container.querySelector('.swiper-pagination'),
-                clickable: true,
-                dynamicBullets: true,
-            },
-        });
-    });
-} else {
-    // 모바일: 재고가 늘어도 페이지가 끝없이 길어지지 않도록 브랜드당 4대만 우선 노출
-    const VISIBLE = 4;
-    document.querySelectorAll('.vehicleSwiper').forEach(sw => {
-        const slides = sw.querySelectorAll('.swiper-slide');
-        if (slides.length <= VISIBLE) return;
-        const btn = document.createElement('button');
-        btn.className = 'vehicle-more-btn';
-        btn.textContent = `더보기 (+${slides.length - VISIBLE}대)`;
-        btn.addEventListener('click', () => {
-            sw.classList.add('expanded');
-            btn.remove();
-        });
-        sw.insertAdjacentElement('afterend', btn);
-    });
-}
-
-// 모델별 색상/재고 슬라이더 (PC/모바일 공통, 옆으로 슬라이드)
+// 모델별 색상/재고 슬라이더 (PC/모바일 공통). 2개씩 보이고 2초마다 왼쪽으로 자동 흐름
 document.querySelectorAll('.modelSwiper').forEach(container => {
+    const slideCount = container.querySelectorAll('.swiper-slide').length;
     new Swiper(container, {
         slidesPerView: 'auto',
         spaceBetween: 12,
         grabCursor: true,
-        watchOverflow: true,
+        loop: slideCount > 2,          // 슬라이드 충분할 때만 무한루프
+        autoplay: slideCount > 2 ? { delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true } : false,
+        speed: 600,
     });
 });
 
@@ -414,9 +388,10 @@ window.addEventListener('load', () => {
             }
         });
     }, {
-        threshold: 0.1
+        threshold: 0,
+        rootMargin: '0px 0px -10% 0px'
     });
-    
+
     sections.forEach(section => {
         section.style.opacity = '0';
         section.style.transform = 'translateY(20px)';
