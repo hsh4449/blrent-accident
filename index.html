@@ -188,6 +188,23 @@
         .evt-dismiss{ background:#eee; color:#666; }
         .evt-closebtn{ background:#F26522; color:#fff; }
         .evt-modal .evt-inner{ padding:20px 16px 8px; }
+        /* 모바일: 전화버튼까지 한 화면에 들어오도록 압축 */
+        @media (max-width:600px){
+          .evt-modal{ padding:10px; align-items:flex-start; }
+          .evt-modal-box{ max-height:94vh; margin-top:2vh; }
+          .evt-modal .evt-hero img{ max-height:110px; object-fit:cover; object-position:center 35%; }
+          .evt-modal .evt-inner{ padding:12px 14px 4px; }
+          .evt-modal .evt-benefits{ gap:8px; }
+          .evt-modal .evt-b{ padding:10px 14px; min-width:0; }
+          .evt-modal .evt-b .top{ margin-bottom:6px; }
+          .evt-modal .evt-b .big{ font-size:21px; }
+          .evt-modal .evt-b ul{ margin-top:6px; font-size:11px; line-height:1.55; }
+          .evt-modal .evt-cta{ padding:12px 0 0; }
+          .evt-modal .evt-cta a{ padding:13px; font-size:15px; }
+          .evt-modal .evt-note{ padding:11px 14px; margin-top:12px; }
+          .evt-modal .evt-note ol{ font-size:10px; line-height:1.6; }
+          .evt-modal-foot{ padding:10px 14px 14px; }
+        }
         @keyframes evtGradient {0%{background-position:0% 50%;}100%{background-position:200% 50%;}}
         @keyframes evtGlow {0%,100%{box-shadow:0 8px 24px rgba(242,101,34,.35);}50%{box-shadow:0 10px 34px rgba(242,101,34,.6),0 0 22px rgba(242,101,34,.35);}}
         @keyframes evtShine {0%{transform:translateX(-120%) skewX(-20deg);}55%,100%{transform:translateX(320%) skewX(-20deg);}}
