@@ -152,7 +152,7 @@ document.querySelectorAll('.modelSwiper').forEach(container => {
         slidesPerView: 'auto',
         spaceBetween: 12,
         grabCursor: true,
-        centerInsufficientSlides: true, // PC에서 카드 적으면 왼쪽 쏠림 대신 가운데 정렬
+        centerInsufficientSlides: window.innerWidth < 768, // 모바일만 가운데, PC는 왼쪽 정렬
         loop: slideCount > 2,          // 슬라이드 충분할 때만 무한루프
         autoplay: slideCount > 2 ? { delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true } : false,
         speed: 600,
