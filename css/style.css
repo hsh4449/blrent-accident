@@ -463,6 +463,16 @@ body {
     width: 46%;            /* 모바일: 2개 보임 + 슬라이드 */
     height: auto;
 }
+/* 모델 슬라이더 카드는 사진만 (모델명은 위 라벨에 한 번만) */
+.modelSwiper .vehicle-info {
+    display: none;
+}
+.modelSwiper .vehicle-card {
+    height: auto;          /* 사진 높이에 맞춤 (기본 220px 고정 해제) */
+}
+.modelSwiper .vehicle-image {
+    height: 150px;
+}
 @media (min-width: 768px) {
     .modelSwiper .swiper-slide { width: 31%; }
 }
