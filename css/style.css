@@ -435,6 +435,41 @@ body {
     background-color: var(--bg-white);
 }
 
+/* 모델별 가로 슬라이더 (색상/재고는 옆으로 슬라이드) */
+.model-row {
+    margin-bottom: var(--spacing-lg);
+}
+.model-label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-base);
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-sm);
+}
+.model-count {
+    font-size: var(--font-xs);
+    font-weight: 600;
+    color: var(--primary-orange);
+    background: var(--primary-orange-lighter);
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+.modelSwiper {
+    overflow: hidden;
+}
+.modelSwiper .swiper-slide {
+    width: 46%;            /* 모바일: 2개 보임 + 슬라이드 */
+    height: auto;
+}
+@media (min-width: 768px) {
+    .modelSwiper .swiper-slide { width: 31%; }
+}
+@media (min-width: 1024px) {
+    .modelSwiper .swiper-slide { width: 23%; }
+}
+
 /* 섹션 타이틀 */
 .vehicle-section-title {
     font-size: var(--font-xl);
@@ -738,6 +773,28 @@ body {
     .vehicle-description {
         white-space: normal;
         -webkit-line-clamp: 1;
+    }
+
+    /* 브랜드당 4대(2줄)만 기본 노출, 나머지는 '더보기'로 (재고 증가 대비) */
+    .vehicleSwiper:not(.expanded) .swiper-slide:nth-child(n+5) {
+        display: none;
+    }
+    .vehicle-more-btn {
+        display: block;
+        width: 100%;
+        margin-top: var(--spacing-sm);
+        padding: var(--spacing-sm);
+        background: var(--bg-white);
+        color: var(--primary-orange);
+        border: 2px solid var(--primary-orange);
+        border-radius: 12px;
+        font-size: var(--font-sm);
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .vehicle-more-btn:active {
+        background: var(--primary-orange);
+        color: var(--bg-white);
     }
 
     /* 여백 다이어트: 섹션 세로 길이 압축 */
