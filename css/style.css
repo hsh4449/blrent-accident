@@ -1717,11 +1717,8 @@ a:focus-visible {
     opacity: 0 !important;
 }
 /* 브랜드 필터 바 (한 번에 한 브랜드만 표시) */
-.brand-filter{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch;
-    padding:10px 0; margin-bottom:var(--spacing-md);
-    position:sticky; top:var(--header-height); z-index:50; background:var(--bg-white);
-    scrollbar-width:none; }
-.brand-filter::-webkit-scrollbar{ display:none; }
+.brand-filter{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
+    padding:10px 0; margin-bottom:var(--spacing-md); }
 .brand-chip{ flex:0 0 auto; padding:9px 18px; border-radius:999px; border:1px solid #ddd;
     background:#fff; color:#555; font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap;
     transition:all .15s ease; }
