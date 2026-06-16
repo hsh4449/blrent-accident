@@ -171,26 +171,41 @@ const vehicleSwiperConfig = {
     const chips = [];
     let timer = null, curBrand = -1, curModel = 0;
 
-    function showModel(g, mi) {
+    // 브랜드 선택 시 그 브랜드 이미지 미리 로딩 → 회전 시 빈 카드 없음
+    function preload(g) {
+        g.rows.forEach(r => r.querySelectorAll('img').forEach(im => {
+            const u = im.getAttribute('src');
+            if (u) { const p = new Image(); p.src = u; }
+        }));
+    }
+    function showModel(g, mi, dir) {
         g.rows.forEach((r, ri) => {
-            r.style.display = ri === mi ? '' : 'none';
-            if (ri === mi) { r.classList.remove('mr-fade'); void r.offsetWidth; r.classList.add('mr-fade'); }
+            if (ri === mi) {
+                r.style.display = '';
+                r.classList.remove('mr-next', 'mr-prev'); void r.offsetWidth;
+                r.classList.add(dir < 0 ? 'mr-prev' : 'mr-next');
+            } else { r.style.display = 'none'; }
         });
     }
-    function startRotation(g) {
+    function restart() {
         clearInterval(timer);
+        const g = groups[curBrand];
+        if (g && g.rows.length > 1) timer = setInterval(() => go(1), ROTATE_MS);
+    }
+    function go(delta) {
+        const g = groups[curBrand];
         if (!g || g.rows.length <= 1) return;
-        timer = setInterval(() => {
-            curModel = (curModel + 1) % g.rows.length;
-            showModel(g, curModel);
-        }, ROTATE_MS);
+        curModel = (curModel + delta + g.rows.length) % g.rows.length;
+        showModel(g, curModel, delta);
+        restart();
     }
     function select(idx) {
         curBrand = idx; curModel = 0;
         groups.forEach((g, gi) => g.els.forEach(e => { e.style.display = gi === idx ? '' : 'none'; }));
         chips.forEach((c, ci) => c.classList.toggle('active', ci === idx));
-        showModel(groups[idx], 0);
-        startRotation(groups[idx]);
+        preload(groups[idx]);
+        showModel(groups[idx], 0, 1);
+        restart();
     }
     groups.forEach((g, i) => {
         const c = document.createElement('button');
@@ -200,11 +215,22 @@ const vehicleSwiperConfig = {
     });
     select(0);
 
-    // 데스크탑: 마우스 올리면 잠시 멈춤
+    // 손 스와이프(터치+마우스드래그): 왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전 (자동회전은 유지)
     const sec = document.getElementById('vehicles');
+    let sx = null, sy = null;
+    const down = (x, y) => { sx = x; sy = y; };
+    const upX = (x, y) => {
+        if (sx === null) return;
+        const dx = x - sx, dy = y - sy; sx = sy = null;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+    };
     if (sec) {
-        sec.addEventListener('mouseenter', () => clearInterval(timer));
-        sec.addEventListener('mouseleave', () => { if (curBrand >= 0) startRotation(groups[curBrand]); });
+        sec.addEventListener('touchstart', e => down(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+        sec.addEventListener('touchend', e => upX(e.changedTouches[0].clientX, e.changedTouches[0].clientY), { passive: true });
+        sec.addEventListener('mousedown', e => down(e.clientX, e.clientY));
+        sec.addEventListener('mouseup', e => upX(e.clientX, e.clientY));
+        sec.addEventListener('mouseenter', () => clearInterval(timer));   // 데스크탑 호버 시 일시정지
+        sec.addEventListener('mouseleave', () => restart());
     }
 })();
 
