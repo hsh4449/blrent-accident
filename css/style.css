@@ -1716,6 +1716,18 @@ a:focus-visible {
     visibility: hidden !important;
     opacity: 0 !important;
 }
+/* 브랜드 필터 바 (한 번에 한 브랜드만 표시) */
+.brand-filter{ display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch;
+    padding:10px 0; margin-bottom:var(--spacing-md);
+    position:sticky; top:var(--header-height); z-index:50; background:var(--bg-white);
+    scrollbar-width:none; }
+.brand-filter::-webkit-scrollbar{ display:none; }
+.brand-chip{ flex:0 0 auto; padding:9px 18px; border-radius:999px; border:1px solid #ddd;
+    background:#fff; color:#555; font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap;
+    transition:all .15s ease; }
+.brand-chip:hover{ border-color:var(--primary-orange); color:var(--primary-orange); }
+.brand-chip.active{ background:var(--primary-orange); border-color:var(--primary-orange); color:#fff; }
+
 /* 차량 섹션 하단 맞춤배차 멘트 배너 */
 .vehicle-cta-band{ text-align:center; margin-top:var(--spacing-xl); padding:32px 24px; background:#FFF6ED; border:1px solid #FFE0C2; border-radius:16px; }
 .vehicle-cta-band .vc-title{ font-size:22px; font-weight:800; color:var(--text-dark); margin:0 0 10px; }

@@ -159,25 +159,42 @@ document.querySelectorAll('.modelSwiper').forEach(container => {
     });
 });
 
-// 브랜드별 라인업 접기/펼치기 토글 (브랜드명 옆 버튼)
-document.querySelectorAll('.vehicle-section-title').forEach(title => {
-    const rows = [];
-    let el = title.nextElementSibling;
-    while (el && !el.classList.contains('vehicle-section-title')) {
-        if (el.classList.contains('model-row') || el.classList.contains('lineup-row')) rows.push(el);
-        el = el.nextElementSibling;
-    }
-    if (!rows.length) return;
-    const btn = document.createElement('button');
-    btn.className = 'brand-toggle';
-    btn.textContent = '접기 ▴';
-    btn.addEventListener('click', () => {
-        const collapsed = rows[0].style.display === 'none';
-        rows.forEach(r => { r.style.display = collapsed ? '' : 'none'; });
-        btn.textContent = collapsed ? '접기 ▴' : '라인업 보기 ▾';
+// 브랜드 필터 바: 칩을 누르면 그 브랜드 차량만 표시(나머지 숨김 → 이미지도 그때 로딩)
+(function () {
+    const bar = document.getElementById('brandFilter');
+    if (!bar) return;
+    const LABELS = {
+        'Mercedes-Benz': '벤츠', 'BMW': 'BMW', 'Audi': '아우디', 'Tesla': '테슬라',
+        'Land Rover': '랜드로버', 'Porsche': '포르쉐', 'Bentley': '벤틀리', 'Lamborghini': '람보르기니'
+    };
+    const titles = [...document.querySelectorAll('.vehicle-section-title')];
+    const groups = titles.map(title => {
+        const els = [title];
+        let el = title.nextElementSibling;
+        // 다음 브랜드 제목 전까지가 한 브랜드. 맨 끝 맞춤배차 배너(.vehicle-cta-band)는 항상 노출.
+        while (el && !el.classList.contains('vehicle-section-title') && !el.classList.contains('vehicle-cta-band')) {
+            els.push(el);
+            el = el.nextElementSibling;
+        }
+        const name = title.textContent.trim();
+        return { label: LABELS[name] || name, els };
     });
-    title.appendChild(btn);
-});
+    const chips = [];
+    function select(idx) {
+        groups.forEach((g, gi) => g.els.forEach(e => { e.style.display = gi === idx ? '' : 'none'; }));
+        chips.forEach((c, ci) => c.classList.toggle('active', ci === idx));
+    }
+    groups.forEach((g, i) => {
+        const c = document.createElement('button');
+        c.type = 'button';
+        c.className = 'brand-chip';
+        c.textContent = g.label;
+        c.addEventListener('click', () => select(i));
+        bar.appendChild(c);
+        chips.push(c);
+    });
+    select(0);   // 기본: 첫 브랜드(벤츠)만
+})();
 
 // 고객후기 슬라이더 (왼쪽으로 자동 흐름)
 const reviewSwiper = new Swiper('.reviewSwiper', {
