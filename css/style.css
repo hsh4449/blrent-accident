@@ -1728,6 +1728,20 @@ a:focus-visible {
 .brand-chip:hover{ border-color:var(--primary-orange); color:var(--primary-orange); }
 .brand-chip.active{ background:var(--primary-orange); border-color:var(--primary-orange); color:#fff; }
 
+/* 쇼케이스: 모델 하나씩 자동 회전 / 각 모델의 모든 차량을 한 줄 가운데 (Swiper 미사용) */
+.lineup-row{ display:block; margin-bottom:0; }
+.lineup-row .model-row{ flex:none; width:100%; margin-bottom:0; }
+.modelSwiper{ overflow:visible; }
+.modelSwiper .swiper-wrapper{ display:flex; justify-content:center; align-items:flex-start; gap:14px; flex-wrap:wrap; transform:none !important; }
+.modelSwiper .swiper-slide{ flex:0 1 360px; width:auto; max-width:380px; min-width:0; height:auto; }
+.modelSwiper .vehicle-image{ height:auto; aspect-ratio:3 / 2; }
+.model-label{ justify-content:center; }
+.model-row.mr-fade{ animation: mrFade .5s ease; }
+@keyframes mrFade{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+@media (max-width:767px){
+    .modelSwiper .swiper-slide{ flex:0 1 46%; max-width:none; }
+}
+
 /* 차량 섹션 하단 맞춤배차 멘트 배너 */
 .vehicle-cta-band{ text-align:center; margin-top:var(--spacing-xl); padding:32px 24px; background:#FFF6ED; border:1px solid #FFE0C2; border-radius:16px; }
 .vehicle-cta-band .vc-title{ font-size:22px; font-weight:800; color:var(--text-dark); margin:0 0 10px; }
