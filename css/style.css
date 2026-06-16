@@ -1733,6 +1733,11 @@ a:focus-visible {
 .modelSwiper .swiper-slide{ flex:0 1 360px; width:auto; max-width:380px; min-width:0; height:auto; }
 .modelSwiper .vehicle-image{ height:auto; aspect-ratio:3 / 2; }
 .model-label{ justify-content:center; }
+/* 회전 모드: 모델 영역 고정 높이 → 차 개수가 달라도 아래 컨트롤이 위아래로 안 움직임 */
+#vehicles.sc-rotating .model-row{ min-height:300px; display:flex; flex-direction:column; justify-content:center; }
+@media (max-width:767px){
+    #vehicles.sc-rotating .model-row{ min-height:280px; }
+}
 .model-row.mr-next{ animation: mrNext .4s ease; }
 .model-row.mr-prev{ animation: mrPrev .4s ease; }
 @keyframes mrNext{ from{ opacity:0; transform:translateX(45px); } to{ opacity:1; transform:none; } }
@@ -1760,7 +1765,8 @@ a:focus-visible {
 
 /* 차량 섹션 하단 맞춤배차 멘트 배너 */
 .vehicle-cta-band{ text-align:center; margin-top:var(--spacing-xl); padding:32px 24px; background:#FFF6ED; border:1px solid #FFE0C2; border-radius:16px; }
-.vehicle-cta-band .vc-title{ font-size:22px; font-weight:800; color:var(--text-dark); margin:0 0 10px; }
+.vehicle-cta-band .vc-title{ font-size:22px; font-weight:800; color:var(--text-dark); margin:0 0 10px; word-break:keep-all; line-height:1.35; }
+.vehicle-cta-band .vc-title b{ color:var(--primary-orange); }
 .vehicle-cta-band .vc-sub{ font-size:15px; color:#666; margin:0; line-height:1.7; word-break:keep-all; }
 .vehicle-cta-band .vc-sub b{ color:var(--primary-orange); font-weight:800; white-space:nowrap; }
 @media (max-width:767px){

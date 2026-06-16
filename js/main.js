@@ -155,6 +155,7 @@ const vehicleSwiperConfig = {
     };
     const ROTATE_MS = 3000;
     const cta = document.querySelector('.vehicle-cta-band');
+    const stage = document.getElementById('vehicles');
     const titles = [...document.querySelectorAll('.vehicle-section-title')];
     const groups = titles.map(title => {
         const els = [title], rows = [];
@@ -228,10 +229,12 @@ const vehicleSwiperConfig = {
         listMode = on;
         if (on) {
             clearInterval(timer);
+            if (stage) stage.classList.remove('sc-rotating');   // 리스트 모드: 고정높이 해제
             g.rows.forEach(r => { r.style.display = ''; r.classList.remove('mr-next', 'mr-prev'); });
             ctrl.style.display = 'none';
             allBtn.textContent = '한 모델씩 보기 ▴';
         } else {
+            if (stage) stage.classList.add('sc-rotating');
             ctrl.style.display = '';
             allBtn.textContent = '전체보기';
             curModel = 0; showModel(g, 0, 1); restart();
@@ -239,6 +242,7 @@ const vehicleSwiperConfig = {
     }
     function select(idx) {
         listMode = false; curBrand = idx; curModel = 0;
+        if (stage) stage.classList.add('sc-rotating');   // 회전 모드: 모델 영역 고정높이
         groups.forEach((g, gi) => g.els.forEach(e => { e.style.display = gi === idx ? '' : 'none'; }));
         chips.forEach((c, ci) => c.classList.toggle('active', ci === idx));
         const g = groups[idx];
