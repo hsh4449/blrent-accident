@@ -145,21 +145,7 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 모델별 색상/재고 슬라이더 (PC/모바일 공통). 2개씩 보이고 2초마다 왼쪽으로 자동 흐름
-document.querySelectorAll('.modelSwiper').forEach(container => {
-    const slideCount = container.querySelectorAll('.swiper-slide').length;
-    new Swiper(container, {
-        slidesPerView: 'auto',
-        spaceBetween: 12,
-        grabCursor: true,
-        centerInsufficientSlides: window.innerWidth < 768, // 모바일만 가운데, PC는 왼쪽 정렬
-        loop: slideCount > 2,          // 슬라이드 충분할 때만 무한루프
-        autoplay: slideCount > 2 ? { delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true } : false,
-        speed: 600,
-    });
-});
-
-// 브랜드 필터 바: 칩을 누르면 그 브랜드 차량만 표시(나머지 숨김 → 이미지도 그때 로딩)
+// 차량 쇼케이스: 브랜드 선택 → 그 브랜드 모델을 하나씩 자동 회전(각 모델의 모든 색상 동시 노출)
 (function () {
     const bar = document.getElementById('brandFilter');
     if (!bar) return;
@@ -167,33 +153,59 @@ document.querySelectorAll('.modelSwiper').forEach(container => {
         'Mercedes-Benz': '벤츠', 'BMW': 'BMW', 'Audi': '아우디', 'Tesla': '테슬라',
         'Land Rover': '랜드로버', 'Porsche': '포르쉐', 'Bentley': '벤틀리', 'Lamborghini': '람보르기니'
     };
+    const ROTATE_MS = 3000;
     const titles = [...document.querySelectorAll('.vehicle-section-title')];
     const groups = titles.map(title => {
-        const els = [title];
+        const els = [title];   // 브랜드 전체 요소(제목+컨테이너)
+        const rows = [];       // 그 안의 모델(model-row) 목록 — 회전 단위
         let el = title.nextElementSibling;
-        // 다음 브랜드 제목 전까지가 한 브랜드. 맨 끝 맞춤배차 배너(.vehicle-cta-band)는 항상 노출.
         while (el && !el.classList.contains('vehicle-section-title') && !el.classList.contains('vehicle-cta-band')) {
             els.push(el);
+            if (el.classList.contains('model-row')) rows.push(el);
+            else rows.push(...el.querySelectorAll('.model-row'));   // lineup-row 안의 모델들
             el = el.nextElementSibling;
         }
-        const name = title.textContent.trim();
-        return { label: LABELS[name] || name, els };
+        return { label: LABELS[title.textContent.trim()] || title.textContent.trim(), els, rows };
     });
+
     const chips = [];
+    let timer = null, curBrand = -1, curModel = 0;
+
+    function showModel(g, mi) {
+        g.rows.forEach((r, ri) => {
+            r.style.display = ri === mi ? '' : 'none';
+            if (ri === mi) { r.classList.remove('mr-fade'); void r.offsetWidth; r.classList.add('mr-fade'); }
+        });
+    }
+    function startRotation(g) {
+        clearInterval(timer);
+        if (!g || g.rows.length <= 1) return;
+        timer = setInterval(() => {
+            curModel = (curModel + 1) % g.rows.length;
+            showModel(g, curModel);
+        }, ROTATE_MS);
+    }
     function select(idx) {
+        curBrand = idx; curModel = 0;
         groups.forEach((g, gi) => g.els.forEach(e => { e.style.display = gi === idx ? '' : 'none'; }));
         chips.forEach((c, ci) => c.classList.toggle('active', ci === idx));
+        showModel(groups[idx], 0);
+        startRotation(groups[idx]);
     }
     groups.forEach((g, i) => {
         const c = document.createElement('button');
-        c.type = 'button';
-        c.className = 'brand-chip';
-        c.textContent = g.label;
+        c.type = 'button'; c.className = 'brand-chip'; c.textContent = g.label;
         c.addEventListener('click', () => select(i));
-        bar.appendChild(c);
-        chips.push(c);
+        bar.appendChild(c); chips.push(c);
     });
-    select(0);   // 기본: 첫 브랜드(벤츠)만
+    select(0);
+
+    // 데스크탑: 마우스 올리면 잠시 멈춤
+    const sec = document.getElementById('vehicles');
+    if (sec) {
+        sec.addEventListener('mouseenter', () => clearInterval(timer));
+        sec.addEventListener('mouseleave', () => { if (curBrand >= 0) startRotation(groups[curBrand]); });
+    }
 })();
 
 // 고객후기 슬라이더 (왼쪽으로 자동 흐름)
