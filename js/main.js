@@ -145,7 +145,7 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 차량 쇼케이스: 브랜드 선택 → 그 브랜드 모델을 하나씩 자동 회전(각 모델의 모든 색상 동시 노출)
+// 차량 쇼케이스: 브랜드 선택 → 모델 자동 회전(점/화살표/스와이프) + '전체 보기' 리스트 모드
 (function () {
     const bar = document.getElementById('brandFilter');
     if (!bar) return;
@@ -154,29 +154,52 @@ const vehicleSwiperConfig = {
         'Land Rover': '랜드로버', 'Porsche': '포르쉐', 'Bentley': '벤틀리', 'Lamborghini': '람보르기니'
     };
     const ROTATE_MS = 3000;
+    const cta = document.querySelector('.vehicle-cta-band');
     const titles = [...document.querySelectorAll('.vehicle-section-title')];
     const groups = titles.map(title => {
-        const els = [title];   // 브랜드 전체 요소(제목+컨테이너)
-        const rows = [];       // 그 안의 모델(model-row) 목록 — 회전 단위
+        const els = [title], rows = [];
         let el = title.nextElementSibling;
-        while (el && !el.classList.contains('vehicle-section-title') && !el.classList.contains('vehicle-cta-band')) {
+        while (el && !el.classList.contains('vehicle-section-title')
+                  && !el.classList.contains('vehicle-cta-band')
+                  && !el.classList.contains('showcase-ctrl-wrap')) {
             els.push(el);
             if (el.classList.contains('model-row')) rows.push(el);
-            else rows.push(...el.querySelectorAll('.model-row'));   // lineup-row 안의 모델들
+            else rows.push(...el.querySelectorAll('.model-row'));
             el = el.nextElementSibling;
         }
         return { label: LABELS[title.textContent.trim()] || title.textContent.trim(), els, rows };
     });
 
-    const chips = [];
-    let timer = null, curBrand = -1, curModel = 0;
+    // 컨트롤(화살표+점) + '전체 보기' 버튼 — 맞춤배차 배너 앞에 삽입
+    const wrap = document.createElement('div'); wrap.className = 'showcase-ctrl-wrap';
+    wrap.innerHTML =
+        '<div class="showcase-ctrl">'
+        + '<button type="button" class="sc-arrow sc-prev" aria-label="이전">‹</button>'
+        + '<div class="sc-dots"></div>'
+        + '<button type="button" class="sc-arrow sc-next" aria-label="다음">›</button>'
+        + '</div>'
+        + '<button type="button" class="sc-all">이 브랜드 전체 보기</button>';
+    if (cta && cta.parentNode) cta.parentNode.insertBefore(wrap, cta);
+    const ctrl = wrap.querySelector('.showcase-ctrl');
+    const dotsBox = wrap.querySelector('.sc-dots');
+    const allBtn = wrap.querySelector('.sc-all');
 
-    // 브랜드 선택 시 그 브랜드 이미지 미리 로딩 → 회전 시 빈 카드 없음
+    const chips = [];
+    let timer = null, curBrand = -1, curModel = 0, listMode = false;
+
     function preload(g) {
         g.rows.forEach(r => r.querySelectorAll('img').forEach(im => {
-            const u = im.getAttribute('src');
-            if (u) { const p = new Image(); p.src = u; }
+            const u = im.getAttribute('src'); if (u) { const p = new Image(); p.src = u; }
         }));
+    }
+    function renderDots(g) {
+        dotsBox.innerHTML = '';
+        g.rows.forEach((r, i) => {
+            const d = document.createElement('button');
+            d.type = 'button'; d.className = 'sc-dot' + (i === curModel ? ' active' : '');
+            d.addEventListener('click', () => { curModel = i; showModel(g, i, 0); restart(); });
+            dotsBox.appendChild(d);
+        });
     }
     function showModel(g, mi, dir) {
         g.rows.forEach((r, ri) => {
@@ -186,25 +209,46 @@ const vehicleSwiperConfig = {
                 r.classList.add(dir < 0 ? 'mr-prev' : 'mr-next');
             } else { r.style.display = 'none'; }
         });
+        [...dotsBox.children].forEach((d, i) => d.classList.toggle('active', i === mi));
     }
     function restart() {
         clearInterval(timer);
         const g = groups[curBrand];
-        if (g && g.rows.length > 1) timer = setInterval(() => go(1), ROTATE_MS);
+        if (!listMode && g && g.rows.length > 1) timer = setInterval(() => go(1), ROTATE_MS);
     }
     function go(delta) {
         const g = groups[curBrand];
-        if (!g || g.rows.length <= 1) return;
+        if (listMode || !g || g.rows.length <= 1) return;
         curModel = (curModel + delta + g.rows.length) % g.rows.length;
         showModel(g, curModel, delta);
         restart();
     }
+    function setListMode(on) {
+        const g = groups[curBrand]; if (!g) return;
+        listMode = on;
+        if (on) {
+            clearInterval(timer);
+            g.rows.forEach(r => { r.style.display = ''; r.classList.remove('mr-next', 'mr-prev'); });
+            ctrl.style.display = 'none';
+            allBtn.textContent = '한 모델씩 보기 ▴';
+        } else {
+            ctrl.style.display = '';
+            allBtn.textContent = '이 브랜드 전체 보기';
+            curModel = 0; showModel(g, 0, 1); restart();
+        }
+    }
     function select(idx) {
-        curBrand = idx; curModel = 0;
+        listMode = false; curBrand = idx; curModel = 0;
         groups.forEach((g, gi) => g.els.forEach(e => { e.style.display = gi === idx ? '' : 'none'; }));
         chips.forEach((c, ci) => c.classList.toggle('active', ci === idx));
-        preload(groups[idx]);
-        showModel(groups[idx], 0, 1);
+        const g = groups[idx];
+        preload(g);
+        renderDots(g);
+        const multi = g.rows.length > 1;
+        ctrl.style.display = multi ? '' : 'none';
+        allBtn.style.display = multi ? '' : 'none';
+        allBtn.textContent = '이 브랜드 전체 보기';
+        showModel(g, 0, 1);
         restart();
     }
     groups.forEach((g, i) => {
@@ -215,22 +259,26 @@ const vehicleSwiperConfig = {
     });
     select(0);
 
-    // 손 스와이프(터치+마우스드래그): 왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전 (자동회전은 유지)
+    ctrl.querySelector('.sc-prev').addEventListener('click', () => go(-1));
+    ctrl.querySelector('.sc-next').addEventListener('click', () => go(1));
+    allBtn.addEventListener('click', () => setListMode(!listMode));
+
+    // 손 스와이프(터치+마우스드래그): 왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전
     const sec = document.getElementById('vehicles');
     let sx = null, sy = null;
     const down = (x, y) => { sx = x; sy = y; };
     const upX = (x, y) => {
         if (sx === null) return;
         const dx = x - sx, dy = y - sy; sx = sy = null;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+        if (!listMode && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
     };
     if (sec) {
         sec.addEventListener('touchstart', e => down(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
         sec.addEventListener('touchend', e => upX(e.changedTouches[0].clientX, e.changedTouches[0].clientY), { passive: true });
         sec.addEventListener('mousedown', e => down(e.clientX, e.clientY));
         sec.addEventListener('mouseup', e => upX(e.clientX, e.clientY));
-        sec.addEventListener('mouseenter', () => clearInterval(timer));   // 데스크탑 호버 시 일시정지
-        sec.addEventListener('mouseleave', () => restart());
+        sec.addEventListener('mouseenter', () => { if (!listMode) clearInterval(timer); });
+        sec.addEventListener('mouseleave', () => { if (!listMode) restart(); });
     }
 })();
 

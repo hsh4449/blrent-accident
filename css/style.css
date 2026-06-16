@@ -1739,7 +1739,24 @@ a:focus-visible {
 @keyframes mrPrev{ from{ opacity:0; transform:translateX(-45px); } to{ opacity:1; transform:none; } }
 @media (max-width:767px){
     .modelSwiper .swiper-slide{ flex:0 1 46%; max-width:none; }
+    /* 브랜드 칩: 모바일 4열 = 2줄 고정 */
+    .brand-filter{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    .brand-chip{ padding:8px 4px; font-size:12px; text-align:center; }
 }
+
+/* 쇼케이스 컨트롤: 양옆 화살표 + 점 인디케이터 + 전체보기 */
+.showcase-ctrl-wrap{ text-align:center; margin-top:16px; }
+.showcase-ctrl{ display:flex; align-items:center; justify-content:center; gap:14px; }
+.sc-arrow{ width:42px; height:42px; flex:0 0 auto; border-radius:50%; border:1px solid #e0e0e0;
+    background:#fff; color:var(--primary-orange); font-size:24px; line-height:38px; text-align:center;
+    cursor:pointer; padding:0; transition:all .15s ease; }
+.sc-arrow:hover{ background:var(--primary-orange); color:#fff; border-color:var(--primary-orange); }
+.sc-dots{ display:flex; flex-wrap:wrap; justify-content:center; gap:7px; max-width:62%; }
+.sc-dot{ width:9px; height:9px; border-radius:50%; border:none; background:#d9d9d9; padding:0; cursor:pointer; transition:all .2s ease; }
+.sc-dot.active{ background:var(--primary-orange); width:22px; border-radius:5px; }
+.sc-all{ margin-top:16px; padding:11px 24px; border-radius:999px; border:1px solid var(--primary-orange);
+    background:#fff; color:var(--primary-orange); font-size:14px; font-weight:700; cursor:pointer; transition:all .15s ease; }
+.sc-all:hover{ background:var(--primary-orange); color:#fff; }
 
 /* 차량 섹션 하단 맞춤배차 멘트 배너 */
 .vehicle-cta-band{ text-align:center; margin-top:var(--spacing-xl); padding:32px 24px; background:#FFF6ED; border:1px solid #FFE0C2; border-radius:16px; }
