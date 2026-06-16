@@ -1716,3 +1716,13 @@ a:focus-visible {
     visibility: hidden !important;
     opacity: 0 !important;
 }
+/* 차량 섹션 하단 맞춤배차 멘트 배너 */
+.vehicle-cta-band{ text-align:center; margin-top:var(--spacing-xl); padding:32px 24px; background:#FFF6ED; border:1px solid #FFE0C2; border-radius:16px; }
+.vehicle-cta-band .vc-title{ font-size:22px; font-weight:800; color:var(--text-dark); margin:0 0 10px; }
+.vehicle-cta-band .vc-sub{ font-size:15px; color:#666; margin:0; line-height:1.7; word-break:keep-all; }
+.vehicle-cta-band .vc-sub b{ color:var(--primary-orange); font-weight:800; }
+@media (max-width:767px){
+    .vehicle-cta-band{ padding:24px 16px; }
+    .vehicle-cta-band .vc-title{ font-size:18px; }
+    .vehicle-cta-band .vc-sub{ font-size:13px; }
+}
