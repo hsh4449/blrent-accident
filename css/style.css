@@ -1736,8 +1736,10 @@ a:focus-visible {
 .modelSwiper .swiper-slide{ flex:0 1 360px; width:auto; max-width:380px; min-width:0; height:auto; }
 .modelSwiper .vehicle-image{ height:auto; aspect-ratio:3 / 2; }
 .model-label{ justify-content:center; }
-.model-row.mr-fade{ animation: mrFade .5s ease; }
-@keyframes mrFade{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:none; } }
+.model-row.mr-next{ animation: mrNext .4s ease; }
+.model-row.mr-prev{ animation: mrPrev .4s ease; }
+@keyframes mrNext{ from{ opacity:0; transform:translateX(45px); } to{ opacity:1; transform:none; } }
+@keyframes mrPrev{ from{ opacity:0; transform:translateX(-45px); } to{ opacity:1; transform:none; } }
 @media (max-width:767px){
     .modelSwiper .swiper-slide{ flex:0 1 46%; max-width:none; }
 }
