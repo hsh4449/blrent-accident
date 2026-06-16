@@ -233,7 +233,7 @@ const vehicleSwiperConfig = {
             allBtn.textContent = '한 모델씩 보기 ▴';
         } else {
             ctrl.style.display = '';
-            allBtn.textContent = '이 브랜드 전체 보기';
+            allBtn.textContent = '전체보기';
             curModel = 0; showModel(g, 0, 1); restart();
         }
     }
@@ -247,7 +247,7 @@ const vehicleSwiperConfig = {
         const multi = g.rows.length > 1;
         ctrl.style.display = multi ? '' : 'none';
         allBtn.style.display = multi ? '' : 'none';
-        allBtn.textContent = '이 브랜드 전체 보기';
+        allBtn.textContent = '전체보기';
         showModel(g, 0, 1);
         restart();
     }
