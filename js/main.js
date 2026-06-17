@@ -145,7 +145,7 @@ const vehicleSwiperConfig = {
     },
 };
 
-// 차량 쇼케이스: 브랜드 선택 → 모델 자동 회전(점/화살표/스와이프) + '전체 보기' 리스트 모드
+// 브랜드 필터: 칩 누르면 그 브랜드 차량 전부 표시(회전 없음, 다 보이게)
 (function () {
     const bar = document.getElementById('brandFilter');
     if (!bar) return;
@@ -153,107 +153,27 @@ const vehicleSwiperConfig = {
         'Mercedes-Benz': '벤츠', 'BMW': 'BMW', 'Audi': '아우디', 'Tesla': '테슬라',
         'Land Rover': '랜드로버', 'Porsche': '포르쉐', 'Bentley': '벤틀리', 'Lamborghini': '람보르기니'
     };
-    const ROTATE_MS = 3000;
-    const cta = document.querySelector('.vehicle-cta-band');
-    const stage = document.getElementById('vehicles');
     const titles = [...document.querySelectorAll('.vehicle-section-title')];
     const groups = titles.map(title => {
-        const els = [title], rows = [];
+        const els = [title];
         let el = title.nextElementSibling;
         while (el && !el.classList.contains('vehicle-section-title')
-                  && !el.classList.contains('vehicle-cta-band')
-                  && !el.classList.contains('showcase-ctrl-wrap')) {
+                  && !el.classList.contains('vehicle-cta-band')) {
             els.push(el);
-            if (el.classList.contains('model-row')) rows.push(el);
-            else rows.push(...el.querySelectorAll('.model-row'));
             el = el.nextElementSibling;
         }
-        return { label: LABELS[title.textContent.trim()] || title.textContent.trim(), els, rows };
+        return { label: LABELS[title.textContent.trim()] || title.textContent.trim(), els };
     });
-
-    // 컨트롤(화살표+점) + '전체 보기' 버튼 — 맞춤배차 배너 앞에 삽입
-    const wrap = document.createElement('div'); wrap.className = 'showcase-ctrl-wrap';
-    wrap.innerHTML =
-        '<div class="showcase-ctrl">'
-        + '<button type="button" class="sc-arrow sc-prev" aria-label="이전">‹</button>'
-        + '<div class="sc-dots"></div>'
-        + '<button type="button" class="sc-arrow sc-next" aria-label="다음">›</button>'
-        + '</div>'
-        + '<button type="button" class="sc-all">이 브랜드 전체 보기</button>';
-    if (cta && cta.parentNode) cta.parentNode.insertBefore(wrap, cta);
-    const ctrl = wrap.querySelector('.showcase-ctrl');
-    const dotsBox = wrap.querySelector('.sc-dots');
-    const allBtn = wrap.querySelector('.sc-all');
-
     const chips = [];
-    let timer = null, curBrand = -1, curModel = 0, listMode = false;
-
     function preload(g) {
-        g.rows.forEach(r => r.querySelectorAll('img').forEach(im => {
+        g.els.forEach(e => e.querySelectorAll('img').forEach(im => {
             const u = im.getAttribute('src'); if (u) { const p = new Image(); p.src = u; }
         }));
     }
-    function renderDots(g) {
-        dotsBox.innerHTML = '';
-        g.rows.forEach((r, i) => {
-            const d = document.createElement('button');
-            d.type = 'button'; d.className = 'sc-dot' + (i === curModel ? ' active' : '');
-            d.addEventListener('click', () => { curModel = i; showModel(g, i, 0); restart(); });
-            dotsBox.appendChild(d);
-        });
-    }
-    function showModel(g, mi, dir) {
-        g.rows.forEach((r, ri) => {
-            if (ri === mi) {
-                r.style.display = '';
-                r.classList.remove('mr-next', 'mr-prev'); void r.offsetWidth;
-                r.classList.add(dir < 0 ? 'mr-prev' : 'mr-next');
-            } else { r.style.display = 'none'; }
-        });
-        [...dotsBox.children].forEach((d, i) => d.classList.toggle('active', i === mi));
-    }
-    function restart() {
-        clearInterval(timer);
-        const g = groups[curBrand];
-        if (!listMode && g && g.rows.length > 1) timer = setInterval(() => go(1), ROTATE_MS);
-    }
-    function go(delta) {
-        const g = groups[curBrand];
-        if (listMode || !g || g.rows.length <= 1) return;
-        curModel = (curModel + delta + g.rows.length) % g.rows.length;
-        showModel(g, curModel, delta);
-        restart();
-    }
-    function setListMode(on) {
-        const g = groups[curBrand]; if (!g) return;
-        listMode = on;
-        if (on) {
-            clearInterval(timer);
-            if (stage) stage.classList.remove('sc-rotating');   // 리스트 모드: 고정높이 해제
-            g.rows.forEach(r => { r.style.display = ''; r.classList.remove('mr-next', 'mr-prev'); });
-            ctrl.style.display = 'none';
-            allBtn.textContent = '한 모델씩 보기 ▴';
-        } else {
-            if (stage) stage.classList.add('sc-rotating');
-            ctrl.style.display = '';
-            allBtn.textContent = '전체보기';
-            curModel = 0; showModel(g, 0, 1); restart();
-        }
-    }
     function select(idx) {
-        listMode = false; curBrand = idx; curModel = 0;
-        if (stage) stage.classList.add('sc-rotating');   // 회전 모드: 모델 영역 고정높이
         groups.forEach((g, gi) => g.els.forEach(e => { e.style.display = gi === idx ? '' : 'none'; }));
         chips.forEach((c, ci) => c.classList.toggle('active', ci === idx));
-        const g = groups[idx];
-        preload(g);
-        renderDots(g);
-        const multi = g.rows.length > 1;
-        ctrl.style.display = multi ? '' : 'none';
-        allBtn.style.display = multi ? '' : 'none';
-        allBtn.textContent = '전체보기';
-        showModel(g, 0, 1);
-        restart();
+        preload(groups[idx]);
     }
     groups.forEach((g, i) => {
         const c = document.createElement('button');
@@ -262,28 +182,6 @@ const vehicleSwiperConfig = {
         bar.appendChild(c); chips.push(c);
     });
     select(0);
-
-    ctrl.querySelector('.sc-prev').addEventListener('click', () => go(-1));
-    ctrl.querySelector('.sc-next').addEventListener('click', () => go(1));
-    allBtn.addEventListener('click', () => setListMode(!listMode));
-
-    // 손 스와이프(터치+마우스드래그): 왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전
-    const sec = document.getElementById('vehicles');
-    let sx = null, sy = null;
-    const down = (x, y) => { sx = x; sy = y; };
-    const upX = (x, y) => {
-        if (sx === null) return;
-        const dx = x - sx, dy = y - sy; sx = sy = null;
-        if (!listMode && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
-    };
-    if (sec) {
-        sec.addEventListener('touchstart', e => down(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-        sec.addEventListener('touchend', e => upX(e.changedTouches[0].clientX, e.changedTouches[0].clientY), { passive: true });
-        sec.addEventListener('mousedown', e => down(e.clientX, e.clientY));
-        sec.addEventListener('mouseup', e => upX(e.clientX, e.clientY));
-        sec.addEventListener('mouseenter', () => { if (!listMode) clearInterval(timer); });
-        sec.addEventListener('mouseleave', () => { if (!listMode) restart(); });
-    }
 })();
 
 // 고객후기 슬라이더 (왼쪽으로 자동 흐름)
