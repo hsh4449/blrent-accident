@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>아레스렌트카 · 후기 관리</title>
+<style>
+  :root { --bg:#0f1115; --card:#1a1d24; --line:#272b34; --txt:#e6e8ec; --sub:#9aa0aa; --accent:#4f8cff; --orange:#F26522; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",sans-serif; }
+  header { padding:18px 24px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; }
+  .spacer { flex:1; }
+  a.home { background:var(--accent); color:#fff; text-decoration:none; border-radius:8px; padding:8px 14px; font-size:13px; font-weight:700; }
+  .wrap { padding:24px; max-width:980px; margin:0 auto; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:18px; }
+  .card h2 { font-size:15px; margin:0 0 14px; color:var(--sub); font-weight:600; }
+  label { display:block; font-size:12px; color:var(--sub); margin:10px 0 4px; }
+  input, textarea, select, button { font-family:inherit; font-size:14px; }
+  input[type=text], input[type=number], textarea, select {
+    width:100%; background:#0f1115; color:var(--txt); border:1px solid var(--line); border-radius:8px; padding:10px 12px; }
+  textarea { min-height:84px; resize:vertical; line-height:1.6; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; }
+  .row > div { flex:1; min-width:140px; }
+  button { cursor:pointer; border:none; border-radius:8px; padding:10px 16px; font-weight:700; }
+  .btn-primary { background:var(--orange); color:#fff; }
+  .btn-ghost { background:transparent; color:var(--sub); border:1px solid var(--line); }
+  .btn-sm { padding:6px 10px; font-size:12px; }
+  .btn-del { background:#3a2326; color:#ff6b6b; border:1px solid #5a2d2d; }
+  .actions { display:flex; gap:10px; margin-top:14px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { text-align:left; padding:10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--sub); font-weight:600; }
+  .stars { color:#ffb454; white-space:nowrap; }
+  .rtext { color:var(--txt); line-height:1.6; max-width:420px; }
+  .muted { color:var(--sub); }
+  .pill { display:inline-block; border-radius:10px; padding:2px 9px; font-size:11px; font-weight:700; }
+  .pill.on { background:#16331f; color:#46d39a; }
+  .pill.off { background:#332016; color:#ffb454; }
+  .ops { display:flex; gap:6px; flex-wrap:wrap; }
+  #status { padding:30px; text-align:center; color:var(--sub); }
+  /* PIN 게이트 */
+  #gate { position:fixed; inset:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:50; }
+  #gate .box { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:30px; width:300px; text-align:center; }
+  #gate input { text-align:center; letter-spacing:6px; font-size:22px; margin:16px 0; }
+  .err { color:#ff6b6b; font-size:13px; min-height:18px; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="box">
+    <div style="font-size:15px;font-weight:700;margin-bottom:6px;">🔒 후기 관리</div>
+    <div class="muted" style="font-size:12px;">PIN 입력</div>
+    <input id="pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off">
+    <div class="err" id="pinErr"></div>
+    <button class="btn-primary" style="width:100%" id="pinBtn">들어가기</button>
+  </div>
+</div>
+
+<header>
+  <h1>📝 아레스렌트카 후기 관리</h1>
+  <a class="home" href="/" target="_blank" rel="noopener">🏠 사이트</a>
+  <span class="spacer"></span>
+  <button class="btn-ghost btn-sm" id="refresh">새로고침</button>
+</header>
+
+<div class="wrap" id="app" style="display:none;">
+  <div class="card">
+    <h2 id="formTitle">+ 새 후기 추가</h2>
+    <input type="hidden" id="f_id">
+    <div class="row">
+      <div style="max-width:120px;">
+        <label>별점</label>
+        <select id="f_rating">
+          <option value="5">★★★★★ (5)</option>
+          <option value="4">★★★★ (4)</option>
+          <option value="3">★★★ (3)</option>
+          <option value="2">★★ (2)</option>
+          <option value="1">★ (1)</option>
+        </select>
+      </div>
+      <div><label>작성자</label><input type="text" id="f_author" placeholder="예: 정*호 고객님"></div>
+      <div><label>대차 차량</label><input type="text" id="f_vehicle" placeholder="예: BMW 5시리즈 대차"></div>
+      <div style="max-width:110px;"><label>노출 순서</label><input type="number" id="f_order" value="0"></div>
+    </div>
+    <label>후기 내용</label>
+    <textarea id="f_text" placeholder="고객 후기 내용을 입력하세요 (따옴표는 자동으로 붙습니다)"></textarea>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;">
+      <input type="checkbox" id="f_visible" checked style="width:auto;"> 홈페이지에 노출
+    </label>
+    <div class="actions">
+      <button class="btn-primary" id="saveBtn">추가</button>
+      <button class="btn-ghost" id="cancelBtn" style="display:none;">취소(새로 추가)</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>등록된 후기 <span class="muted" id="count"></span></h2>
+    <div id="status">불러오는 중…</div>
+    <div style="overflow-x:auto;"><table id="list" style="display:none;"><thead><tr>
+      <th style="width:60px;">순서</th><th style="width:70px;">별점</th><th>후기</th><th style="width:110px;">작성자/차량</th><th style="width:70px;">노출</th><th style="width:150px;">관리</th>
+    </tr></thead><tbody></tbody></table></div>
+  </div>
+</div>
+
+<script>
+// ── 설정 ──────────────────────────────────────────────
+const ADMIN_PIN = '0000';   // 쓰기 PIN (BL 매니저 관례). 바꾸려면 이 값 수정
+const SUPABASE_URL = 'https://jjwsnwnfhqcszwmjdcac.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqd3Nud25maHFjc3p3bWpkY2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTk3NjgsImV4cCI6MjA4NTMzNTc2OH0.8sH1l1fVKEc48qzT6u4qFyUDPZGaLndcYi8si21dtoc';
+const API = SUPABASE_URL + '/rest/v1/ares_reviews';
+const H = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function stars(n){ n=Math.max(0,Math.min(5,parseInt(n,10)||0)); return '★'.repeat(n)+'☆'.repeat(5-n); }
+
+let rows = [];
+
+async function api(method, qs, body){
+  const opt = { method, headers: Object.assign({}, H) };
+  if(method==='POST'||method==='PATCH') opt.headers['Prefer']='return=representation';
+  if(body) opt.body = JSON.stringify(body);
+  const res = await fetch(API + (qs||''), opt);
+  if(!res.ok) throw new Error('Supabase ' + res.status + ' — ' + (await res.text()));
+  const t = await res.text();
+  return t ? JSON.parse(t) : null;
+}
+
+async function load(){
+  $('#status').style.display='block'; $('#list').style.display='none';
+  try {
+    rows = await api('GET', '?select=*&order=sort_order.asc,created_at.asc');
+    renderList();
+  } catch(e){ $('#status').textContent = '오류: ' + e.message; }
+}
+
+function renderList(){
+  $('#count').textContent = '(' + rows.length + '개 · 노출 ' + rows.filter(r=>r.visible).length + ')';
+  $('#status').style.display='none'; $('#list').style.display='table';
+  $('#list tbody').innerHTML = rows.length ? rows.map(r =>
+    '<tr>'+
+      '<td>'+r.sort_order+'</td>'+
+      '<td class="stars">'+stars(r.rating)+'</td>'+
+      '<td class="rtext">'+esc(r.text)+'</td>'+
+      '<td>'+esc(r.author_name)+'<br><span class="muted">'+esc(r.vehicle||'')+'</span></td>'+
+      '<td><span class="pill '+(r.visible?'on':'off')+'">'+(r.visible?'노출':'숨김')+'</span></td>'+
+      '<td><div class="ops">'+
+        '<button class="btn-ghost btn-sm" onclick="editRow('+r.id+')">수정</button>'+
+        '<button class="btn-ghost btn-sm" onclick="toggleVis('+r.id+')">'+(r.visible?'숨기기':'노출')+'</button>'+
+        '<button class="btn-del btn-sm" onclick="delRow('+r.id+')">삭제</button>'+
+      '</div></td>'+
+    '</tr>'
+  ).join('') : '<tr><td colspan="6" class="muted">등록된 후기가 없습니다.</td></tr>';
+}
+
+function resetForm(){
+  $('#f_id').value=''; $('#f_rating').value='5'; $('#f_author').value='';
+  $('#f_vehicle').value=''; $('#f_text').value=''; $('#f_visible').checked=true;
+  $('#f_order').value = (rows.length ? Math.max.apply(null, rows.map(r=>r.sort_order))+1 : 1);
+  $('#formTitle').textContent='+ 새 후기 추가'; $('#saveBtn').textContent='추가'; $('#cancelBtn').style.display='none';
+}
+
+window.editRow = function(id){
+  const r = rows.find(x=>x.id===id); if(!r) return;
+  $('#f_id').value=r.id; $('#f_rating').value=r.rating; $('#f_author').value=r.author_name||'';
+  $('#f_vehicle').value=r.vehicle||''; $('#f_text').value=r.text||''; $('#f_visible').checked=!!r.visible;
+  $('#f_order').value=r.sort_order;
+  $('#formTitle').textContent='✏ 후기 수정 (#'+r.id+')'; $('#saveBtn').textContent='저장'; $('#cancelBtn').style.display='inline-block';
+  window.scrollTo({top:0, behavior:'smooth'});
+};
+
+window.toggleVis = async function(id){
+  const r = rows.find(x=>x.id===id); if(!r) return;
+  try { await api('PATCH', '?id=eq.'+id, { visible: !r.visible }); await load(); }
+  catch(e){ alert('실패: '+e.message); }
+};
+
+window.delRow = async function(id){
+  if(!confirm('이 후기를 삭제할까요? (복구 불가)')) return;
+  try { await api('DELETE', '?id=eq.'+id); await load(); }
+  catch(e){ alert('실패: '+e.message); }
+};
+
+$('#saveBtn').addEventListener('click', async () => {
+  const text = $('#f_text').value.trim();
+  const author = $('#f_author').value.trim();
+  if(!text){ alert('후기 내용을 입력하세요.'); return; }
+  if(!author){ alert('작성자를 입력하세요.'); return; }
+  const payload = {
+    rating: parseInt($('#f_rating').value,10),
+    text: text,
+    author_name: author,
+    vehicle: $('#f_vehicle').value.trim() || null,
+    visible: $('#f_visible').checked,
+    sort_order: parseInt($('#f_order').value,10) || 0
+  };
+  const id = $('#f_id').value;
+  try {
+    if(id) await api('PATCH', '?id=eq.'+id, payload);
+    else   await api('POST', '', payload);
+    await load(); resetForm();
+  } catch(e){ alert('저장 실패: '+e.message); }
+});
+$('#cancelBtn').addEventListener('click', resetForm);
+$('#refresh').addEventListener('click', load);
+
+// ── PIN 게이트 ──────────────────────────────────────────
+function unlock(){
+  $('#gate').style.display='none'; $('#app').style.display='block';
+  try { sessionStorage.setItem('ares_rev_ok','1'); } catch(e){}
+  resetForm(); load();
+}
+function tryPin(){
+  if($('#pin').value === ADMIN_PIN){ unlock(); }
+  else { $('#pinErr').textContent='PIN 이 올바르지 않습니다.'; $('#pin').value=''; $('#pin').focus(); }
+}
+$('#pinBtn').addEventListener('click', tryPin);
+$('#pin').addEventListener('keydown', e => { if(e.key==='Enter') tryPin(); });
+try { if(sessionStorage.getItem('ares_rev_ok')==='1') unlock(); } catch(e){}
+</script>
+</body>
+</html>
