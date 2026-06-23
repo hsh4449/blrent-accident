@@ -185,7 +185,8 @@ const vehicleSwiperConfig = {
 })();
 
 // 고객후기 슬라이더 (왼쪽으로 자동 흐름)
-const reviewSwiper = new Swiper('.reviewSwiper', {
+// 설정을 전역으로 노출 → reviews.js 가 Supabase 후기 로드 후 동일 설정으로 재초기화
+window.REVIEW_SWIPER_CONFIG = {
     slidesPerView: 1,
     spaceBetween: 16,
     loop: true,
@@ -214,7 +215,9 @@ const reviewSwiper = new Swiper('.reviewSwiper', {
             spaceBetween: 24,
         },
     },
-});
+};
+// 하드코딩 후기(폴백)로 우선 초기화 — reviews.js 가 Supabase 로드 성공 시 교체
+window.reviewSwiper = new Swiper('.reviewSwiper', window.REVIEW_SWIPER_CONFIG);
 
 // ========================================
 // FAQ 아코디언
