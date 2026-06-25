@@ -23,7 +23,9 @@
     return s;
   }
   function slide(r) {
+    var photo = r.image_url ? '<div class="review-photo"><img src="' + esc(r.image_url) + '" alt="사고 차량 후기 사진" loading="lazy"></div>' : '';
     return '<div class="swiper-slide"><div class="review-card">' +
+      photo +
       '<div class="review-rating">' + stars(r.rating) + '</div>' +
       '<p class="review-text">"' + esc(r.text) + '"</p>' +
       '<div class="review-author">' +
