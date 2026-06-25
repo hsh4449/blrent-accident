@@ -297,7 +297,10 @@
       var modal=document.getElementById('evtModal'); if(!modal) return;
       var KEY='evtHideUntil';
       try{ if(localStorage.getItem(KEY)===new Date().toDateString()) return; }catch(e){}
-      setTimeout(function(){ modal.classList.add('show'); }, 700);
+      setTimeout(function(){
+        modal.classList.add('show');
+        if(window.aresTrack) window.aresTrack('event_impression', {label:'evt-modal'});  // 이벤트배너 노출 집계
+      }, 700);
       function closeModal(){ modal.classList.remove('show'); }
       modal.querySelector('.evt-close').addEventListener('click', closeModal);
       modal.querySelector('.evt-closebtn').addEventListener('click', closeModal);
