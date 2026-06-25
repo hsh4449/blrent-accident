@@ -87,6 +87,8 @@
     </div>
     <label>후기 내용</label>
     <textarea id="f_text" placeholder="고객 후기 내용을 입력하세요 (따옴표는 자동으로 붙습니다)"></textarea>
+    <label>사고 사진 URL (선택) — 예: /img/reviews/seltos.jpg</label>
+    <input type="text" id="f_image" placeholder="/img/reviews/파일명.jpg">
     <label style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;">
       <input type="checkbox" id="f_visible" checked style="width:auto;"> 홈페이지에 노출
     </label>
@@ -144,7 +146,7 @@ function renderList(){
     '<tr>'+
       '<td>'+r.sort_order+'</td>'+
       '<td class="stars">'+stars(r.rating)+'</td>'+
-      '<td class="rtext">'+esc(r.text)+'</td>'+
+      '<td class="rtext">'+(r.image_url?'<img src="'+esc(r.image_url)+'" style="width:90px;height:60px;object-fit:cover;border-radius:6px;float:left;margin:0 10px 4px 0;">':'')+esc(r.text)+'</td>'+
       '<td>'+esc(r.author_name)+'<br><span class="muted">'+esc(r.vehicle||'')+'</span></td>'+
       '<td><span class="pill '+(r.visible?'on':'off')+'">'+(r.visible?'노출':'숨김')+'</span></td>'+
       '<td><div class="ops">'+
@@ -158,7 +160,7 @@ function renderList(){
 
 function resetForm(){
   $('#f_id').value=''; $('#f_rating').value='5'; $('#f_author').value='';
-  $('#f_vehicle').value=''; $('#f_text').value=''; $('#f_visible').checked=true;
+  $('#f_vehicle').value=''; $('#f_text').value=''; $('#f_image').value=''; $('#f_visible').checked=true;
   $('#f_order').value = (rows.length ? Math.max.apply(null, rows.map(r=>r.sort_order))+1 : 1);
   $('#formTitle').textContent='+ 새 후기 추가'; $('#saveBtn').textContent='추가'; $('#cancelBtn').style.display='none';
 }
@@ -166,7 +168,7 @@ function resetForm(){
 window.editRow = function(id){
   const r = rows.find(x=>x.id===id); if(!r) return;
   $('#f_id').value=r.id; $('#f_rating').value=r.rating; $('#f_author').value=r.author_name||'';
-  $('#f_vehicle').value=r.vehicle||''; $('#f_text').value=r.text||''; $('#f_visible').checked=!!r.visible;
+  $('#f_vehicle').value=r.vehicle||''; $('#f_text').value=r.text||''; $('#f_image').value=r.image_url||''; $('#f_visible').checked=!!r.visible;
   $('#f_order').value=r.sort_order;
   $('#formTitle').textContent='✏ 후기 수정 (#'+r.id+')'; $('#saveBtn').textContent='저장'; $('#cancelBtn').style.display='inline-block';
   window.scrollTo({top:0, behavior:'smooth'});
@@ -194,6 +196,7 @@ $('#saveBtn').addEventListener('click', async () => {
     text: text,
     author_name: author,
     vehicle: $('#f_vehicle').value.trim() || null,
+    image_url: $('#f_image').value.trim() || null,
     visible: $('#f_visible').checked,
     sort_order: parseInt($('#f_order').value,10) || 0
   };
