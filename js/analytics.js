@@ -147,6 +147,9 @@
   var form = document.getElementById('consultForm');
   if (form) form.addEventListener('submit', function () { send({ event_type: 'submit_consult' }); });
 
+  // ---- 외부(인라인 스크립트)에서 커스텀 이벤트 기록용 (예: 이벤트 모달 노출) ----
+  window.aresTrack = function (eventType, extra) { send({ event_type: eventType, extra: extra || null }); };
+
   // ---- 5) 체류시간 (떠날 때 1회) ----
   var exitSent = false;
   function sendExit() {
