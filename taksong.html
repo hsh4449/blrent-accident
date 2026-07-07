@@ -290,6 +290,7 @@
             <select id="filterStatus" onchange="renderTable()">
                 <option value="">전체</option>
                 <option value="입금완료">입금완료</option>
+                <option value="고객직접입금">고객직접입금</option>
                 <option value="청구완료">청구완료</option>
                 <option value="청구전">청구전</option>
             </select>
@@ -321,6 +322,7 @@
                     <th>내수익</th>
                     <th>수익분배</th>
                     <th>상태</th>
+                    <th>입금처</th>
                     <th>추가비용</th>
                     <th>비고</th>
                     <th></th>
@@ -692,10 +694,22 @@
             </div>
             <div class="form-group">
                 <label>상태</label>
-                <select id="fStatus">
+                <select id="fStatus" onchange="calcProfit()">
                     <option value="청구전">청구전</option>
                     <option value="청구완료">청구완료</option>
                     <option value="입금완료">입금완료</option>
+                    <option value="고객직접입금">고객직접입금 (부가세 면제)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>입금처</label>
+                <select id="fDepositTo">
+                    <option value="">-</option>
+                    <option value="불꽃탁송">불꽃탁송</option>
+                    <option value="황성현">황성현</option>
+                    <option value="조윤호">조윤호</option>
+                    <option value="신동석">신동석</option>
+                    <option value="전동환">전동환</option>
                 </select>
             </div>
             <div class="form-group full">
@@ -722,6 +736,12 @@
 <script>
 // ===================== 데이터 =====================
 const STORAGE_KEY = 'taksong_data';
+
+// 고객직접입금 = 부가세 면제 (세금계산서 미발행)
+const VAT_EXEMPT_STATUS = '고객직접입금';
+const isVatExempt = (r) => r.status === VAT_EXEMPT_STATUS;
+// 부가세: 면제 건은 0
+const vatOf = (r) => isVatExempt(r) ? 0 : Math.round(((r.charge || 0) + (r.fuelCharge || 0)) / 11);
 
 // 단가표 데이터
 const PRICE_DATA = {
@@ -878,7 +898,7 @@ function renderSummary() {
         const items = _allData.filter(r => r.person === person);
         const supply = items.reduce((s, r) => {
             const total = (r.charge || 0) + (r.fuelCharge || 0);
-            return s + (total - Math.round(total / 11));
+            return s + (total - vatOf(r));
         }, 0);
         const extras = items.reduce((s, r) => s + ((r.extras || []).reduce((ss, e) => ss + (parseInt(e.amount)||0), 0)), 0);
         // 수수료입금완료된 사고대여 수수료의 분배 몫 (총/받은 양쪽에 동일 가산 → 남은 정산에는 영향 없음)
@@ -915,14 +935,11 @@ function renderSummary() {
     const normalRent = calcByCategory('일반대여');
     const etcRent = calcByCategory('기타');
 
-    // 부가가치세 계산 (탁송 + 주유비 합산)
-    const totalVat = filtered.reduce((s, r) => {
-        const total = (r.charge || 0) + (r.fuelCharge || 0);
-        return s + Math.round(total / 11);
-    }, 0);
+    // 부가가치세 계산 (탁송 + 주유비 합산, 고객직접입금은 면제)
+    const totalVat = filtered.reduce((s, r) => s + vatOf(r), 0);
     const totalSupply = filtered.reduce((s, r) => {
         const total = (r.charge || 0) + (r.fuelCharge || 0);
-        return s + (total - Math.round(total / 11));
+        return s + (total - vatOf(r));
     }, 0);
 
     // 분기별 부가세 납부 기록
@@ -1039,7 +1056,7 @@ function openVatPayment() {
     const month = parseInt(document.getElementById('filterMonth').value);
     const vatKey = getVatPeriodKey(parseInt(year), month);
     const filtered = getFiltered();
-    const totalVat = filtered.reduce((s, r) => s + Math.round((r.charge || 0) / 11), 0);
+    const totalVat = filtered.reduce((s, r) => s + (isVatExempt(r) ? 0 : Math.round((r.charge || 0) / 11)), 0);
 
     const paidAmount = prompt(vatKey + ' 실제 납부금액을 입력하세요 (예상: ' + fmt(totalVat) + '원)', totalVat);
     if (paidAmount === null) return;
@@ -1075,7 +1092,7 @@ function renderTable() {
     const tbody = document.getElementById('tableBody');
 
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="21" style="padding:40px;color:#999;">데이터가 없습니다</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="22" style="padding:40px;color:#999;">데이터가 없습니다</td></tr>';
         renderSummary();
         return;
     }
@@ -1085,7 +1102,8 @@ function renderTable() {
     ).join('');
     const persons = ['탁송기사','황성현','조윤호','신동석','전동환'];
     const distributes = ['불꽃탁송','황성현','조윤호','신동석','전동환','적립'];
-    const statuses = ['청구전','청구완료','입금완료'];
+    const statuses = ['청구전','청구완료','입금완료','고객직접입금'];
+    const depositTos = ['불꽃탁송','황성현','조윤호','신동석','전동환'];
     const rates = [0, 20, 100];
     const categories = ['장기대여','사고대여','일반대여','기타'];
     const directions = ['','인도','반납'];
@@ -1121,10 +1139,11 @@ function renderTable() {
             <td class="text-right" style="font-size:13px;color:#0d47a1;" id="il-cm-${r.id}">${showDriver ? fmt(r.commission) : '-'}</td>
             <td><input type="number" class="inline-input" style="width:85px;font-weight:700;" value="${r.charge||0}" data-field="charge" oninput="inlineCalc(${r.id})" onchange="autoSave(${r.id})"></td>
             <td><input type="number" class="inline-input" style="width:75px;color:#ef6c00;" value="${fuelC||''}" placeholder="0" data-field="fuelCharge" oninput="inlineCalc(${r.id})" onchange="autoSave(${r.id})"></td>
-            <td class="text-right" style="color:#e65100;font-size:13px;" id="il-vat-${r.id}">${(r.charge||fuelC) ? fmt(Math.round(((r.charge||0)+fuelC)/11)) : '-'}</td>
+            <td class="text-right" style="color:#e65100;font-size:13px;" id="il-vat-${r.id}">${isVatExempt(r) ? '<span style="color:#2e7d32;font-weight:700;">면제</span>' : ((r.charge||fuelC) ? fmt(Math.round(((r.charge||0)+fuelC)/11)) : '-')}</td>
             <td class="text-right" style="color:#2e7d32;font-weight:800;font-size:14px;" id="il-profit-${r.id}">${fmt(r.profit)}</td>
             <td><select class="inline-select" data-field="distribute" onchange="autoSave(${r.id})">${selOpt(distributes, r.distribute)}</select></td>
-            <td><select class="inline-select" data-field="status" onchange="autoSave(${r.id})">${selOpt(statuses, r.status)}</select></td>
+            <td><select class="inline-select" data-field="status" onchange="inlineCalc(${r.id});autoSave(${r.id})">${selOpt(statuses, r.status)}</select></td>
+            <td><select class="inline-select" data-field="depositTo" onchange="autoSave(${r.id})"><option value="" ${!r.depositTo?'selected':''}>-</option>${selOpt(depositTos, r.depositTo)}</select></td>
             <td id="il-extras-${r.id}" style="cursor:pointer;" onclick="openExtrasPopup(${r.id})" title="클릭하여 편집">${extrasBtnLabel}</td>
             <td><input type="text" class="inline-input wide" style="width:110px;" value="${r.note||''}" data-field="note" onchange="autoSave(${r.id})"></td>
             <td style="white-space:nowrap;">
@@ -1249,12 +1268,13 @@ function renderSettlement() {
 
     const filtered = getSettleFiltered();
 
-    // 정산 계산 (받아야될 = 청구완료+청구전, 처리완료 = 입금완료)
+    // 정산 계산 (받아야될 = 청구완료+청구전, 처리완료 = 입금완료+고객직접입금)
     const calc = (dist) => {
         const items = filtered.filter(r => r.distribute === dist);
+        const isDone = (r) => r.status === '입금완료' || r.status === VAT_EXEMPT_STATUS;
         const total = items.reduce((s, r) => s + (r.profit || 0), 0);
-        const received = items.filter(r => r.status === '입금완료').reduce((s, r) => s + (r.profit || 0), 0);
-        const receivable = items.filter(r => r.status !== '입금완료').reduce((s, r) => s + (r.profit || 0), 0);
+        const received = items.filter(r => isDone(r)).reduce((s, r) => s + (r.profit || 0), 0);
+        const receivable = items.filter(r => !isDone(r)).reduce((s, r) => s + (r.profit || 0), 0);
         return { count: items.length, total, received, receivable };
     };
 
@@ -1267,7 +1287,7 @@ function renderSettlement() {
         const items = allDataForSettle.filter(r => r.person === person);
         const getSupply = (r) => {
             const t = (r.charge || 0) + (r.fuelCharge || 0);
-            return t ? t - Math.round(t / 11) : 0;
+            return t ? t - vatOf(r) : 0;
         };
         const getExtras = (r) => (r.extras || []).reduce((s, e) => s + (parseInt(e.amount) || 0), 0);
 
@@ -1307,7 +1327,7 @@ function renderSettlement() {
 
     // 필터 기간 흐름 (주유비 포함)
     const periodCharge = filtered.reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0);
-    const periodChargeIn = filtered.filter(r => r.status === '입금완료').reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0);
+    const periodChargeIn = filtered.filter(r => r.status === '입금완료' || r.status === VAT_EXEMPT_STATUS).reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0);
     const periodDriverPay = filtered.reduce((s, r) => s + (r.driverPay || 0), 0);
 
     // === 기간별 입출금 흐름 ===
@@ -1326,8 +1346,8 @@ function renderSettlement() {
                     <div class="settle-row"><span>수수료(20%) 합계</span><span class="amount">${fmt(filtered.reduce((s,r)=>s+(r.commission||0),0))}</span></div>
                 </div>
                 <div>
-                    <div class="settle-row"><span>부가세 합계</span><span class="amount" style="color:#e65100;">${fmt(filtered.reduce((s,r)=>s+Math.round((r.charge||0)/11),0))}</span></div>
-                    <div class="settle-row"><span>공급가 합계</span><span class="amount">${fmt(filtered.reduce((s,r)=>s+((r.charge||0)-Math.round((r.charge||0)/11)),0))}</span></div>
+                    <div class="settle-row"><span>부가세 합계</span><span class="amount" style="color:#e65100;">${fmt(filtered.reduce((s,r)=>s+(isVatExempt(r)?0:Math.round((r.charge||0)/11)),0))}</span></div>
+                    <div class="settle-row"><span>공급가 합계</span><span class="amount">${fmt(filtered.reduce((s,r)=>s+((r.charge||0)-(isVatExempt(r)?0:Math.round((r.charge||0)/11))),0))}</span></div>
                     <div class="settle-row"><span>총 건수</span><span class="amount">${filtered.length}건</span></div>
                 </div>
             </div>
@@ -1914,7 +1934,7 @@ function openDayDetail(year, month, day) {
 
     document.getElementById('dayDetailList').innerHTML = items.map(r => {
         const personClass = { '탁송기사':'badge-driver', '황성현':'badge-me', '조윤호':'badge-boss', '신동석':'badge-sin', '전동환':'badge-jeon' }[r.person] || 'badge-boss';
-        const statusClass = r.status === '입금완료' ? 'status-paid' : r.status === '청구완료' ? 'status-invoiced' : 'status-pending';
+        const statusClass = (r.status === '입금완료' || r.status === VAT_EXEMPT_STATUS) ? 'status-paid' : r.status === '청구완료' ? 'status-invoiced' : 'status-pending';
         return `<div class="day-detail-item">
             <div class="day-detail-left">
                 <div class="car">${r.carNo || '-'} <span class="badge ${personClass}">${r.person}</span> <span class="status ${statusClass}">${r.status}</span></div>
@@ -2054,6 +2074,7 @@ function openModal(id) {
         document.getElementById('fFuelCharge').value = r.fuelCharge || '';
         document.getElementById('fDistribute').value = r.distribute;
         document.getElementById('fStatus').value = r.status;
+        document.getElementById('fDepositTo').value = r.depositTo || '';
         document.getElementById('fNote').value = r.note;
         document.getElementById('fCategory').value = r.category || '장기대여';
         document.getElementById('fDirection').value = r.direction || '';
@@ -2071,6 +2092,7 @@ function openModal(id) {
         document.getElementById('fFuelCharge').value = '';
         document.getElementById('fDistribute').value = '불꽃탁송';
         document.getElementById('fStatus').value = '청구전';
+        document.getElementById('fDepositTo').value = '';
         document.getElementById('fNote').value = '';
         document.getElementById('fCategory').value = '장기대여';
         document.getElementById('fDirection').value = '';
@@ -2121,17 +2143,15 @@ function calcFee() {
 function calcProfit() {
     const fee = parseInt(document.getElementById('fFee').value) || 0;
     const charge = parseInt(document.getElementById('fCharge').value) || 0;
-    const fuelCharge = parseInt(document.getElementById('fFuelCharge').value) || 0;
-    const totalCharge = charge + fuelCharge;
     const person = document.getElementById('fPerson').value;
-    const supply = totalCharge - Math.round(totalCharge / 11);
+    const exempt = document.getElementById('fStatus').value === VAT_EXEMPT_STATUS;
 
     let profit;
     if (person === '탁송기사') {
         const cRate = parseInt(document.getElementById('fRate').value) || 0;
         const commission = Math.floor(fee * cRate / 100);
         // 주유비는 실비이므로 수익에 포함 안 함 (탁송 공급가만)
-        const baseSupply = charge - Math.round(charge / 11);
+        const baseSupply = exempt ? charge : charge - Math.round(charge / 11);
         profit = commission + (baseSupply - fee);
     } else {
         profit = 0;
@@ -2147,8 +2167,9 @@ function saveRecord() {
     const fuelCharge = parseInt(document.getElementById('fFuelCharge').value) || 0;
     const isDriver = person === '탁송기사';
     const cRate = isDriver ? (parseInt(document.getElementById('fRate').value) || 0) : 20;
+    const exempt = document.getElementById('fStatus').value === VAT_EXEMPT_STATUS;
 
-    const baseSupply = charge - Math.round(charge / 11);
+    const baseSupply = exempt ? charge : charge - Math.round(charge / 11);
     const commission = Math.floor(fee * cRate / 100);
     const driverPay = fee - commission;
     let profit;
@@ -2177,6 +2198,7 @@ function saveRecord() {
         profit: profit,
         distribute: document.getElementById('fDistribute').value,
         status: document.getElementById('fStatus').value,
+        depositTo: document.getElementById('fDepositTo').value,
         note: document.getElementById('fNote').value.trim(),
         extras: _modalExtras.filter(e => (e.name && e.name.trim()) || e.amount > 0).map(e => ({ name: (e.name||'').trim(), amount: parseInt(e.amount)||0 }))
     };
@@ -2271,16 +2293,18 @@ function inlineCalc(id) {
     const isDriver = person === '탁송기사';
     const rateSel = tr.querySelector('[data-field="commissionRate"]');
     const cRate = rateSel ? parseInt(rateSel.value) : 20;
+    const statusSel = tr.querySelector('[data-field="status"]');
+    const exempt = statusSel && statusSel.value === VAT_EXEMPT_STATUS;
     const commission = Math.floor(fee * cRate / 100);
     const driverPay = fee - commission;
-    const supply = charge - Math.round(charge / 11);
+    const supply = exempt ? charge : charge - Math.round(charge / 11);
 
     const totalC = charge + fuelC;
-    const vat = Math.round(totalC / 11);
+    const vat = exempt ? 0 : Math.round(totalC / 11);
 
     document.getElementById('il-dp-' + id).textContent = isDriver ? fmt(driverPay) : '-';
     document.getElementById('il-cm-' + id).textContent = isDriver ? fmt(commission) : '-';
-    document.getElementById('il-vat-' + id).textContent = totalC ? fmt(vat) : '-';
+    document.getElementById('il-vat-' + id).innerHTML = exempt ? '<span style="color:#2e7d32;font-weight:700;">면제</span>' : (totalC ? fmt(vat) : '-');
 
     let profit;
     if (isDriver) {
@@ -2301,9 +2325,11 @@ function saveInlineEdit(id, quiet) {
     const isDriver = person === '탁송기사';
     const rateSel = tr.querySelector('[data-field="commissionRate"]');
     const cRate = rateSel ? parseInt(rateSel.value) : 20;
+    const status = tr.querySelector('[data-field="status"]').value;
+    const exempt = status === VAT_EXEMPT_STATUS;
     const commission = Math.floor(fee * cRate / 100);
     const driverPay = fee - commission;
-    const supply = charge - Math.round(charge / 11);
+    const supply = exempt ? charge : charge - Math.round(charge / 11);
 
     let profit;
     if (isDriver) {
@@ -2325,6 +2351,7 @@ function saveInlineEdit(id, quiet) {
     const fuelInp = tr.querySelector('[data-field="fuelCharge"]');
     const contentInp = tr.querySelector('[data-field="content"]');
     const noteInp = tr.querySelector('[data-field="note"]');
+    const depositSel = tr.querySelector('[data-field="depositTo"]');
 
     data[idx] = {
         id: id,
@@ -2345,7 +2372,8 @@ function saveInlineEdit(id, quiet) {
         fuelCharge: fuelInp ? (parseInt(fuelInp.value) || 0) : (prev.fuelCharge || 0),
         profit: profit,
         distribute: tr.querySelector('[data-field="distribute"]').value,
-        status: tr.querySelector('[data-field="status"]').value,
+        status: status,
+        depositTo: depositSel ? depositSel.value : (prev.depositTo || ''),
         note: noteInp ? noteInp.value.trim() : (prev.note || ''),
         extras: prev.extras || []
     };
@@ -2366,7 +2394,7 @@ function deleteRecord(id) {
 // ===================== 내보내기 =====================
 function exportData() {
     const filtered = getFiltered();
-    const header = '날짜,차량번호,대여종류,인도/반납,출발지,경유지,도착지,내용,담당자,탁송비,기사지급,수수료,청구금액,주유비,추가비용합계,추가비용내역,내수익,수익분배,상태,비고';
+    const header = '날짜,차량번호,대여종류,인도/반납,출발지,경유지,도착지,내용,담당자,탁송비,기사지급,수수료,청구금액,주유비,추가비용합계,추가비용내역,내수익,수익분배,상태,입금처,비고';
     const csvEscape = (v) => {
         const s = String(v == null ? '' : v);
         return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
@@ -2380,7 +2408,7 @@ function exportData() {
             r.origin||'', (typeof r.via === 'string' ? r.via : ''), r.destination||'',
             r.content, r.person, r.fee, r.driverPay, r.commission, r.charge,
             r.fuelCharge||0, extrasTotal, extrasDesc,
-            r.profit, r.distribute, r.status, r.note
+            r.profit, r.distribute, r.status, r.depositTo||'', r.note
         ].map(csvEscape).join(',');
     });
     const csv = '\uFEFF' + header + '\n' + rows.join('\n');
