@@ -69,6 +69,29 @@
         .status-invoiced { background: #fff8e1; color: #f57f17; }
         .status-pending { background: #fce4ec; color: #c62828; }
 
+        /* 상태별 색상 (홈택스 처리 구분용) */
+        .inline-select.st-청구전 { background: #ffebee; border-color: #ef9a9a; color: #c62828; font-weight: 700; }
+        .inline-select.st-청구완료 { background: #fff8e1; border-color: #ffca28; color: #e65100; font-weight: 700; }
+        .inline-select.st-입금완료 { background: #e8f5e9; border-color: #81c784; color: #2e7d32; font-weight: 700; }
+        .inline-select.st-고객직접입금 { background: #e0f2f1; border-color: #4db6ac; color: #00695c; font-weight: 700; }
+        tr.rs-청구전 td:first-child { box-shadow: inset 4px 0 0 #ef5350; }
+        tr.rs-청구완료 td:first-child { box-shadow: inset 4px 0 0 #ffb300; }
+        tr.rs-입금완료 td:first-child { box-shadow: inset 4px 0 0 #66bb6a; }
+        tr.rs-고객직접입금 td:first-child { box-shadow: inset 4px 0 0 #26a69a; }
+
+        /* 청구처별 색상 */
+        .inline-select.bill-고객 { background: #e8f5e9; border-color: #81c784; color: #2e7d32; font-weight: 700; }
+        .inline-select.bill-비엘 { background: #e3f2fd; border-color: #64b5f6; color: #1565c0; font-weight: 700; }
+        .inline-select.bill-모빌리티 { background: #ede7f6; border-color: #9575cd; color: #4527a0; font-weight: 700; }
+        .inline-select.bill-기타 { background: #f5f5f5; border-color: #bdbdbd; color: #616161; font-weight: 700; }
+
+        /* 입금처별 색상 */
+        .inline-select.dep-불꽃탁송 { background: #e3f2fd; border-color: #64b5f6; color: #1565c0; font-weight: 700; }
+        .inline-select.dep-황성현 { background: #fff3e0; border-color: #ffb74d; color: #e65100; font-weight: 700; }
+        .inline-select.dep-조윤호 { background: #efebe9; border-color: #a1887f; color: #5d4037; font-weight: 700; }
+        .inline-select.dep-신동석 { background: #f3e5f5; border-color: #ba68c8; color: #6a1b9a; font-weight: 700; }
+        .inline-select.dep-전동환 { background: #e0f2f1; border-color: #4db6ac; color: #00695c; font-weight: 700; }
+
         /* 모달 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.5); z-index: 200; justify-content: center; align-items: center; }
         .modal-overlay.show { display: flex; }
@@ -306,6 +329,7 @@
                 <tr>
                     <th>날짜</th>
                     <th>차량번호</th>
+                    <th>차종</th>
                     <th>대여종류</th>
                     <th>인도/반납</th>
                     <th>출발지</th>
@@ -316,6 +340,7 @@
                     <th>수수료율</th>
                     <th>기사지급</th>
                     <th>수수료</th>
+                    <th>청구처</th>
                     <th>청구금액<br><small>(부가세포함)</small></th>
                     <th>주유비</th>
                     <th>부가세</th>
@@ -607,6 +632,10 @@
                 <input type="text" id="fCarNo" placeholder="예: 9879">
             </div>
             <div class="form-group">
+                <label>차종</label>
+                <input type="text" id="fCarModel" placeholder="예: 모닝, 아반떼">
+            </div>
+            <div class="form-group">
                 <label>유형</label>
                 <select id="fCategory">
                     <option value="장기대여">장기대여</option>
@@ -699,6 +728,16 @@
                     <option value="청구완료">청구완료</option>
                     <option value="입금완료">입금완료</option>
                     <option value="고객직접입금">고객직접입금 (부가세 면제)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>청구처</label>
+                <select id="fBillTo">
+                    <option value="">-</option>
+                    <option value="고객">고객</option>
+                    <option value="비엘">비엘</option>
+                    <option value="모빌리티">모빌리티</option>
+                    <option value="기타">기타</option>
                 </select>
             </div>
             <div class="form-group">
@@ -874,7 +913,7 @@ function getFiltered() {
         if (month && (d.getMonth() + 1) !== month) return false;
         if (person && r.person !== person) return false;
         if (status && r.status !== status) return false;
-        if (search && !(`${r.carNo} ${r.content} ${r.note}`).toLowerCase().includes(search)) return false;
+        if (search && !(`${r.carNo} ${r.carModel||''} ${r.content} ${r.note}`).toLowerCase().includes(search)) return false;
         return true;
     }).sort((a, b) => new Date(b.date) - new Date(a.date) || b.id - a.id);
 }
@@ -1092,7 +1131,7 @@ function renderTable() {
     const tbody = document.getElementById('tableBody');
 
     if (!filtered.length) {
-        tbody.innerHTML = '<tr><td colspan="22" style="padding:40px;color:#999;">데이터가 없습니다</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="24" style="padding:40px;color:#999;">데이터가 없습니다</td></tr>';
         renderSummary();
         return;
     }
@@ -1104,6 +1143,7 @@ function renderTable() {
     const distributes = ['불꽃탁송','황성현','조윤호','신동석','전동환','적립'];
     const statuses = ['청구전','청구완료','입금완료','고객직접입금'];
     const depositTos = ['불꽃탁송','황성현','조윤호','신동석','전동환'];
+    const billTos = ['고객','비엘','모빌리티','기타'];
     const rates = [0, 20, 100];
     const categories = ['장기대여','사고대여','일반대여','기타'];
     const directions = ['','인도','반납'];
@@ -1124,9 +1164,10 @@ function renderTable() {
         const extrasBtnLabel = extras.length
             ? `<span style="background:#ede7f6;color:#4527a0;padding:3px 8px;border-radius:10px;font-size:11px;font-weight:700;">${extras.length}건 ${fmt(extrasTotal)}</span>`
             : `<span style="color:#999;font-size:11px;">+ 추가</span>`;
-        return `<tr id="row-${r.id}">
+        return `<tr id="row-${r.id}" class="rs-${r.status}">
             <td><input type="date" class="inline-date" value="${r.date}" data-field="date" onchange="autoSave(${r.id})"></td>
             <td><input type="text" class="inline-input" style="width:60px;text-align:center;font-weight:700;" value="${r.carNo||''}" data-field="carNo" onchange="autoSave(${r.id})"></td>
+            <td><input type="text" class="inline-input" style="width:80px;text-align:center;" value="${escAttr(r.carModel||'')}" data-field="carModel" placeholder="-" onchange="autoSave(${r.id})"></td>
             <td><select class="inline-select" data-field="category" onchange="autoSave(${r.id})">${selOpt(categories, cat)}</select></td>
             <td><select class="inline-select" data-field="direction" onchange="autoSave(${r.id})">${directions.map(d=>`<option value="${d}" ${d===dir?'selected':''}>${d||'-'}</option>`).join('')}</select></td>
             <td><input type="text" class="inline-input" style="width:60px;text-align:center;" maxlength="10" value="${escAttr(origin)}" data-field="origin" placeholder="-" onchange="autoSave(${r.id})"></td>
@@ -1137,13 +1178,14 @@ function renderTable() {
             <td>${showDriver ? `<select class="inline-select" data-field="commissionRate" onchange="inlineCalc(${r.id});autoSave(${r.id})">${rates.map(rt=>`<option value="${rt}" ${rt===cRate?'selected':''}>${rt}%</option>`).join('')}</select>` : '-'}</td>
             <td class="text-right" style="font-size:13px;color:#1565c0;" id="il-dp-${r.id}">${showDriver ? fmt(r.driverPay) : '-'}</td>
             <td class="text-right" style="font-size:13px;color:#0d47a1;" id="il-cm-${r.id}">${showDriver ? fmt(r.commission) : '-'}</td>
+            <td><select class="inline-select${r.billTo?' bill-'+r.billTo:''}" data-field="billTo" onchange="autoSave(${r.id});paintRow(${r.id})"><option value="" ${!r.billTo?'selected':''}>-</option>${selOpt(billTos, r.billTo)}</select></td>
             <td><input type="number" class="inline-input" style="width:85px;font-weight:700;" value="${r.charge||0}" data-field="charge" oninput="inlineCalc(${r.id})" onchange="autoSave(${r.id})"></td>
             <td><input type="number" class="inline-input" style="width:75px;color:#ef6c00;" value="${fuelC||''}" placeholder="0" data-field="fuelCharge" oninput="inlineCalc(${r.id})" onchange="autoSave(${r.id})"></td>
             <td class="text-right" style="color:#e65100;font-size:13px;" id="il-vat-${r.id}">${isVatExempt(r) ? '<span style="color:#2e7d32;font-weight:700;">면제</span>' : ((r.charge||fuelC) ? fmt(Math.round(((r.charge||0)+fuelC)/11)) : '-')}</td>
             <td class="text-right" style="color:#2e7d32;font-weight:800;font-size:14px;" id="il-profit-${r.id}">${fmt(r.profit)}</td>
             <td><select class="inline-select" data-field="distribute" onchange="autoSave(${r.id})">${selOpt(distributes, r.distribute)}</select></td>
-            <td><select class="inline-select" data-field="status" onchange="inlineCalc(${r.id});autoSave(${r.id})">${selOpt(statuses, r.status)}</select></td>
-            <td><select class="inline-select" data-field="depositTo" onchange="autoSave(${r.id})"><option value="" ${!r.depositTo?'selected':''}>-</option>${selOpt(depositTos, r.depositTo)}</select></td>
+            <td><select class="inline-select st-${r.status}" data-field="status" onchange="inlineCalc(${r.id});autoSave(${r.id});paintRow(${r.id})">${selOpt(statuses, r.status)}</select></td>
+            <td><select class="inline-select${r.depositTo?' dep-'+r.depositTo:''}" data-field="depositTo" onchange="autoSave(${r.id});paintRow(${r.id})"><option value="" ${!r.depositTo?'selected':''}>-</option>${selOpt(depositTos, r.depositTo)}</select></td>
             <td id="il-extras-${r.id}" style="cursor:pointer;" onclick="openExtrasPopup(${r.id})" title="클릭하여 편집">${extrasBtnLabel}</td>
             <td><input type="text" class="inline-input wide" style="width:110px;" value="${r.note||''}" data-field="note" onchange="autoSave(${r.id})"></td>
             <td style="white-space:nowrap;">
@@ -2066,6 +2108,8 @@ function openModal(id) {
         if (!r) return;
         document.getElementById('fDate').value = r.date;
         document.getElementById('fCarNo').value = r.carNo;
+        document.getElementById('fCarModel').value = r.carModel || '';
+        document.getElementById('fBillTo').value = r.billTo || '';
         document.getElementById('fContent').value = r.content;
         document.getElementById('fPerson').value = r.person;
         document.getElementById('fFee').value = r.fee;
@@ -2085,6 +2129,8 @@ function openModal(id) {
     } else {
         document.getElementById('fDate').value = new Date().toISOString().slice(0, 10);
         document.getElementById('fCarNo').value = '';
+        document.getElementById('fCarModel').value = '';
+        document.getElementById('fBillTo').value = '';
         document.getElementById('fContent').value = '';
         document.getElementById('fPerson').value = '탁송기사';
         document.getElementById('fFee').value = '';
@@ -2182,6 +2228,8 @@ function saveRecord() {
     const record = {
         date: document.getElementById('fDate').value,
         carNo: document.getElementById('fCarNo').value.trim(),
+        carModel: document.getElementById('fCarModel').value.trim(),
+        billTo: document.getElementById('fBillTo').value,
         content: document.getElementById('fContent').value.trim(),
         category: document.getElementById('fCategory').value,
         direction: document.getElementById('fDirection').value,
@@ -2317,6 +2365,18 @@ function inlineCalc(id) {
 
 function autoSave(id) { saveInlineEdit(id, true); }
 
+// 상태/청구처/입금처 변경 시 색상 즉시 반영 (재렌더링 없이)
+function paintRow(id) {
+    const tr = document.getElementById('row-' + id);
+    if (!tr) return;
+    const st = tr.querySelector('[data-field="status"]');
+    const bt = tr.querySelector('[data-field="billTo"]');
+    const dp = tr.querySelector('[data-field="depositTo"]');
+    if (st) { st.className = 'inline-select st-' + st.value; tr.className = 'rs-' + st.value; }
+    if (bt) bt.className = 'inline-select' + (bt.value ? ' bill-' + bt.value : '');
+    if (dp) dp.className = 'inline-select' + (dp.value ? ' dep-' + dp.value : '');
+}
+
 function saveInlineEdit(id, quiet) {
     const tr = document.getElementById('row-' + id);
     const person = tr.querySelector('[data-field="person"]').value;
@@ -2352,11 +2412,15 @@ function saveInlineEdit(id, quiet) {
     const contentInp = tr.querySelector('[data-field="content"]');
     const noteInp = tr.querySelector('[data-field="note"]');
     const depositSel = tr.querySelector('[data-field="depositTo"]');
+    const modelInp = tr.querySelector('[data-field="carModel"]');
+    const billSel = tr.querySelector('[data-field="billTo"]');
 
     data[idx] = {
         id: id,
         date: tr.querySelector('[data-field="date"]').value,
         carNo: tr.querySelector('[data-field="carNo"]').value.trim(),
+        carModel: modelInp ? modelInp.value.trim() : (prev.carModel || ''),
+        billTo: billSel ? billSel.value : (prev.billTo || ''),
         content: contentInp ? contentInp.value.trim() : (prev.content || ''),
         category: catSel ? catSel.value : (prev.category || '장기대여'),
         direction: dirSel ? dirSel.value : (prev.direction || ''),
@@ -2394,7 +2458,7 @@ function deleteRecord(id) {
 // ===================== 내보내기 =====================
 function exportData() {
     const filtered = getFiltered();
-    const header = '날짜,차량번호,대여종류,인도/반납,출발지,경유지,도착지,내용,담당자,탁송비,기사지급,수수료,청구금액,주유비,추가비용합계,추가비용내역,내수익,수익분배,상태,입금처,비고';
+    const header = '날짜,차량번호,차종,대여종류,인도/반납,출발지,경유지,도착지,내용,담당자,탁송비,기사지급,수수료,청구처,청구금액,주유비,추가비용합계,추가비용내역,내수익,수익분배,상태,입금처,비고';
     const csvEscape = (v) => {
         const s = String(v == null ? '' : v);
         return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
@@ -2404,9 +2468,9 @@ function exportData() {
         const extrasTotal = extras.reduce((s,e)=>s+(parseInt(e.amount)||0),0);
         const extrasDesc = extras.map(e=>`${e.name||''}:${e.amount||0}`).join(' / ');
         return [
-            r.date, r.carNo, r.category||'', r.direction||'',
+            r.date, r.carNo, r.carModel||'', r.category||'', r.direction||'',
             r.origin||'', (typeof r.via === 'string' ? r.via : ''), r.destination||'',
-            r.content, r.person, r.fee, r.driverPay, r.commission, r.charge,
+            r.content, r.person, r.fee, r.driverPay, r.commission, r.billTo||'', r.charge,
             r.fuelCharge||0, extrasTotal, extrasDesc,
             r.profit, r.distribute, r.status, r.depositTo||'', r.note
         ].map(csvEscape).join(',');
