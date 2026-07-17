@@ -1755,6 +1755,9 @@ a:focus-visible {
 /* 여러 모델 묶음 행: 각 이미지 아래 개별 모델명 */
 .mr-multi .mr-name{ text-align:center; margin:10px 0 0; font-size:14px; font-weight:700; color:var(--text-dark); word-break:keep-all; }
 @media (max-width:767px){ .mr-multi .mr-name{ font-size:12px; margin-top:7px; } }
+/* 벤츠 라인업: 라벨 없는 카드 그리드, 이미지 크롭 없이 원본 비율 전체 표시 */
+.benz-cards .modelSwiper .vehicle-image{ height:auto; aspect-ratio:auto; }
+.benz-cards .modelSwiper .vehicle-image img{ height:auto; }
 .model-row.mr-next{ animation: mrNext .4s ease; }
 .model-row.mr-prev{ animation: mrPrev .4s ease; }
 @keyframes mrNext{ from{ opacity:0; transform:translateX(45px); } to{ opacity:1; transform:none; } }
