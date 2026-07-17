@@ -1760,8 +1760,8 @@ a:focus-visible {
 .benz-cards .modelSwiper .swiper-wrapper{ align-items:stretch; }
 .benz-cards .modelSwiper .swiper-slide{ display:flex; }
 .benz-cards .modelSwiper .vehicle-card{ display:flex; flex-direction:column; width:100%; }
-.benz-cards .modelSwiper .vehicle-image{ height:auto; aspect-ratio:auto; flex:1 1 auto; display:flex; align-items:center; }
-.benz-cards .modelSwiper .vehicle-image img{ height:auto; }
+.benz-cards .modelSwiper .vehicle-image{ height:auto; aspect-ratio:auto; flex:1 1 auto; display:flex; align-items:center; justify-content:center; background:var(--bg-white); }
+.benz-cards .modelSwiper .vehicle-image img{ width:90%; height:auto; }
 .benz-cards .mr-name{ margin:10px 0 8px; }
 .model-row.mr-next{ animation: mrNext .4s ease; }
 .model-row.mr-prev{ animation: mrPrev .4s ease; }
