@@ -1755,13 +1755,8 @@ a:focus-visible {
 /* 여러 모델 묶음 행: 각 이미지 아래 개별 모델명 */
 .mr-multi .mr-name{ text-align:center; margin:10px 0 0; font-size:14px; font-weight:700; color:var(--text-dark); word-break:keep-all; }
 @media (max-width:767px){ .mr-multi .mr-name{ font-size:12px; margin-top:7px; } }
-/* 벤츠 라인업: 라벨 없는 카드 그리드, 이미지 크롭 없이 원본 비율 전체 표시.
-   같은 줄 카드는 stretch로 높이 통일, 이미지 세로 중앙, 이름표 하단 고정 정렬 */
-.benz-cards .modelSwiper .swiper-wrapper{ align-items:stretch; }
-.benz-cards .modelSwiper .swiper-slide{ display:flex; }
-.benz-cards .modelSwiper .vehicle-card{ display:flex; flex-direction:column; width:100%; }
-.benz-cards .modelSwiper .vehicle-image{ height:auto; aspect-ratio:auto; flex:1 1 auto; display:flex; align-items:center; justify-content:center; background:var(--bg-white); }
-.benz-cards .modelSwiper .vehicle-image img{ width:90%; height:auto; }
+/* 벤츠 라인업: 라벨 없는 카드 그리드. 이미지 파일 자체가 750x500(3:2, 흰 여백 포함)
+   통일 규격이라 기본 3:2 카드에 크롭 없이 그대로 맞음 */
 .benz-cards .mr-name{ margin:10px 0 8px; }
 .model-row.mr-next{ animation: mrNext .4s ease; }
 .model-row.mr-prev{ animation: mrPrev .4s ease; }
