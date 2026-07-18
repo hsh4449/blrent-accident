@@ -69,6 +69,17 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 
     <style>
+    /* 빛의계승자체 (펀플로X산돌, noonnu.cc/font_page/442) — Regular/Bold 2종 */
+    @font-face{
+      font-family:'HeirofLight';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/HeirofLightRegular.woff') format('woff');
+      font-weight:400; font-display:swap;
+    }
+    @font-face{
+      font-family:'HeirofLight';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/HeirofLightBold.woff') format('woff');
+      font-weight:700 900; font-display:swap;
+    }
     /* ============================================================
        김부장렌트카 디자인 토큰 — 로고에서 도출
        radius / shadow 는 아래 토큰 외 하드코딩 금지
@@ -86,7 +97,7 @@
     *{ margin:0; padding:0; box-sizing:border-box; }
     html{ scroll-behavior:smooth; }
     body{
-      font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      font-family:'HeirofLight','Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
       color:var(--ink); background:#fff; line-height:1.6; word-break:keep-all;
       padding-bottom:calc(58px + env(safe-area-inset-bottom));
     }
