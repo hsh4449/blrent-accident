@@ -74,20 +74,20 @@
        radius / shadow 는 아래 토큰 외 하드코딩 금지
        ============================================================ */
     :root{
-      --black:#121212;      /* 메인 배경 */
-      --black-deep:#000000; /* 강조 섹션 배경 */
-      --surface:#1C1C1C;    /* 카드·입력창 표면 */
-      --red:#C41E2F;        /* 서브(주 CTA·포인트) */
-      --ink:#F2F2F2;        /* 본문 텍스트(화이트 서브) */
-      --line:#2E2E2E;
+      --black:#121212;
+      --black-deep:#000000;
+      --red:#C41E2F;
+      --paper:#F5F5F5;
+      --ink:#111111;
+      --line:#E0E0E0;
       --radius:4px;
-      --shadow:0 1px 3px rgba(0,0,0,.5);
+      --shadow:0 1px 3px rgba(0,0,0,.16);
     }
     *{ margin:0; padding:0; box-sizing:border-box; }
     html{ scroll-behavior:smooth; }
     body{
       font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
-      color:var(--ink); background:var(--black); line-height:1.6; word-break:keep-all;
+      color:var(--ink); background:#fff; line-height:1.6; word-break:keep-all;
       padding-bottom:calc(58px + env(safe-area-inset-bottom));
     }
     img{ max-width:100%; display:block; }
@@ -115,7 +115,7 @@
     }
     .header .container{ height:56px; display:flex; align-items:center; justify-content:space-between; }
     .logo img{ height:30px; width:auto; }
-    .logo-fallback{ display:none; font-size:20px; font-weight:900; font-style:italic; color:#121212; letter-spacing:-.03em; }
+    .logo-fallback{ display:none; font-size:20px; font-weight:900; font-style:italic; color:var(--black); letter-spacing:-.03em; }
     .logo-fallback b{ color:var(--red); }
     .logo.img-broken img{ display:none; }
     .logo.img-broken .logo-fallback{ display:inline; }
@@ -126,14 +126,14 @@
 
     /* ── 프로모 인라인 배너 ── */
     .promo-bar{
-      display:none; background:var(--red); color:#fff;
+      display:none; background:var(--black-deep); color:#fff;
       font-size:13px; text-align:center; padding:9px 14px; line-height:1.4;
     }
     .promo-bar b{ color:#fff; font-weight:800; }
-    .promo-bar .promo-hot{ color:#fff; font-weight:800; text-decoration:underline; text-underline-offset:3px; }
+    .promo-bar .promo-hot{ color:#E8A0A8; font-weight:800; }
 
     /* ── 히어로 ── */
-    .hero{ background:var(--black-deep); color:#fff; padding:36px 0 40px; }
+    .hero{ background:var(--black); color:#fff; padding:36px 0 40px; }
     .hero h1{ font-size:24px; font-weight:800; line-height:1.35; }
     .hero h1 .num{ display:block; font-size:clamp(46px,14vw,76px); line-height:1.15; }
     .hero .btn-tel{ margin-top:22px; }
@@ -142,22 +142,22 @@
 
     /* ── 섹션 공통 ── */
     section{ padding:52px 0; }
-    .sec-h2{ font-size:22px; font-weight:800; color:#fff; line-height:1.3; }
-    .sec-sub{ margin-top:6px; font-size:14px; color:#9A9AA0; }
+    .sec-h2{ font-size:22px; font-weight:800; color:var(--black); line-height:1.3; }
+    .sec-sub{ margin-top:6px; font-size:14px; color:#6B7280; }
 
-    /* ── ② 비용 ── */
-    .cost{ background:var(--black); }
+    /* ── ① 비용 ── */
+    .cost{ background:#fff; }
     .cost-label{ margin-top:26px; font-size:16px; font-weight:700; color:var(--ink); }
-    .cost-zero{ font-size:clamp(64px,22vw,110px); color:var(--red); line-height:1.1; }
-    .cost-why{ margin-top:8px; font-size:14px; color:#9A9AA0; }
-    .cost-why b{ color:#fff; }
+    .cost-zero{ font-size:clamp(64px,22vw,110px); color:var(--black); line-height:1.1; }
+    .cost-why{ margin-top:8px; font-size:14px; color:#6B7280; }
+    .cost-why b{ color:var(--ink); }
     .cost-cases{ margin-top:28px; }
-    .cost-cases dt{ padding-top:16px; font-size:15px; font-weight:800; color:#fff; }
-    .cost-cases dd{ padding:4px 0 16px; font-size:14px; color:#A6A6AC; border-bottom:1px solid var(--line); }
+    .cost-cases dt{ padding-top:16px; font-size:15px; font-weight:800; color:var(--black); }
+    .cost-cases dd{ padding:4px 0 16px; font-size:14px; color:#4B5563; border-bottom:1px solid var(--line); }
     .cost .btn-tel{ margin-top:26px; }
 
-    /* ── ③ 후기 ── */
-    .reviews{ background:var(--black-deep); }
+    /* ── ② 후기 ── */
+    .reviews{ background:var(--paper); }
     .rv-track{
       margin-top:22px; display:flex; gap:12px; overflow-x:auto;
       scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
@@ -166,9 +166,9 @@
     .rv-track::-webkit-scrollbar{ display:none; }
     .rv-card{
       flex:0 0 78%; max-width:340px; scroll-snap-align:start;
-      background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
+      background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
     }
-    .rv-route{ font-size:15px; font-weight:800; color:#fff; line-height:1.4; }
+    .rv-route{ font-size:15px; font-weight:800; color:var(--black); line-height:1.4; }
     .rv-fault{
       display:inline-block; margin-top:6px; font-size:12px; font-weight:800; color:var(--red);
       border:1px solid var(--red); border-radius:var(--radius); padding:1px 7px;
@@ -176,11 +176,11 @@
     .rv-photo{ margin-top:10px; }
     .rv-photo img{ width:100%; height:150px; object-fit:cover; border-radius:var(--radius); }
     .rv-stars{ margin-top:10px; font-size:13px; color:var(--red); letter-spacing:2px; }
-    .rv-text{ margin-top:6px; font-size:13.5px; color:#B4B4BA; }
-    .rv-author{ margin-top:10px; font-size:12px; color:#8A8A90; }
+    .rv-text{ margin-top:6px; font-size:13.5px; color:#4B5563; }
+    .rv-author{ margin-top:10px; font-size:12px; color:#9CA3AF; }
 
-    /* ── ④ 절차 ── */
-    .process{ background:var(--black-deep); color:#fff; }
+    /* ── ③ 절차 ── */
+    .process{ background:var(--black); color:#fff; }
     .process .sec-h2{ color:#fff; }
     .process .sec-sub{ color:rgba(255,255,255,.6); }
     .step{ display:flex; gap:18px; align-items:flex-start; margin-top:30px; }
@@ -188,15 +188,15 @@
     .step-tit{ font-size:17px; font-weight:800; color:#fff; }
     .step-desc{ margin-top:4px; font-size:13.5px; color:rgba(255,255,255,.72); }
 
-    /* ── ① 차량 ── */
-    .cars{ background:var(--black); }
+    /* ── ④ 차량 ── */
+    .cars{ background:#fff; }
     .brand-chips{ margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; }
     .chip{
-      border:1px solid var(--line); background:transparent; color:#D6D6DA;
+      border:1px solid var(--line); background:#fff; color:var(--ink);
       font-family:inherit; font-size:13px; font-weight:700; padding:8px 14px;
       border-radius:var(--radius); cursor:pointer;
     }
-    .chip.active{ background:var(--red); border-color:var(--red); color:#fff; }
+    .chip.active{ background:var(--black); border-color:var(--black); color:#fff; }
     .car-grid{ margin-top:20px; display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
     .car-group{ display:none; }
     .car-group.active{ display:grid; }
@@ -204,46 +204,46 @@
     .car-grid img{ width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:var(--radius); box-shadow:var(--shadow); }
     .car-grid figcaption{ margin-top:7px; font-size:13px; font-weight:700; color:var(--ink); text-align:center; }
     .car-band{
-      margin-top:28px; background:var(--surface); border-left:4px solid var(--red);
+      margin-top:28px; background:var(--paper); border-left:4px solid var(--red);
       padding:18px 16px;
     }
-    .car-band p{ font-size:15px; font-weight:700; color:#fff; }
+    .car-band p{ font-size:15px; font-weight:700; color:var(--black); }
     .car-band .btn-tel{ margin-top:14px; }
 
     /* ── ⑤ FAQ ── */
-    .faq{ background:var(--black); }
-    .faq-list{ margin-top:24px; border-top:2px solid var(--red); }
+    .faq{ background:#fff; }
+    .faq-list{ margin-top:24px; border-top:2px solid var(--black); }
     .faq-item{ border-bottom:1px solid var(--line); }
     .faq-q{
       width:100%; display:flex; justify-content:space-between; align-items:center; gap:12px;
       background:none; border:none; padding:16px 2px; cursor:pointer; text-align:left;
-      font-family:inherit; font-size:15px; font-weight:700; color:#fff;
+      font-family:inherit; font-size:15px; font-weight:700; color:var(--ink);
     }
     .faq-q .caret{
       flex:0 0 auto; width:9px; height:9px;
-      border-right:2px solid #fff; border-bottom:2px solid #fff;
+      border-right:2px solid var(--black); border-bottom:2px solid var(--black);
       transform:rotate(45deg); transition:transform .2s;
     }
     .faq-item.open .faq-q .caret{ transform:rotate(-135deg); }
-    .faq-a{ display:none; padding:0 2px 16px; font-size:14px; color:#A6A6AC; }
+    .faq-a{ display:none; padding:0 2px 16px; font-size:14px; color:#4B5563; }
     .faq-item.open .faq-a{ display:block; }
 
     /* ── ⑥ 보조채널 ── */
-    .alt{ background:var(--black-deep); }
+    .alt{ background:var(--paper); }
     .alt-kakao{
-      display:block; margin-top:20px; text-align:center; background:#fff; color:#111;
+      display:block; margin-top:20px; text-align:center; background:var(--black); color:#fff;
       font-size:15px; font-weight:800; padding:15px; border-radius:var(--radius);
     }
     .alt form{ margin-top:26px; }
     .form-group{ margin-bottom:14px; }
-    .form-group label{ display:block; font-size:13px; font-weight:700; color:#D6D6DA; margin-bottom:5px; }
+    .form-group label{ display:block; font-size:13px; font-weight:700; color:var(--black); margin-bottom:5px; }
     .form-group input, .form-group textarea{
       width:100%; border:1px solid var(--line); border-radius:var(--radius);
-      padding:12px; font-family:inherit; font-size:15px; color:#fff; background:var(--surface);
+      padding:12px; font-family:inherit; font-size:15px; color:var(--ink); background:#fff;
     }
-    .form-group input:focus, .form-group textarea:focus{ outline:2px solid var(--red); outline-offset:-1px; }
+    .form-group input:focus, .form-group textarea:focus{ outline:2px solid var(--black); outline-offset:-1px; }
     .submit-btn{
-      width:100%; background:#fff; color:#111; border:none; border-radius:var(--radius);
+      width:100%; background:var(--black); color:#fff; border:none; border-radius:var(--radius);
       font-family:inherit; font-size:16px; font-weight:800; padding:15px; cursor:pointer;
     }
     .submit-btn:disabled{ opacity:.6; }
@@ -266,7 +266,7 @@
     }
     .fixed-cta a{ display:flex; align-items:center; justify-content:center; font-weight:800; }
     .fixed-cta .f-tel{ flex:2.4; background:var(--red); color:#fff; font-size:17px; }
-    .fixed-cta .f-kakao{ flex:1; background:#fff; color:#111; font-size:14px; }
+    .fixed-cta .f-kakao{ flex:1; background:var(--black); color:#fff; font-size:14px; }
 
     @media (min-width:720px){
       .hero h1{ font-size:30px; }
