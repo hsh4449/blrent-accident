@@ -300,146 +300,16 @@
                 <span class="num" data-dispatch>1시간 30분</span>
                 안에 차가 갑니다
             </h1>
-            <a href="tel:1666-6525" class="btn-tel" data-cta="hero">지금 전화하기 <span data-tel-text>1666-6525</span></a>
+            <a href="tel:1666-6525" class="btn-tel" data-cta="hero">내 사고도 되는지 물어보기 <span data-tel-text>1666-6525</span></a>
             <p class="hero-proof">누적 고객 <b id="customer-count">68,661+</b>명이 이용한 사고대차 서비스</p>
         </div>
     </section>
 
-    <!-- ① 비용 -->
-    <section class="cost" id="cost">
-        <div class="container">
-            <div class="bar"></div>
-            <h2 class="sec-h2">비용부터 말씀드립니다</h2>
-            <p class="cost-label">고객님이 내시는 돈</p>
-            <div class="cost-zero num">0원</div>
-            <p class="cost-why">사고대차 요금은 <b>상대 보험사의 지불보증</b>으로 처리됩니다. 고객님께 청구되는 금액이 없습니다.</p>
-
-            <dl class="cost-cases">
-                <dt>과실 0% 피해 사고</dt>
-                <dd>요금 전액을 상대 보험사가 부담합니다. 고객님 부담 0원.</dd>
-                <dt>쌍방과실 사고</dt>
-                <dd>본인 과실 비율만큼만 부담합니다. 과실 20%라면 요금의 20%만 부담하시면 됩니다.</dd>
-                <dt>본인 과실 사고</dt>
-                <dd>본인 보험의 대차(렌트) 특약으로 처리 가능한 경우가 있습니다. 전화 주시면 바로 확인해드립니다.</dd>
-            </dl>
-
-            <a href="tel:1666-6525" class="btn-tel" data-cta="cost">내 사고도 되는지 물어보기 <span data-tel-text>1666-6525</span></a>
-        </div>
-    </section>
-
-    <!-- ② 고객 후기 -->
-    <section class="reviews" id="reviews">
-        <div class="container">
-            <div class="bar"></div>
-            <h2 class="sec-h2">실제 고객님들의 후기</h2>
-            <p class="sec-sub">어떤 차를 타다가, 어떤 차를 받으셨는지 보세요</p>
-        </div>
-        <div class="container">
-            <!-- 폴백(Supabase 로드 실패 시) — 평소엔 js/reviews.js 가 동적 후기로 교체 -->
-            <div class="rv-track" id="reviewTrack">
-                <article class="rv-card">
-                    <div class="rv-route">셀토스 → BMW 520i</div>
-                    <span class="rv-fault">과실 0%</span>
-                    <div class="rv-photo"><img src="/img/reviews/seltos.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"신호 대기 중에 뒤에서 그대로 추돌당했어요. 제 과실 0%라 사고대차 된다고 해서 신청했는데, 셀토스 타다가 BMW 520i를 받아서 깜짝 놀랐습니다. 수리 끝날 때까지 추가 비용 한 푼 없이 잘 탔어요. 사고는 났지만 기분은 좋았네요 ㅎㅎ"</p>
-                    <div class="rv-author">김*은 고객님</div>
-                </article>
-                <article class="rv-card">
-                    <div class="rv-route">쏘렌토 → BMW X6</div>
-                    <span class="rv-fault">과실 10%</span>
-                    <div class="rv-photo"><img src="/img/reviews/sorento.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"눈 오는 날 상대 차가 차선을 넘어와서 뒤쪽을 받혔어요. 9대1로 제 과실 10%였는데 사고대차 가능하다고 하셔서 진행했습니다. 쏘렌토 몰다가 BMW X6 받으니 가족들이 더 좋아했네요. 배차도 빠르고 친절했습니다."</p>
-                    <div class="rv-author">이*우 고객님</div>
-                </article>
-                <article class="rv-card">
-                    <div class="rv-route">펠리세이드 → 포르쉐 카이엔</div>
-                    <span class="rv-fault">과실 0%</span>
-                    <div class="rv-photo"><img src="/img/reviews/palisade.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"주차장에서 빠져나오는데 상대가 측면을 긁고 지나갔어요. 제 과실 없는 사고라 바로 대차 신청했습니다. 펠리세이드도 큰 차인데 포르쉐 카이엔이 와서 수리 기간 내내 호강했네요. 추가금 0원, 강력 추천합니다."</p>
-                    <div class="rv-author">박*아 고객님</div>
-                </article>
-                <article class="rv-card">
-                    <div class="rv-route">GV80 → BMW X5</div>
-                    <span class="rv-fault">과실 20%</span>
-                    <div class="rv-photo"><img src="/img/reviews/gv80.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"교차로에서 접촉이 났는데 과실이 8대2로 애매하게 제 쪽 20%로 잡혔어요. 30% 이하면 사고대차 된다고 해서 신청했고, GV80 타다가 BMW X5 받았습니다. 과실 비율 때문에 안 될 줄 알았는데 깔끔하게 처리해주셔서 감사했어요."</p>
-                    <div class="rv-author">정*훈 고객님</div>
-                </article>
-                <article class="rv-card">
-                    <div class="rv-route">벤츠 E350 → 테슬라 모델Y</div>
-                    <span class="rv-fault">과실 20%</span>
-                    <div class="rv-photo"><img src="/img/reviews/e350.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"좁은 골목에서 마주 오던 차랑 접촉했는데 제 과실이 20% 나왔어요. 벤츠 E350 수리 들어가면서 테슬라 모델Y로 대차받았는데 전기차는 처음이라 신기하고 재밌게 탔습니다. 상담부터 반납까지 매끄러웠어요."</p>
-                    <div class="rv-author">한*솔 고객님</div>
-                </article>
-                <article class="rv-card">
-                    <div class="rv-route">그랜저 GN7 → 벤츠 GLE450</div>
-                    <span class="rv-fault">과실 20%</span>
-                    <div class="rv-photo"><img src="/img/reviews/gn7.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"앞쪽 모서리를 긁는 사고였는데 과실이 8대2로 제가 20%였어요. 사고대차 문제없이 됐고, 그랜저(GN7) 타다가 벤츠 GLE450 받아서 오히려 차급이 올라갔네요 ㅎㅎ 빠른 배차 감사합니다."</p>
-                    <div class="rv-author">윤*재 고객님</div>
-                </article>
-                <article class="rv-card">
-                    <div class="rv-route">K5 → 벤츠 E클래스</div>
-                    <span class="rv-fault">과실 10%</span>
-                    <div class="rv-photo"><img src="/img/reviews/k5.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
-                    <div class="rv-stars">★★★★★</div>
-                    <p class="rv-text">"밤에 톨게이트 근처에서 앞쪽을 크게 부딪혀 범퍼가 다 나갔어요. 제 과실 10%라 사고대차 신청했고, K5 몰다가 벤츠 E클래스로 대차받았습니다. 사고로 정신없었는데 차량이 빨리 와줘서 출퇴근에 지장이 없었어요. 정말 감사했습니다."</p>
-                    <div class="rv-author">조*민 고객님</div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- ③ 절차 -->
-    <section class="process" id="process">
-        <div class="container">
-            <div class="bar"></div>
-            <h2 class="sec-h2">고객님이 하실 일은 전화 한 통</h2>
-            <p class="sec-sub">나머지는 전부 저희가 합니다</p>
-
-            <div class="step">
-                <div class="step-no num">1</div>
-                <div>
-                    <div class="step-tit">전화 주세요</div>
-                    <p class="step-desc">사고 상황을 그대로 말씀만 해주시면 됩니다. 24시간 받습니다.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-no num">2</div>
-                <div>
-                    <div class="step-tit">보험사 확인</div>
-                    <p class="step-desc">담당자가 상대 보험사와 대차 가능 여부·지불보증을 직접 확인합니다.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-no num">3</div>
-                <div>
-                    <div class="step-tit">차량 배차</div>
-                    <p class="step-desc">자체 탁송으로 고객님이 계신 곳까지 <span data-dispatch>1시간 30분</span> 내 차량을 가져다드립니다.</p>
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-no num">4</div>
-                <div>
-                    <div class="step-tit">대차 시작</div>
-                    <p class="step-desc">간단한 서류 작성 후 바로 운행하시면 됩니다. 반납까지 관리해드립니다.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ④ 차량 -->
+    <!-- ① 차량 -->
     <section class="cars" id="vehicles">
         <div class="container">
             <div class="bar"></div>
-            <h2 class="sec-h2">이런 차들이 갑니다</h2>
+            <h2 class="sec-h2">어떤 차를 빌려주시나요?</h2>
             <p class="sec-sub">고객님 차량 배기량에 맞춰 동급 또는 상위 차량으로 배차합니다</p>
 
             <div class="brand-chips" id="brandChips">
@@ -537,6 +407,136 @@
             <div class="car-band">
                 <p>이 외 차량도 말씀만 해주세요. 최대한 빠르게 맞춰드립니다.</p>
                 <a href="tel:1666-6525" class="btn-tel" data-cta="vehicles">원하는 차량 문의하기 <span data-tel-text>1666-6525</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ② 비용 -->
+    <section class="cost" id="cost">
+        <div class="container">
+            <div class="bar"></div>
+            <h2 class="sec-h2">비용부터 말씀드립니다</h2>
+            <p class="cost-label">고객님이 내시는 돈</p>
+            <div class="cost-zero num">0원</div>
+            <p class="cost-why">사고대차 요금은 <b>상대 보험사의 지불보증</b>으로 처리됩니다. 고객님께 청구되는 금액이 없습니다.</p>
+
+            <dl class="cost-cases">
+                <dt>과실 0% 피해 사고</dt>
+                <dd>요금 전액을 상대 보험사가 부담합니다. 고객님 부담 0원.</dd>
+                <dt>쌍방과실 사고</dt>
+                <dd>본인 과실 비율만큼만 부담합니다. 과실 20%라면 요금의 20%만 부담하시면 됩니다.</dd>
+                <dt>본인 과실 사고</dt>
+                <dd>본인 보험의 대차(렌트) 특약으로 처리 가능한 경우가 있습니다. 전화 주시면 바로 확인해드립니다.</dd>
+            </dl>
+
+            <a href="tel:1666-6525" class="btn-tel" data-cta="cost">내 사고도 되는지 물어보기 <span data-tel-text>1666-6525</span></a>
+        </div>
+    </section>
+
+    <!-- ③ 고객 후기 -->
+    <section class="reviews" id="reviews">
+        <div class="container">
+            <div class="bar"></div>
+            <h2 class="sec-h2">실제 고객님들의 후기</h2>
+            <p class="sec-sub">어떤 차를 타다가, 어떤 차를 받으셨는지 보세요</p>
+        </div>
+        <div class="container">
+            <!-- 폴백(Supabase 로드 실패 시) — 평소엔 js/reviews.js 가 동적 후기로 교체 -->
+            <div class="rv-track" id="reviewTrack">
+                <article class="rv-card">
+                    <div class="rv-route">셀토스 → BMW 520i</div>
+                    <span class="rv-fault">과실 0%</span>
+                    <div class="rv-photo"><img src="/img/reviews/seltos.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"신호 대기 중에 뒤에서 그대로 추돌당했어요. 제 과실 0%라 사고대차 된다고 해서 신청했는데, 셀토스 타다가 BMW 520i를 받아서 깜짝 놀랐습니다. 수리 끝날 때까지 추가 비용 한 푼 없이 잘 탔어요. 사고는 났지만 기분은 좋았네요 ㅎㅎ"</p>
+                    <div class="rv-author">김*은 고객님</div>
+                </article>
+                <article class="rv-card">
+                    <div class="rv-route">쏘렌토 → BMW X6</div>
+                    <span class="rv-fault">과실 10%</span>
+                    <div class="rv-photo"><img src="/img/reviews/sorento.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"눈 오는 날 상대 차가 차선을 넘어와서 뒤쪽을 받혔어요. 9대1로 제 과실 10%였는데 사고대차 가능하다고 하셔서 진행했습니다. 쏘렌토 몰다가 BMW X6 받으니 가족들이 더 좋아했네요. 배차도 빠르고 친절했습니다."</p>
+                    <div class="rv-author">이*우 고객님</div>
+                </article>
+                <article class="rv-card">
+                    <div class="rv-route">펠리세이드 → 포르쉐 카이엔</div>
+                    <span class="rv-fault">과실 0%</span>
+                    <div class="rv-photo"><img src="/img/reviews/palisade.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"주차장에서 빠져나오는데 상대가 측면을 긁고 지나갔어요. 제 과실 없는 사고라 바로 대차 신청했습니다. 펠리세이드도 큰 차인데 포르쉐 카이엔이 와서 수리 기간 내내 호강했네요. 추가금 0원, 강력 추천합니다."</p>
+                    <div class="rv-author">박*아 고객님</div>
+                </article>
+                <article class="rv-card">
+                    <div class="rv-route">GV80 → BMW X5</div>
+                    <span class="rv-fault">과실 20%</span>
+                    <div class="rv-photo"><img src="/img/reviews/gv80.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"교차로에서 접촉이 났는데 과실이 8대2로 애매하게 제 쪽 20%로 잡혔어요. 30% 이하면 사고대차 된다고 해서 신청했고, GV80 타다가 BMW X5 받았습니다. 과실 비율 때문에 안 될 줄 알았는데 깔끔하게 처리해주셔서 감사했어요."</p>
+                    <div class="rv-author">정*훈 고객님</div>
+                </article>
+                <article class="rv-card">
+                    <div class="rv-route">벤츠 E350 → 테슬라 모델Y</div>
+                    <span class="rv-fault">과실 20%</span>
+                    <div class="rv-photo"><img src="/img/reviews/e350.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"좁은 골목에서 마주 오던 차랑 접촉했는데 제 과실이 20% 나왔어요. 벤츠 E350 수리 들어가면서 테슬라 모델Y로 대차받았는데 전기차는 처음이라 신기하고 재밌게 탔습니다. 상담부터 반납까지 매끄러웠어요."</p>
+                    <div class="rv-author">한*솔 고객님</div>
+                </article>
+                <article class="rv-card">
+                    <div class="rv-route">그랜저 GN7 → 벤츠 GLE450</div>
+                    <span class="rv-fault">과실 20%</span>
+                    <div class="rv-photo"><img src="/img/reviews/gn7.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"앞쪽 모서리를 긁는 사고였는데 과실이 8대2로 제가 20%였어요. 사고대차 문제없이 됐고, 그랜저(GN7) 타다가 벤츠 GLE450 받아서 오히려 차급이 올라갔네요 ㅎㅎ 빠른 배차 감사합니다."</p>
+                    <div class="rv-author">윤*재 고객님</div>
+                </article>
+                <article class="rv-card">
+                    <div class="rv-route">K5 → 벤츠 E클래스</div>
+                    <span class="rv-fault">과실 10%</span>
+                    <div class="rv-photo"><img src="/img/reviews/k5.jpg" alt="사고 차량 후기 사진" loading="lazy"></div>
+                    <div class="rv-stars">★★★★★</div>
+                    <p class="rv-text">"밤에 톨게이트 근처에서 앞쪽을 크게 부딪혀 범퍼가 다 나갔어요. 제 과실 10%라 사고대차 신청했고, K5 몰다가 벤츠 E클래스로 대차받았습니다. 사고로 정신없었는데 차량이 빨리 와줘서 출퇴근에 지장이 없었어요. 정말 감사했습니다."</p>
+                    <div class="rv-author">조*민 고객님</div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ④ 절차 -->
+    <section class="process" id="process">
+        <div class="container">
+            <div class="bar"></div>
+            <h2 class="sec-h2">고객님이 하실 일은 전화 한 통</h2>
+            <p class="sec-sub">나머지는 전부 저희가 합니다</p>
+
+            <div class="step">
+                <div class="step-no num">1</div>
+                <div>
+                    <div class="step-tit">전화 주세요</div>
+                    <p class="step-desc">사고 상황을 그대로 말씀만 해주시면 됩니다. 24시간 받습니다.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-no num">2</div>
+                <div>
+                    <div class="step-tit">보험사 확인</div>
+                    <p class="step-desc">담당자가 상대 보험사와 대차 가능 여부·지불보증을 직접 확인합니다.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-no num">3</div>
+                <div>
+                    <div class="step-tit">차량 배차</div>
+                    <p class="step-desc">자체 탁송으로 고객님이 계신 곳까지 <span data-dispatch>1시간 30분</span> 내 차량을 가져다드립니다.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-no num">4</div>
+                <div>
+                    <div class="step-tit">대차 시작</div>
+                    <p class="step-desc">간단한 서류 작성 후 바로 운행하시면 됩니다. 반납까지 관리해드립니다.</p>
+                </div>
             </div>
         </div>
     </section>
