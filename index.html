@@ -231,22 +231,13 @@
     /* ── ⑥ 보조채널 ── */
     .alt{ background:var(--paper); }
     .alt-kakao{
-      display:block; margin-top:20px; text-align:center; background:var(--black); color:#fff;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      margin-top:20px; text-align:center; background:var(--black); color:#fff;
       font-size:15px; font-weight:800; padding:15px; border-radius:var(--radius);
     }
-    .alt form{ margin-top:26px; }
-    .form-group{ margin-bottom:14px; }
-    .form-group label{ display:block; font-size:13px; font-weight:700; color:var(--black); margin-bottom:5px; }
-    .form-group input, .form-group textarea{
-      width:100%; border:1px solid var(--line); border-radius:var(--radius);
-      padding:12px; font-family:inherit; font-size:15px; color:var(--ink); background:#fff;
-    }
-    .form-group input:focus, .form-group textarea:focus{ outline:2px solid var(--black); outline-offset:-1px; }
-    .submit-btn{
-      width:100%; background:var(--black); color:#fff; border:none; border-radius:var(--radius);
-      font-family:inherit; font-size:16px; font-weight:800; padding:15px; cursor:pointer;
-    }
-    .submit-btn:disabled{ opacity:.6; }
+
+    /* 버튼 아이콘 (인라인 SVG) */
+    .ico{ width:18px; height:18px; flex:0 0 auto; }
 
     /* ── 푸터 ── */
     .footer{ background:var(--black-deep); color:rgba(255,255,255,.55); font-size:12px; padding:36px 0 44px; }
@@ -264,7 +255,7 @@
       height:calc(58px + env(safe-area-inset-bottom));
       padding-bottom:env(safe-area-inset-bottom);
     }
-    .fixed-cta a{ display:flex; align-items:center; justify-content:center; font-weight:800; }
+    .fixed-cta a{ display:flex; align-items:center; justify-content:center; gap:7px; font-weight:800; }
     .fixed-cta .f-tel{ flex:2.4; background:var(--red); color:#fff; font-size:17px; }
     .fixed-cta .f-kakao{ flex:1; background:var(--black); color:#fff; font-size:14px; }
 
@@ -573,29 +564,9 @@
         <div class="container">
             <div class="bar"></div>
             <h2 class="sec-h2">지금 통화가 어려우시다면</h2>
-            <p class="sec-sub">카카오톡으로 문의하시거나, 연락처를 남겨주시면 담당자가 확인 즉시 전화드립니다</p>
+            <p class="sec-sub">카카오톡으로 편하게 문의하세요. 확인 즉시 답변드립니다</p>
 
-            <a href="https://open.kakao.com/o/sPdYBZli" target="_blank" rel="noopener" class="alt-kakao">카카오톡 1:1 문의</a>
-
-            <form id="consultForm">
-                <div class="form-group">
-                    <label for="name">이름 *</label>
-                    <input type="text" id="name" name="이름" required placeholder="홍길동">
-                </div>
-                <div class="form-group">
-                    <label for="phone">연락처 *</label>
-                    <input type="tel" id="phone" name="연락처" required placeholder="010-1234-5678">
-                </div>
-                <div class="form-group">
-                    <label for="carModel">사고 차량</label>
-                    <input type="text" id="carModel" name="차량종류" placeholder="예: 소나타, 그랜저 등">
-                </div>
-                <div class="form-group">
-                    <label for="message">문의 내용</label>
-                    <textarea id="message" name="문의내용" rows="4" placeholder="사고 상황을 간단히 적어주세요"></textarea>
-                </div>
-                <button type="submit" class="submit-btn">전화 회신 요청하기</button>
-            </form>
+            <a href="https://open.kakao.com/o/sPdYBZli" target="_blank" rel="noopener" class="alt-kakao"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.5 1.44 4.72 3.69 6.19-.14.5-.9 3.16-.93 3.37 0 0-.02.15.08.21.1.06.22.01.22.01.29-.04 3.35-2.19 3.88-2.56.66.1 1.35.15 2.06.15 5.52 0 10-3.58 10-8S17.52 3 12 3z"/></svg>카카오톡 1:1 문의</a>
         </div>
     </section>
 
@@ -629,8 +600,8 @@
 
     <!-- 고정 하단바 -->
     <div class="fixed-cta">
-        <a href="tel:1666-6525" class="f-tel" data-cta="fixed">전화 상담 <span data-tel-text style="margin-left:8px;">1666-6525</span></a>
-        <a href="https://open.kakao.com/o/sPdYBZli" target="_blank" rel="noopener" class="f-kakao">카톡 상담</a>
+        <a href="tel:1666-6525" class="f-tel" data-cta="fixed"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>전화 상담 <span data-tel-text>1666-6525</span></a>
+        <a href="https://open.kakao.com/o/sPdYBZli" target="_blank" rel="noopener" class="f-kakao"><svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.5 1.44 4.72 3.69 6.19-.14.5-.9 3.16-.93 3.37 0 0-.02.15.08.21.1.06.22.01.22.01.29-.04 3.35-2.19 3.88-2.56.66.1 1.35.15 2.06.15 5.52 0 10-3.58 10-8S17.52 3 12 3z"/></svg>카톡 상담</a>
     </div>
 
     <!-- 고객후기 동적 로드 (Supabase ares_reviews) -->
@@ -684,38 +655,6 @@
         });
       });
     })();
-    </script>
-
-    <!-- Google Apps Script 폼 제출 (엔드포인트 기존 유지) -->
-    <script>
-        document.getElementById("consultForm").addEventListener("submit", function(e) {
-            e.preventDefault();
-
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwtjwHFurSLMz3In7t_GJa4gRRtg3qtYXwXaUuf-64sIE5gHQMCbvrLS17lJzdXeBIQEQ/exec";
-
-            const btn = this.querySelector(".submit-btn");
-            const originalText = btn.textContent;
-            btn.textContent = "접수 중입니다...";
-            btn.disabled = true;
-
-            fetch(scriptURL, {
-                method: 'POST',
-                body: new FormData(this),
-                mode: 'no-cors'
-            })
-            .then(function () {
-                alert("접수되었습니다.\n\n담당자가 확인 즉시 전화드립니다.\n급하시면 지금 바로 " + SITE.tel + " 로 전화 주세요.");
-                document.getElementById("consultForm").reset();
-                btn.textContent = originalText;
-                btn.disabled = false;
-            })
-            .catch(function (error) {
-                console.error('Error!', error);
-                alert("접수 중 문제가 발생했습니다.\n\n" + SITE.tel + " 로 전화 주시면 바로 도와드리겠습니다.");
-                btn.textContent = originalText;
-                btn.disabled = false;
-            });
-        });
     </script>
 
     <!-- Smartlog -->
