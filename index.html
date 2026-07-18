@@ -69,11 +69,21 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 
     <style>
-    /* 승리의 그날까지체 (noonnu.cc/font_page/1685) — Regular 단일 굵기 */
+    /* KBO 다이아 고딕 (noonnu.cc/font_page/1146) — Light/Medium/Bold 3종 */
     @font-face{
-      font-family:'TillVictoryComes';
-      src:url('https://cdn.jsdelivr.net/gh/tillvictorycomes/TillVictoryComes-font/tillvictorycomes-Regular.woff2') format('woff2');
-      font-weight:normal; font-style:normal; font-display:swap;
+      font-family:'KboDiamondGothic';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_light.woff') format('woff');
+      font-weight:300; font-display:swap;
+    }
+    @font-face{
+      font-family:'KboDiamondGothic';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_medium.woff') format('woff');
+      font-weight:400 500; font-display:swap;
+    }
+    @font-face{
+      font-family:'KboDiamondGothic';
+      src:url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/KBO-Dia-Gothic_bold.woff') format('woff');
+      font-weight:600 900; font-display:swap;
     }
     /* ============================================================
        김부장렌트카 디자인 토큰 — 로고에서 도출
@@ -92,7 +102,7 @@
     *{ margin:0; padding:0; box-sizing:border-box; }
     html{ scroll-behavior:smooth; }
     body{
-      font-family:'TillVictoryComes','Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+      font-family:'KboDiamondGothic','Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
       color:var(--ink); background:#fff; line-height:1.6; word-break:keep-all;
       padding-bottom:calc(58px + env(safe-area-inset-bottom));
     }
