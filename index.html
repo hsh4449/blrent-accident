@@ -74,14 +74,14 @@
        radius / shadow 는 아래 토큰 외 하드코딩 금지
        ============================================================ */
     :root{
-      --navy:#16243D;
-      --navy-deep:#0E1729;
+      --black:#121212;
+      --black-deep:#000000;
       --red:#C41E2F;
-      --paper:#F7F6F3;
-      --ink:#181B21;
-      --line:#DDE0E6;
+      --paper:#F5F5F5;
+      --ink:#111111;
+      --line:#E0E0E0;
       --radius:4px;
-      --shadow:0 1px 3px rgba(22,36,61,.14);
+      --shadow:0 1px 3px rgba(0,0,0,.16);
     }
     *{ margin:0; padding:0; box-sizing:border-box; }
     html{ scroll-behavior:smooth; }
@@ -115,7 +115,7 @@
     }
     .header .container{ height:56px; display:flex; align-items:center; justify-content:space-between; }
     .logo img{ height:30px; width:auto; }
-    .logo-fallback{ display:none; font-size:20px; font-weight:900; font-style:italic; color:var(--navy); letter-spacing:-.03em; }
+    .logo-fallback{ display:none; font-size:20px; font-weight:900; font-style:italic; color:var(--black); letter-spacing:-.03em; }
     .logo-fallback b{ color:var(--red); }
     .logo.img-broken img{ display:none; }
     .logo.img-broken .logo-fallback{ display:inline; }
@@ -126,14 +126,14 @@
 
     /* ── 프로모 인라인 배너 ── */
     .promo-bar{
-      display:none; background:var(--navy-deep); color:#fff;
+      display:none; background:var(--black-deep); color:#fff;
       font-size:13px; text-align:center; padding:9px 14px; line-height:1.4;
     }
     .promo-bar b{ color:#fff; font-weight:800; }
     .promo-bar .promo-hot{ color:#E8A0A8; font-weight:800; }
 
     /* ── 히어로 ── */
-    .hero{ background:var(--navy); color:#fff; padding:36px 0 40px; }
+    .hero{ background:var(--black); color:#fff; padding:36px 0 40px; }
     .hero h1{ font-size:24px; font-weight:800; line-height:1.35; }
     .hero h1 .num{ display:block; font-size:clamp(46px,14vw,76px); line-height:1.15; }
     .hero .btn-tel{ margin-top:22px; }
@@ -142,17 +142,17 @@
 
     /* ── 섹션 공통 ── */
     section{ padding:52px 0; }
-    .sec-h2{ font-size:22px; font-weight:800; color:var(--navy); line-height:1.3; }
+    .sec-h2{ font-size:22px; font-weight:800; color:var(--black); line-height:1.3; }
     .sec-sub{ margin-top:6px; font-size:14px; color:#6B7280; }
 
     /* ── ① 비용 ── */
     .cost{ background:#fff; }
     .cost-label{ margin-top:26px; font-size:16px; font-weight:700; color:var(--ink); }
-    .cost-zero{ font-size:clamp(64px,22vw,110px); color:var(--navy); line-height:1.1; }
+    .cost-zero{ font-size:clamp(64px,22vw,110px); color:var(--black); line-height:1.1; }
     .cost-why{ margin-top:8px; font-size:14px; color:#6B7280; }
     .cost-why b{ color:var(--ink); }
     .cost-cases{ margin-top:28px; }
-    .cost-cases dt{ padding-top:16px; font-size:15px; font-weight:800; color:var(--navy); }
+    .cost-cases dt{ padding-top:16px; font-size:15px; font-weight:800; color:var(--black); }
     .cost-cases dd{ padding:4px 0 16px; font-size:14px; color:#4B5563; border-bottom:1px solid var(--line); }
     .cost .btn-tel{ margin-top:26px; }
 
@@ -168,7 +168,7 @@
       flex:0 0 78%; max-width:340px; scroll-snap-align:start;
       background:#fff; border-radius:var(--radius); box-shadow:var(--shadow); padding:16px;
     }
-    .rv-route{ font-size:15px; font-weight:800; color:var(--navy); line-height:1.4; }
+    .rv-route{ font-size:15px; font-weight:800; color:var(--black); line-height:1.4; }
     .rv-fault{
       display:inline-block; margin-top:6px; font-size:12px; font-weight:800; color:var(--red);
       border:1px solid var(--red); border-radius:var(--radius); padding:1px 7px;
@@ -180,7 +180,7 @@
     .rv-author{ margin-top:10px; font-size:12px; color:#9CA3AF; }
 
     /* ── ③ 절차 ── */
-    .process{ background:var(--navy); color:#fff; }
+    .process{ background:var(--black); color:#fff; }
     .process .sec-h2{ color:#fff; }
     .process .sec-sub{ color:rgba(255,255,255,.6); }
     .step{ display:flex; gap:18px; align-items:flex-start; margin-top:30px; }
@@ -190,7 +190,16 @@
 
     /* ── ④ 차량 ── */
     .cars{ background:#fff; }
-    .car-grid{ margin-top:24px; display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
+    .brand-chips{ margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; }
+    .chip{
+      border:1px solid var(--line); background:#fff; color:var(--ink);
+      font-family:inherit; font-size:13px; font-weight:700; padding:8px 14px;
+      border-radius:var(--radius); cursor:pointer;
+    }
+    .chip.active{ background:var(--black); border-color:var(--black); color:#fff; }
+    .car-grid{ margin-top:20px; display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px; }
+    .car-group{ display:none; }
+    .car-group.active{ display:grid; }
     @media (min-width:720px){ .car-grid{ grid-template-columns:repeat(4,1fr); } }
     .car-grid img{ width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:var(--radius); box-shadow:var(--shadow); }
     .car-grid figcaption{ margin-top:7px; font-size:13px; font-weight:700; color:var(--ink); text-align:center; }
@@ -198,12 +207,12 @@
       margin-top:28px; background:var(--paper); border-left:4px solid var(--red);
       padding:18px 16px;
     }
-    .car-band p{ font-size:15px; font-weight:700; color:var(--navy); }
+    .car-band p{ font-size:15px; font-weight:700; color:var(--black); }
     .car-band .btn-tel{ margin-top:14px; }
 
     /* ── ⑤ FAQ ── */
     .faq{ background:#fff; }
-    .faq-list{ margin-top:24px; border-top:2px solid var(--navy); }
+    .faq-list{ margin-top:24px; border-top:2px solid var(--black); }
     .faq-item{ border-bottom:1px solid var(--line); }
     .faq-q{
       width:100%; display:flex; justify-content:space-between; align-items:center; gap:12px;
@@ -212,7 +221,7 @@
     }
     .faq-q .caret{
       flex:0 0 auto; width:9px; height:9px;
-      border-right:2px solid var(--navy); border-bottom:2px solid var(--navy);
+      border-right:2px solid var(--black); border-bottom:2px solid var(--black);
       transform:rotate(45deg); transition:transform .2s;
     }
     .faq-item.open .faq-q .caret{ transform:rotate(-135deg); }
@@ -222,25 +231,25 @@
     /* ── ⑥ 보조채널 ── */
     .alt{ background:var(--paper); }
     .alt-kakao{
-      display:block; margin-top:20px; text-align:center; background:var(--navy); color:#fff;
+      display:block; margin-top:20px; text-align:center; background:var(--black); color:#fff;
       font-size:15px; font-weight:800; padding:15px; border-radius:var(--radius);
     }
     .alt form{ margin-top:26px; }
     .form-group{ margin-bottom:14px; }
-    .form-group label{ display:block; font-size:13px; font-weight:700; color:var(--navy); margin-bottom:5px; }
+    .form-group label{ display:block; font-size:13px; font-weight:700; color:var(--black); margin-bottom:5px; }
     .form-group input, .form-group textarea{
       width:100%; border:1px solid var(--line); border-radius:var(--radius);
       padding:12px; font-family:inherit; font-size:15px; color:var(--ink); background:#fff;
     }
-    .form-group input:focus, .form-group textarea:focus{ outline:2px solid var(--navy); outline-offset:-1px; }
+    .form-group input:focus, .form-group textarea:focus{ outline:2px solid var(--black); outline-offset:-1px; }
     .submit-btn{
-      width:100%; background:var(--navy); color:#fff; border:none; border-radius:var(--radius);
+      width:100%; background:var(--black); color:#fff; border:none; border-radius:var(--radius);
       font-family:inherit; font-size:16px; font-weight:800; padding:15px; cursor:pointer;
     }
     .submit-btn:disabled{ opacity:.6; }
 
     /* ── 푸터 ── */
-    .footer{ background:var(--navy-deep); color:rgba(255,255,255,.55); font-size:12px; padding:36px 0 44px; }
+    .footer{ background:var(--black-deep); color:rgba(255,255,255,.55); font-size:12px; padding:36px 0 44px; }
     .footer-brand{ font-size:18px; font-weight:900; font-style:italic; color:#fff; letter-spacing:-.03em; }
     .footer-brand b{ color:var(--red); }
     .footer-block{ margin-top:18px; line-height:1.7; }
@@ -257,7 +266,7 @@
     }
     .fixed-cta a{ display:flex; align-items:center; justify-content:center; font-weight:800; }
     .fixed-cta .f-tel{ flex:2.4; background:var(--red); color:#fff; font-size:17px; }
-    .fixed-cta .f-kakao{ flex:1; background:var(--navy); color:#fff; font-size:14px; }
+    .fixed-cta .f-kakao{ flex:1; background:var(--black); color:#fff; font-size:14px; }
 
     @media (min-width:720px){
       .hero h1{ font-size:30px; }
@@ -433,15 +442,96 @@
             <h2 class="sec-h2">이런 차들이 갑니다</h2>
             <p class="sec-sub">고객님 차량 배기량에 맞춰 동급 또는 상위 차량으로 배차합니다</p>
 
-            <div class="car-grid">
-                <figure><img src="img/cars/벤츠 E200 화이트.webp" alt="벤츠 E200" loading="lazy"><figcaption>벤츠 E200</figcaption></figure>
-                <figure><img src="img/cars/BMW 5시리즈 화이트.webp" alt="BMW 5시리즈" loading="lazy"><figcaption>BMW 5시리즈</figcaption></figure>
-                <figure><img src="img/cars/벤츠 GLE450 화이트.webp" alt="벤츠 GLE450" loading="lazy"><figcaption>벤츠 GLE450</figcaption></figure>
-                <figure><img src="img/cars/BMW X6 화이트.webp" alt="BMW X6" loading="lazy"><figcaption>BMW X6</figcaption></figure>
-                <figure><img src="img/cars/테슬라 모델Y 롱레인지.webp" alt="테슬라 모델Y" loading="lazy"><figcaption>테슬라 모델Y</figcaption></figure>
-                <figure><img src="img/cars/포르쉐 카이엔 쿠페.webp" alt="포르쉐 카이엔" loading="lazy"><figcaption>포르쉐 카이엔</figcaption></figure>
-                <figure><img src="img/cars/벤츠 S580 화이트.webp" alt="벤츠 S580" loading="lazy"><figcaption>벤츠 S580</figcaption></figure>
-                <figure><img src="img/cars/람보르기니 우루스S.webp" alt="람보르기니 우루스" loading="lazy"><figcaption>람보르기니 우루스</figcaption></figure>
+            <div class="brand-chips" id="brandChips">
+                <button type="button" class="chip active" data-brand="benz">벤츠</button>
+                <button type="button" class="chip" data-brand="bmw">BMW</button>
+                <button type="button" class="chip" data-brand="audi">아우디</button>
+                <button type="button" class="chip" data-brand="tesla">테슬라</button>
+                <button type="button" class="chip" data-brand="landrover">랜드로버</button>
+                <button type="button" class="chip" data-brand="porsche">포르쉐</button>
+                <button type="button" class="chip" data-brand="bentley">벤틀리</button>
+                <button type="button" class="chip" data-brand="lambo">람보르기니</button>
+            </div>
+
+            <div class="car-grid car-group active" data-brand="benz">
+                <figure><img src="img/cars/벤츠 E200 화이트.webp" alt="벤츠 E200 화이트" loading="lazy"><figcaption>E200 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 E200 블랙.webp" alt="벤츠 E200 블랙" loading="lazy"><figcaption>E200 블랙</figcaption></figure>
+                <figure><img src="img/cars/벤츠 AMG GT43 화이트.webp" alt="벤츠 AMG GT43 화이트" loading="lazy"><figcaption>AMG GT43 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 AMG GT43 블랙.webp" alt="벤츠 AMG GT43 블랙" loading="lazy"><figcaption>AMG GT43 블랙</figcaption></figure>
+                <figure><img src="img/cars/벤츠 CLE 카브리올레 화이트.webp" alt="벤츠 CLE 카브리올레 화이트" loading="lazy"><figcaption>CLE 카브리올레 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 CLE 카브리올레 블랙.webp" alt="벤츠 CLE 카브리올레 블랙" loading="lazy"><figcaption>CLE 카브리올레 블랙</figcaption></figure>
+                <figure><img src="img/cars/벤츠 E53 AMG.webp" alt="벤츠 E53 AMG" loading="lazy"><figcaption>E53 AMG</figcaption></figure>
+                <figure><img src="img/cars/벤츠 AMG SL 화이트.webp" alt="벤츠 AMG SL" loading="lazy"><figcaption>AMG SL</figcaption></figure>
+                <figure><img src="img/cars/벤츠 S580 화이트.webp" alt="벤츠 S580 화이트" loading="lazy"><figcaption>S580 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 S580 블랙.webp" alt="벤츠 S580 블랙" loading="lazy"><figcaption>S580 블랙</figcaption></figure>
+                <figure><img src="img/cars/벤츠 GLE450 화이트.webp" alt="벤츠 GLE450 화이트" loading="lazy"><figcaption>GLE450 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 GLE450 쿠페 블랙.webp" alt="벤츠 GLE450 쿠페 블랙" loading="lazy"><figcaption>GLE450 쿠페 블랙</figcaption></figure>
+                <figure><img src="img/cars/벤츠 GLE53 화이트.webp" alt="벤츠 GLE53 화이트" loading="lazy"><figcaption>GLE53 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 GLE53 블랙.webp" alt="벤츠 GLE53 블랙" loading="lazy"><figcaption>GLE53 블랙</figcaption></figure>
+                <figure><img src="img/cars/벤츠 G450 화이트.webp" alt="벤츠 G450 화이트" loading="lazy"><figcaption>G450 화이트</figcaption></figure>
+                <figure><img src="img/cars/벤츠 G63 블랙.webp" alt="벤츠 G63 블랙" loading="lazy"><figcaption>G63 블랙</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="bmw">
+                <figure><img src="img/cars/BMW 5시리즈 화이트.webp" alt="BMW 5시리즈 화이트" loading="lazy"><figcaption>5시리즈 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW 5시리즈 블랙.webp" alt="BMW 5시리즈 블랙" loading="lazy"><figcaption>5시리즈 블랙</figcaption></figure>
+                <figure><img src="img/cars/BMW 7시리즈 화이트.webp" alt="BMW 7시리즈 화이트" loading="lazy"><figcaption>7시리즈 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW 7시리즈 투톤.webp" alt="BMW 7시리즈 투톤" loading="lazy"><figcaption>7시리즈 투톤</figcaption></figure>
+                <figure><img src="img/cars/BMW 420i 화이트.webp" alt="BMW 420i 화이트" loading="lazy"><figcaption>420i 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW M3 화이트.webp" alt="BMW M3 화이트" loading="lazy"><figcaption>M3 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW M3 블루.webp" alt="BMW M3 블루" loading="lazy"><figcaption>M3 블루</figcaption></figure>
+                <figure><img src="img/cars/BMW M4 화이트.webp" alt="BMW M4 화이트" loading="lazy"><figcaption>M4 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW M850 블랙.webp" alt="BMW M850 블랙" loading="lazy"><figcaption>M850 블랙</figcaption></figure>
+                <figure><img src="img/cars/BMW Z4 화이트.webp" alt="BMW Z4 화이트" loading="lazy"><figcaption>Z4 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW Z4 퍼플.webp" alt="BMW Z4 퍼플" loading="lazy"><figcaption>Z4 퍼플</figcaption></figure>
+                <figure><img src="img/cars/BMW X5 화이트.webp" alt="BMW X5 화이트" loading="lazy"><figcaption>X5 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW X6 화이트.webp" alt="BMW X6 화이트" loading="lazy"><figcaption>X6 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW X6 블랙.webp" alt="BMW X6 블랙" loading="lazy"><figcaption>X6 블랙</figcaption></figure>
+                <figure><img src="img/cars/BMW X7 화이트.webp" alt="BMW X7 화이트" loading="lazy"><figcaption>X7 화이트</figcaption></figure>
+                <figure><img src="img/cars/BMW X7 블랙.webp" alt="BMW X7 블랙" loading="lazy"><figcaption>X7 블랙</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="audi">
+                <figure><img src="img/cars/아우디 A6.webp" alt="아우디 A6" loading="lazy"><figcaption>A6</figcaption></figure>
+                <figure><img src="img/cars/아우디 A7.webp" alt="아우디 A7" loading="lazy"><figcaption>A7</figcaption></figure>
+                <figure><img src="img/cars/아우디 R8.webp" alt="아우디 R8" loading="lazy"><figcaption>R8</figcaption></figure>
+                <figure><img src="img/cars/아우디 Q8 e-tron.webp" alt="아우디 Q8 e-tron" loading="lazy"><figcaption>Q8 e-tron</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="tesla">
+                <figure><img src="img/cars/테슬라 모델3.webp" alt="테슬라 모델3" loading="lazy"><figcaption>Model 3</figcaption></figure>
+                <figure><img src="img/cars/테슬라 모델Y 롱레인지.webp" alt="테슬라 모델Y" loading="lazy"><figcaption>Model Y</figcaption></figure>
+                <figure><img src="img/mx.webp" alt="테슬라 모델X" loading="lazy"><figcaption>Model X</figcaption></figure>
+                <figure><img src="img/ms.webp" alt="테슬라 모델S" loading="lazy"><figcaption>Model S</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="landrover">
+                <figure><img src="img/cars/레인지로버 벨라.webp" alt="레인지로버 벨라" loading="lazy"><figcaption>레인지로버 벨라</figcaption></figure>
+                <figure><img src="img/cars/레인지로버 보그 오토바이오그래피.webp" alt="레인지로버 보그" loading="lazy"><figcaption>레인지로버 보그</figcaption></figure>
+                <figure><img src="img/cars/레인지로버 스포츠.webp" alt="레인지로버 스포츠" loading="lazy"><figcaption>레인지로버 스포츠</figcaption></figure>
+                <figure><img src="img/defender.webp" alt="랜드로버 디펜더" loading="lazy"><figcaption>디펜더</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="porsche">
+                <figure><img src="img/cars/포르쉐 타이칸.webp" alt="포르쉐 타이칸" loading="lazy"><figcaption>타이칸</figcaption></figure>
+                <figure><img src="img/cars/포르쉐 718 박스터_2.webp" alt="포르쉐 718 박스터" loading="lazy"><figcaption>718 박스터</figcaption></figure>
+                <figure><img src="img/cars/포르쉐 마칸GTS.webp" alt="포르쉐 마칸GTS" loading="lazy"><figcaption>마칸 GTS</figcaption></figure>
+                <figure><img src="img/cars/포르쉐 박스터 GTS 4.0.webp" alt="포르쉐 박스터 GTS 4.0" loading="lazy"><figcaption>박스터 GTS 4.0</figcaption></figure>
+                <figure><img src="img/cars/포르쉐 카레라 카브리올레.webp" alt="포르쉐 카레라 카브리올레" loading="lazy"><figcaption>카레라 카브리올레</figcaption></figure>
+                <figure><img src="img/cars/포르쉐 카이엔 쿠페.webp" alt="포르쉐 카이엔 쿠페" loading="lazy"><figcaption>카이엔 쿠페</figcaption></figure>
+                <figure><img src="img/cars/포르쉐 파나메라.webp" alt="포르쉐 파나메라" loading="lazy"><figcaption>파나메라</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="bentley">
+                <figure><img src="img/cars/벤틀리 벤테이가.webp" alt="벤틀리 벤테이가" loading="lazy"><figcaption>벤테이가</figcaption></figure>
+                <figure><img src="img/cars/벤틀리 컨티넨탈 GT.webp" alt="벤틀리 컨티넨탈 GT" loading="lazy"><figcaption>컨티넨탈 GT</figcaption></figure>
+            </div>
+
+            <div class="car-grid car-group" data-brand="lambo">
+                <figure><img src="img/cars/람보르기니 우루스S.webp" alt="람보르기니 우루스S" loading="lazy"><figcaption>우루스S</figcaption></figure>
+                <figure><img src="img/cars/람보르기니 우루스SE.webp" alt="람보르기니 우루스SE" loading="lazy"><figcaption>우루스SE</figcaption></figure>
+                <figure><img src="img/huracan.webp" alt="람보르기니 우라칸" loading="lazy"><figcaption>우라칸</figcaption></figure>
+                <figure><img src="img/cars/맥라렌 570S 쿠페.webp" alt="맥라렌 570S" loading="lazy"><figcaption>맥라렌 570S</figcaption></figure>
             </div>
 
             <div class="car-band">
@@ -580,6 +670,17 @@
       document.querySelectorAll('.faq-q').forEach(function (btn) {
         btn.addEventListener('click', function () {
           btn.parentElement.classList.toggle('open');
+        });
+      });
+
+      // 차량 브랜드 칩 필터
+      document.querySelectorAll('.chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('active'); });
+          document.querySelectorAll('.car-group').forEach(function (g) { g.classList.remove('active'); });
+          chip.classList.add('active');
+          var group = document.querySelector('.car-group[data-brand="' + chip.dataset.brand + '"]');
+          if (group) group.classList.add('active');
         });
       });
     })();
