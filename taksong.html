@@ -972,10 +972,20 @@ function renderSummary() {
         '전동환': { bg: '#e0f2f1', label: '#00695c', value: '#004d40' },
         '미지정': { bg: '#f5f5f5', label: '#616161', value: '#424242' },
     };
+    const rentCategories = [
+        { name: '장기대여', color: '#1565c0' },
+        { name: '사고대여', color: '#c62828' },
+        { name: '일반대여', color: '#2e7d32' },
+        { name: '기타', color: '#6a1b9a' },
+    ];
     const calcByDeposit = (dep) => {
         const items = filtered.filter(r => (r.depositTo || '미지정') === dep);
         const total = items.reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0);
-        return { count: items.length, total };
+        const byCat = rentCategories.map(cat => {
+            const catItems = items.filter(r => (r.category || '장기대여') === cat.name);
+            return { ...cat, count: catItems.length, total: catItems.reduce((s, r) => s + (r.charge || 0) + (r.fuelCharge || 0), 0) };
+        }).filter(c => c.count > 0);
+        return { count: items.length, total, byCat };
     };
     const depositCards = Object.keys(depositColors).map(dep => ({ dep, ...depositColors[dep], ...calcByDeposit(dep) }));
 
@@ -1022,12 +1032,22 @@ function renderSummary() {
         <div class="card red"><div class="label">미청구 건수</div><div class="value">${pending}건</div></div>
         <div class="card" style="border-left:3px solid #1565c0;grid-column:1/-1;background:#fafbff;">
             <div class="label" style="margin-bottom:10px;">입금처별 현황 (청구금액 + 주유비)</div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
                 ${depositCards.map(c => `
-                <div style="background:${c.bg};border-radius:10px;padding:14px;text-align:center;">
-                    <div style="font-size:12px;color:${c.label};font-weight:700;">${c.dep}</div>
-                    <div style="font-size:20px;font-weight:800;color:${c.value};margin-top:4px;">${fmt(c.total)}</div>
-                    <div style="font-size:11px;color:#666;margin-top:2px;">${c.count}건</div>
+                <div style="background:${c.bg};border-radius:10px;padding:14px;">
+                    <div style="text-align:center;">
+                        <div style="font-size:12px;color:${c.label};font-weight:700;">${c.dep}</div>
+                        <div style="font-size:20px;font-weight:800;color:${c.value};margin-top:4px;">${fmt(c.total)}</div>
+                        <div style="font-size:11px;color:#666;margin-top:2px;">${c.count}건</div>
+                    </div>
+                    ${c.byCat.length ? `
+                    <div style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,0,0,.08);">
+                        ${c.byCat.map(cat => `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:2px 0;font-size:12px;">
+                            <span style="color:${cat.color};font-weight:700;">${cat.name}</span>
+                            <span style="color:#555;">${cat.count}건 · <b style="color:${cat.color};">${fmt(cat.total)}</b></span>
+                        </div>`).join('')}
+                    </div>` : ''}
                 </div>`).join('')}
             </div>
         </div>
