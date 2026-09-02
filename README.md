@@ -17,9 +17,10 @@
 | `google-apps-script-email.js` | 상담폼(consultForm) 수신용 Google Apps Script 소스 (배포는 Google 측) |
 | `.github/workflows/smartlog-crawl.yml` | 스마트로그 수집 워크플로 |
 | `img/배너슬라이드/` | 이벤트 배너 제작용 원본 (사이트에서 직접 참조하지 않음) |
+| `css/fa-subset.css`, `css/webfonts/` | Font Awesome solid 서브셋 (사용 아이콘 18개만 self-host). 아이콘 추가 시 `python tools/build_fa_subset.py` 로 재생성 |
 
 ## 외부 의존성
-- Pretendard(jsDelivr), Swiper 11(jsDelivr), Font Awesome 서브셋(css/fa-subset.css, 사용 아이콘만 self-host), 스마트로그(smlog.co.kr)
+- Pretendard(jsDelivr), Swiper 11(jsDelivr), Font Awesome 서브셋(로컬, 위 참조), 스마트로그(smlog.co.kr)
 
 ## 배포
 - 미리보기: `netlify deploy --dir . --alias preview` → https://preview--blrent.netlify.app
