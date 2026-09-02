@@ -25,7 +25,9 @@ def fetch(name):
 allcss = io.open(fetch("css/all.min.css"), encoding="utf-8").read()
 ttf = fetch("webfonts/fa-solid-900.ttf")
 
-corpus = "\n".join(io.open(f, encoding="utf-8").read() for f in ["index.html"] + glob.glob("js/*.js"))
+# index.html 은 class 속성값만, js 는 전체 텍스트에서 fa-* 토큰 수집 (href 의 css/fa-subset.css 같은 경로는 제외)
+html = io.open("index.html", encoding="utf-8").read()
+corpus = "\n".join(re.findall(r'class="([^"]*)"', html)) + "\n" + "\n".join(io.open(f, encoding="utf-8").read() for f in glob.glob("js/*.js"))
 used = sorted(set(re.findall(r"\bfa-([a-z0-9-]+)", corpus)))
 styles = sorted(set(re.findall(r"\b(fa[srlb]|fa-solid|fa-regular|fa-brands)\b", corpus)))
 if styles != ["fas"]:
