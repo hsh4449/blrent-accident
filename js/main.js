@@ -1,3 +1,95 @@
+// ========================================
+// index.html 인라인 스크립트에서 이동 (2026-09-02 리팩토링)
+// ========================================
+
+/* Hero 함께한 인원수: 날짜 기반으로 매일 1회 결정(132~224), 하루 고정 */
+(function(){
+  var d=new Date();
+  var seed=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+  var x=Math.sin(seed)*10000; x=x-Math.floor(x);
+  var n=132+Math.floor(x*93); /* 132~224 */
+  var el=document.getElementById('heroCount');
+  if(el) el.textContent=n.toLocaleString()+'명';
+})();
+
+(function(){
+  var modal=document.getElementById('evtModal'); if(!modal) return;
+  var KEY='evtHideUntil';
+  try{ if(localStorage.getItem(KEY)===new Date().toDateString()) return; }catch(e){}
+  setTimeout(function(){
+    modal.classList.add('show');
+    if(window.aresTrack) window.aresTrack('event_impression', {label:'evt-modal'});  // 이벤트배너 노출 집계
+  }, 700);
+  function closeModal(){ modal.classList.remove('show'); }
+  modal.querySelector('.evt-close').addEventListener('click', closeModal);
+  modal.querySelector('.evt-closebtn').addEventListener('click', closeModal);
+  modal.querySelector('.evt-dismiss').addEventListener('click', function(){ try{ localStorage.setItem(KEY,new Date().toDateString()); }catch(e){} closeModal(); });
+  modal.addEventListener('click', function(e){ if(e.target===modal) closeModal(); });
+})();
+
+// 상담 신청 폼 → Google Apps Script 전송 (index.html 인라인에서 이동)
+(function () {
+    var consultForm = document.getElementById("consultForm");
+    if (!consultForm) return;
+consultForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // 2번의 실제 Google Apps Script URL
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwtjwHFurSLMz3In7t_GJa4gRRtg3qtYXwXaUuf-64sIE5gHQMCbvrLS17lJzdXeBIQEQ/exec"; 
+
+    const btn = this.querySelector(".submit-btn");
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 접수중입니다...';
+    btn.disabled = true;
+
+    fetch(scriptURL, { 
+        method: 'POST', 
+        body: new FormData(this), 
+        mode: 'no-cors'
+    })
+    .then(response => {
+        // 성공 팝업 표시
+        alert("✅ 신청되었습니다!\n\n담당자가 확인 후 24시간 이내에 연락드리겠습니다.\n빠른 상담을 원하시면 1666-6525로 전화주세요.");
+
+        // 폼 초기화
+        document.getElementById("consultForm").reset();
+
+        // 버튼 원래대로
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error!', error);
+        alert("⚠️ 신청 중 문제가 발생했습니다.\n\n직접 전화로 문의해주시면 감사하겠습니다.\n📞 1666-6525");
+
+        // 버튼 원래대로
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+});
+})();
+
+// 누적 이용 고객 수: 2026-03-13 기준 68,661 + 일별 결정적 증가 (index.html 인라인에서 이동)
+(function() {
+    var baseDate = new Date('2026-03-13');
+    var baseCount = 68661;
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var daysDiff = Math.floor((today - baseDate) / (1000 * 60 * 60 * 24));
+    var total = baseCount;
+    for (var i = 0; i < daysDiff; i++) {
+        var seed = 20260313 + i * 7 + i * i * 3;
+        var daily = 10 + (seed % 21);
+        total += daily;
+    }
+    var el = document.getElementById('customer-count');
+    if (el) el.textContent = total.toLocaleString() + '+';
+})();
+
+// ========================================
+// 이하 원래 main.js
+// ========================================
+
 /* ========================================
    아레스렌트카 - JavaScript
    모바일 인터랙션 및 기능 구현
@@ -281,7 +373,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // 통계 숫자 카운트업 애니메이션
 // ========================================
 
-function animateCount(element, target, duration = 2000) {
+function animateCount(element, target, duration = 2000, suffix = '') {
     const start = 0;
     const increment = target / (duration / 16); // 60fps 기준
     let current = start;
@@ -289,7 +381,7 @@ function animateCount(element, target, duration = 2000) {
     const timer = setInterval(() => {
         current += increment;
         if (current >= target) {
-            element.textContent = formatNumber(target);
+            element.textContent = formatNumber(target) + suffix;
             clearInterval(timer);
         } else {
             element.textContent = formatNumber(Math.floor(current));
@@ -324,14 +416,8 @@ const statsObserver = new IntersectionObserver((entries) => {
                     }
                     
                     stat.textContent = '0';
-                    animateCount(stat, number);
-                    
-                    // 원래 텍스트의 + 기호 유지
-                    if (text.includes('+')) {
-                        setTimeout(() => {
-                            stat.textContent = stat.textContent + '+';
-                        }, 2000);
-                    }
+                    // 원래 텍스트의 + 기호는 마지막 틱에서 함께 출력 (별도 타이머로 붙이면 애니메이션과 경합해 사라짐)
+                    animateCount(stat, number, 2000, text.includes('+') ? '+' : '');
                 }
             });
             entry.target.dataset.animated = 'true';
@@ -343,32 +429,6 @@ const heroStats = document.querySelector('.hero-stats');
 if (heroStats) {
     statsObserver.observe(heroStats);
 }
-
-// ========================================
-// 전화번호 클릭 추적 (분석용)
-// ========================================
-
-const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
-phoneLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        console.log('전화 상담 클릭:', link.href);
-        // 여기에 Google Analytics 등 분석 코드 추가 가능
-        // gtag('event', 'click', { 'event_category': 'phone', 'event_label': link.href });
-    });
-});
-
-// ========================================
-// 카카오톡 링크 클릭 추적 (분석용)
-// ========================================
-
-const kakaoLinks = document.querySelectorAll('a[href*="kakao"]');
-kakaoLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        console.log('카카오톡 상담 클릭:', link.href);
-        // 여기에 Google Analytics 등 분석 코드 추가 가능
-        // gtag('event', 'click', { 'event_category': 'kakao', 'event_label': link.href });
-    });
-});
 
 // ========================================
 // 이미지 지연 로딩 (Lazy Loading)
@@ -437,58 +497,11 @@ window.addEventListener('load', () => {
 // 메뉴 토글 버튼 클릭으로만 네비게이션이 열리도록 수정
 
 // ========================================
-// 디버그 모드 (개발용)
-// ========================================
-
-const DEBUG_MODE = false;
-
-if (DEBUG_MODE) {
-    console.log('🚗 아레스렌트카 홈페이지 로드됨');
-    console.log('📱 화면 너비:', window.innerWidth);
-    console.log('📏 헤더 높이:', headerHeight);
-    
-    // 리사이즈 이벤트 로깅
-    window.addEventListener('resize', () => {
-        console.log('📐 화면 크기 변경:', window.innerWidth, 'x', window.innerHeight);
-    });
-}
-
-// ========================================
-// 성능 모니터링
-// ========================================
-
-if (window.performance && window.performance.timing) {
-    window.addEventListener('load', () => {
-        const timing = window.performance.timing;
-        const loadTime = timing.loadEventEnd - timing.navigationStart;
-        console.log('⚡ 페이지 로딩 시간:', (loadTime / 1000).toFixed(2), '초');
-    });
-}
-
-// ========================================
-// 서비스 워커 등록 (PWA 지원 - 선택사항)
-// ========================================
-
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
-    window.addEventListener('load', () => {
-        // navigator.serviceWorker.register('/sw.js')
-        //     .then(registration => console.log('SW registered:', registration))
-        //     .catch(error => console.log('SW registration failed:', error));
-    });
-}
-
-// ========================================
 // contenteditable 요소 편집 안내
 // ========================================
 
 const editableElements = document.querySelectorAll('[contenteditable="true"]');
 editableElements.forEach(element => {
-    element.addEventListener('focus', function() {
-        if (DEBUG_MODE) {
-            console.log('✏️ 편집 모드:', this.tagName, this.className);
-        }
-    });
-    
     // 엔터키 방지 (한 줄 텍스트)
     element.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && !this.dataset.multiline) {
@@ -519,14 +532,6 @@ if (imageModal && modalImg) {
         if (e.key === 'Escape') imageModal.style.display = 'none';
     });
 }
-
-// ========================================
-// 초기화 완료 로그
-// ========================================
-
-console.log('%c🚗 아레스렌트카 홈페이지', 'color: #FF6B00; font-size: 20px; font-weight: bold;');
-console.log('%c✅ JavaScript 초기화 완료', 'color: #4CAF50; font-size: 14px;');
-console.log('%c📱 모바일 우선 반응형 디자인', 'color: #2196F3; font-size: 12px;');
 
 // ========================================
 // 외부에 노출할 API (선택사항)
