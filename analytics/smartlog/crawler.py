@@ -17,12 +17,20 @@ import requests
 from datetime import datetime, timedelta, timezone
 
 # ---- 설정 ----
-SMLOG_ID = os.environ.get('SMLOG_ID', '***REMOVED***')
+try:  # 로컬 실행용: 저장소 루트 .env (C:\Projects\_vault 링크). GitHub Actions 는 시크릿을 env 로 줌
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '.env'))
+except ImportError:
+    pass
+SMLOG_ID = os.environ.get('SMLOG_ID', '')
 SMLOG_PW = os.environ.get('SMLOG_PW', '')
 SVID = os.environ.get('SMLOG_SVID', '36572')
 WINDOW_DAYS = int(os.environ.get('WINDOW_DAYS', '14'))   # self-healing 재수집 창
 SUPABASE_URL = os.environ.get('SUPABASE_URL')
 SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+
+if not SMLOG_ID or not SMLOG_PW:
+    sys.exit('SMLOG_ID / SMLOG_PW 환경변수 필요 (로컬: .env → C:\\Projects\\_vault\\env\\blrent-accident.env)')
 
 BASE = 'https://smlog.co.kr'
 KST = timezone(timedelta(hours=9))
